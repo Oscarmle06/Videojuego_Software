@@ -1,10 +1,10 @@
-# **Game Name Here**
+# **Velocity Draft**
 
 ## _Game Design Document_
 
 ---
 
-##### **Copyright notice / author information / boring legal stuff nobody likes**
+##### **Copyright notice / Aixa Elenka Mendoza Filisola | A01782727 - Oscar Miguel Lara Elizondo | A01781855 - Jose Emilio Lara Posada | A01782838 / boring legal stuff nobody likes**
 
 ##
 ## _Index_
@@ -56,6 +56,9 @@ The primary goal is to secure a podium finish (Top 3) in every race to advance a
 
 The game provokes a state of Strategic Aggression. We want the player to feel like a high-stakes underdog, constantly "building" a survival machine under pressure. It creates a loop of high-octane adrenaline during the race and calculated tension during the card selection phase. The player should feel the nervousness of being "one crash away from disaster" contrasted with the empowerment of executing a perfectly timed EMP or Grappler Hook.
 
+## _Technical_
+
+---
 
 ### **Screens**
 
