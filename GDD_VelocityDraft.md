@@ -57,6 +57,10 @@ As the player progresses through tracks, the difficulty scales: more complex tra
 
 The goal is to provoke a constant state of*risk vs. reward tension. Unlike a casual racing game, every decision — which card to pick, when to use an offensive item, whether to push for position or play defensively — carries real consequences thanks to permadeath. Players should feel the adrenaline of survival combined with the satisfaction of a well-executed strategic play.
 
+### **LOGO**
+
+![Alt text](/assets/imgs/logo.png)
+
 ---
 
 ## _Technical_
@@ -70,35 +74,49 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - OPTIONS → brightness, sound, music sliders
    - EXIT → closes the game
 
+![Alt text](/assets/imgs/titlescreen.png)
+
 2. **Level Selection**
    - Level buttons 1–7 + Trophy (final race), unlocked sequentially
    - Locked levels are non-interactive
    - BACK → Title Screen
+
+   ![Alt text](/assets/imgs/levelselection.png)
 
 3. **Options / Pause Menu** *(doubles as pause screen)*
    - Sliders: Sound (SFX volume), Music, Brightness
    - SAVE & EXIT → returns to Level Selection
    - BACK → returns to game
 
+   ![Alt text](/assets/imgs/option.png)
+
 4. **Gameplay Screen**
    - Main 2.5D race view (Mode 7 floor + sprite karts)
    - HUD: health bar, race position, active cards (up to 3 offensive slots), minimap
    - ESC → Pause Menu
+
+   ![Alt text](/assets/imgs/playerview.png)
 
 5. **Results Screen**
    - WIN variant: trophy + flag, level number, finish time
    - TRY AGAIN variant: same layout, different header
    - Triggers Card Selection on WIN
 
+   ![Alt text](/assets/imgs/win.png)
+
 6. **Card Selection Screen**
    - Shown after each win (Level 1 onward)
    - Displays 3 randomly drawn cards from the 12-card pool
    - Player selects 1 with mouse/Enter
 
+   ![Alt text](/assets/imgs/card_seleection.png)
+
 7. **Car Statistics Screen**
    - Shows cumulative passive upgrades: Tires, Spoiler Aero, Chassis, Transmission
    - Progress bars per stat — persists across runs (not lost on death)
    - BACK → returns to game
+
+   ![Alt text](/assets/imgs/statistics.png)
 
 8. **Storytelling / Cutscenes**
    - Intro cutscene (reserve driver backstory)
@@ -106,10 +124,14 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - Permadeath cutscene
    - Simplistic pixel art style, text-driven, advanced with SPACE
 
+   ![Alt text](/assets/imgs/story.png)
+
 9. **Credits Screen**
    - Team names, music credits, sprites credits, legal notices
    - Background music playing
    - BACK TO MAIN MENU button
+
+   ![Alt text](/assets/imgs/credit_scene.png)
 
 10. **Game Over Screen**
     - Triggered by health = 0 or finish outside top 3
@@ -215,6 +237,10 @@ The visual theme is retro arcade racing: vivid green grass, blue sky, palm trees
 | Midday | Bright, warm, non-threatening | Blue sky with clouds |
 | Sunset | Warm, reflective, melancholic | Orange/purple gradient |
 
+![Alt text](/assets/imgs/sunnyday.png)
+![Alt text](/assets/imgs/sunrise.png)
+![Alt text](/assets/imgs/sunset.png)
+
 Weather overlays (Clear, Rain, Wind) apply on top of the time-of-day backgrounds starting from Level 4.
 
 Track complexity increases with each level: more waypoints (turns), additional laps, and tighter layouts. Lap count maxes out at Level 5.
@@ -312,28 +338,11 @@ The engine combines three techniques:
 
 The canvas is split at `horizon = canvasHeight / 2`. Everything below is rendered per-scanline:
 
-```
-rowDist    = camera.posZ / (y - horizon)
-floorX_step = rowDist × (dirX - planeX)
-floorY_step = rowDist × (dirY - planeY)
-stepX      = rowDist × (2 × planeX) / screenWidth
-stepY      = rowDist × (2 × planeY) / screenWidth
-floorX     = posX + floorX_step   // starting map coord for the row
-floorY     = posY + floorY_step
-```
-
 Each pixel samples `track.grid[gridY][gridX]` → asphalt (80,80,80) or grass (34,100,34).
 
 **Sprite Scaling (Z-axis billboard)**
 
 Karts and projectiles are rendered as scaled billboards using inverse camera plane transform:
-
-```
-invDet   = 1 / (planeX × dirY - dirX × planeY)
-transformY = invDet × (-planeY × dx + planeX × dy)   // depth
-spriteHeight = canvasHeight / transformY
-screenX  = (width/2) × (1 + transformX / transformY)
-```
 
 Sorted back-to-front (Painter's Algorithm) before drawing.
 
@@ -355,25 +364,8 @@ The sky half (above horizon) is filled with a flat color or a scrolling pixel-ar
 
 #### Kart Movement
 
-```
-velocity += acceleration × deltaTime
-velocity -= friction × velocity × deltaTime
-velocity  = clamp(velocity, 0, topSpeed)
-
-posX += dirX × velocity × deltaTime
-posY += dirY × velocity × deltaTime
-```
-
 #### Steering / Rotation
 
-```
-rotationSpeed = baseRotSpeed × (velocity / topSpeed)
-cos = Math.cos(rotationSpeed × deltaTime)
-sin = Math.sin(rotationSpeed × deltaTime)
-
-newDirX = dirX × cos - dirY × sin
-newDirY = dirX × sin + dirY × cos
-```
 Camera plane rotates identically to keep FOV consistent.
 
 #### Terrain (sampled each frame from grid)
@@ -384,15 +376,12 @@ Camera plane rotates identically to keep FOV consistent.
 | Grass (grid = 0) | `baseTopSpeed × 0.55` | `baseFriction × 2.0` |
 
 #### Kart vs Track Collision
+
 - Off-grid boundary → velocity = 0, kart pushed back
 - Off-track (grass) → terrain penalties apply, offensive cards disabled
 
 #### Kart vs Kart Collision (Circle Collision)
 
-```
-distance = sqrt((ax - bx)² + (ay - by)²)
-if (distance < radiusA + radiusB) → collision
-```
 On collision: both receive impulse away from each other. The Aggressive CPU uses this intentionally. Heavy Chassis card reduces damage received and modifies impulse magnitudes.
 
 #### Card Stat Modifiers (applied at selection time, stackable)
@@ -407,13 +396,6 @@ On collision: both receive impulse away from each other. The Aggressive CPU uses
 ---
 
 ### **Database Structure**
-
-```sql
-Users          (User_ID PK, Username, Password)
-Game_Stats     (Stats_ID PK, User_ID FK, Total_Wins, Total_Losses, Total_Takedowns)
-Card_Usage     (Usage_ID PK, User_ID FK, Card_name, Selection_count, Category)
-Run_History    (Run_ID PK, User_ID FK, Highest_Level_Reached, Death_Cause, Final_Score)
-```
 
 Purpose: player progression persistence, session analytics for difficulty tuning, card balance data (selection frequency → drop rate / power adjustments).
 
@@ -446,9 +428,14 @@ Player kart: vivid blue (Option 2). Each CPU has a distinct palette tied to thei
 
 For each kart: side profile (L), side profile (R), front view, back view, angled back-left, angled back-right, angled front-left, angled front-right *(used for drift/turn animation)*
 
+![alt text](/assets/imgs/kart.png)
+![alt text](/assets/imgs/colorpal.png)
+
 **Cards (12 total)**
 - Front face: unique illustration + category letter (P / O / R) + ability identifier
 - Back face: shared design for all cards (same deck implied)
+
+![alt text](/assets/imgs/cards.png)
 
 **UI Elements**
 - Health bar
