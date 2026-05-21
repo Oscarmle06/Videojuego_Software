@@ -142,7 +142,7 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 ### **Controls**
 
 | Key | Action |
-|---|---|
+|---|---|---
 | W / ↑ | Accelerate |
 | S / ↓ | Brake / Reverse (when stopped) |
 | A / ← | Turn left |
