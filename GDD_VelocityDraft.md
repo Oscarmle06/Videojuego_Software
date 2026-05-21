@@ -186,21 +186,20 @@ At run start, the full 12-card pool is available. After each victorious race, 3 
 - **Takedown Recovery** — recover 5–10% HP each time an enemy crashes or goes off-track via your cards
 
 #### Card Drop Probabilities
-
-"| Card | Category | Drop Rate |"
-
-| Racing Transmission | Passive | 13% |
-| Heavy Chassis | Passive | 13% |
-| Sport Tires | Passive | 13% |
-| Aerodynamic Spoiler | Passive | 13% |
-| Tire Shredder | Offensive | 8% |
-| EMP | Offensive | 8% |
-| Grappler Hook | Offensive | 8% |
-| Sonic Wave | Offensive | 8% |
-| Repair Bot | Repair | 5% |
-| Pit Stop | Repair | 4% |
-| Temporary Armor | Repair | 4% |
-| Takedown Recovery | Repair | 3% |
+| Card                 | Category  | Drop Rate |
+|----------------------|-----------|------------|
+| Racing Transmission  | Passive   | 13%        |
+| Heavy Chassis        | Passive   | 13%        |
+| Sport Tires          | Passive   | 13%        |
+| Aerodynamic Spoiler  | Passive   | 13%        |
+| Tire Shredder        | Offensive | 8%         |
+| EMP                  | Offensive | 8%         |
+| Grappler Hook        | Offensive | 8%         |
+| Sonic Wave           | Offensive | 8%         |
+| Repair Bot           | Repair    | 5%         |
+| Pit Stop             | Repair    | 4%         |
+| Temporary Armor      | Repair    | 4%         |
+| Takedown Recovery    | Repair    | 3%         |
 
 > Passives 52% total · Offensive 32% total · Repair 16% total
 
