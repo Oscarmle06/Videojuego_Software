@@ -141,18 +141,18 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 
 ### **Controls**
 
-| Key | Action |
----|---|---
-| W / ↑ | Accelerate |
-| S / ↓ | Brake / Reverse (when stopped) |
-| A / ← | Turn left |
-| D / → | Turn right |
-| O | Select offensive/repair card |
-| P | Use offensive/repair card selected |
-| ESC | Pause game | (not implemented yet) |
-| SPACE | Advance cutscene | (not implemented yet) |
-| Mouse | Navigate menus, select cards in menu|
-| Enter | Confirm card selection in menu |
+| Key       | Action                                      |
+|-----------|---------------------------------------------|
+| W / ↑     | Accelerate                                  |
+| S / ↓     | Brake / Reverse (when stopped)              |
+| A / ←     | Turn left                                   |
+| D / →     | Turn right                                  |
+| O         | Select offensive/repair card                |
+| P         | Use selected offensive/repair card          |
+| ESC       | Pause game *(not implemented yet)*          |
+| SPACE     | Advance cutscene *(not implemented yet)*    |
+| Mouse     | Navigate menus, select cards in menu        |
+| Enter     | Confirm card selection in menu              |
 
 ---
 
