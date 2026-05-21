@@ -147,12 +147,12 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 | S / ↓ | Brake / Reverse (when stopped) |
 | A / ← | Turn left |
 | D / → | Turn right |
-| E | Use offensive card |
-| R | Use repair card |
-| ESC | Pause game |
-| SPACE | Advance cutscene |
-| Mouse | Navigate menus, select cards |
-| Enter | Confirm card selection |
+| O | Select offensive/repair card |
+| P | Use offensive/repair card selected |
+| ESC | Pause game | (not implemented yet)
+| SPACE | Advance cutscene | (not implemented yet)
+| Mouse | Navigate menus, select cards in menu|
+| Enter | Confirm card selection in menu |
 
 ---
 
