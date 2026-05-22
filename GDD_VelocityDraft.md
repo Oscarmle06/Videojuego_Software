@@ -165,21 +165,25 @@ A single persistent health bar replaces the traditional lives system. Damage is 
 Finish in the **top 3** to advance. Finishing 4th or lower ends the run immediately, regardless of HP remaining.
 
 #### Card System
-At run start, the full 12-card pool is available. After each victorious race, 3 random cards are drawn and the player picks 1. Card categories:
+At run start, the full 12-card pool is available. After each victorious race, 3 random cards are drawn and the player picks 1. Cards are only for the player not for the enemy or rivals. 
+Card categories:
 
 **Passives (Permanent upgrades — no button slot)**
+Passive cards work as upgrades for the car. They appear at the bottom of the screen and can only be selected by the player before the race. 
 - **Racing Transmission** — increases base acceleration
 - **Heavy Chassis** — reduces damage and impulse from kart collisions; multiplies opponent's impulse
 - **Sport Tires** — increases grip (rotation speed at high velocities, tighter turns)
 - **Aerodynamic Spoiler** — increases base top speed
 
 **Offensive (Active, key-triggered, limited durability 1–2 races, max 3 in deck)**
+Offensive cards work as powers/powerup's during gameplay. They appear untop of the passive cards, the player chooses when (during the race) to implement them.
 - **Tire Shredder** — projectile that causes rival to lose control and drop top speed for 3–5 sec
 - **EMP** — shockwave that disables nearby enemies' attacks and pushes them outward
 - **Grappler Hook** — latches onto the car ahead; steals 15% of their current speed
 - **Sonic Wave** — forward/backward sound blast that damages and pushes enemies sideways
 
 **Repair (Active, between or during races)**
+The repair cards form the normal deck with the offensive.
 - **Repair Bot** — recover 30% HP immediately
 - **Pit Stop** — recover 60% HP, but only usable between races
 - **Temporary Armor** — adds a shield bar that absorbs the next hit without damaging base HP
