@@ -214,15 +214,15 @@ The repair cards form the normal deck with the offensive.
 - **The Evasive** — mirrors player movement to block position advances
 
 #### Obstacles & Environment
-- **Off-road terrain** — applies speed penalty (55% topSpeed), disables offensive cards
+- **Off-road terrain** — reduces speed, disables offensive cards
 - **Road cracks** — direct 5–10% HP damage + camera shake on contact
 
 **Weather Modifiers (Global)**
 | Condition | Effect |
 |-----------|---------|
-| Clear | No modifiers, full visibility |
-| Rain | Grip multiplier reduced (wider turns), grey fog filter, rain streak animation, rain SFX |
-| Wind | Constant lateral force vector applied to all karts; players must counter-steer; wind SFX |
+| Clear | Standard visibility and handling conditions|
+| Rain | Reduces traction, widens turns, and adds rain visual. |
+| Wind | Pushes vehicles sideways during races, forcing players to counter-steer. |
 
 ---
 
@@ -333,33 +333,20 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 ### **Technical Overview**
 
-#### 2.5D Implementation
+#### 2.5D Visual Style
+The game uses a retro-inspired pseudo-3d visual style similar to classic arcade racing games. Tracks are rendered using perspective-based floor projection techniques to create the illusion of depth, while karts and projectiles are displayed as scaled sprites that grow or shrink depending on distance from the camera. 
 
-The engine combines three techniques:
-
-**Mode 7 — Floor Projection**
-
-The canvas is split at `horizon = canvasHeight / 2`. Everything below is rendered per-scanline:
-
-Each pixel samples `track.grid[gridY][gridX]` → asphalt (80,80,80) or grass (34,100,34).
-
-**Sprite Scaling (Z-axis billboard)**
-
-Karts and projectiles are rendered as scaled billboards using inverse camera plane transform:
-
-Sorted back-to-front (Painter's Algorithm) before drawing.
-
-**Skybox**
-
-The sky half (above horizon) is filled with a flat color or a scrolling pixel-art background image that changes per time-of-day theme.
+The uppse hald of the screen displays the sky and environmental backgrounds, which change according to the current level theme and in-game time of day.
 
 #### Track Generation
+Tracks are procedurally generated using curved waypoint paths to create smooth racing circuits. Each track includes:
+1.Road boundaries
+2.Checkpoints
+3.Spawn positions
+4.Off-road terrain areas.
+If the player drives off to these areas it will lose all speed.
 
-1. Generate N waypoints in polar coordinates around (32, 32) with random radius variation
-2. Smooth with Catmull-Rom spline (50 steps per segment, circular wraparound with `(i±1+N)%N`)
-3. Generate left/right edges via normalized perpendicular vectors at each spline point
-4. Rasterize edges into 64×64 grid (linear interpolation left→right, `Math.floor()` to cell index)
-5. `findStartPosition()` returns `splinePoints[0]` with direction toward `splinePoints[1]`
+Track complexity increases throughout the game by introducing tighter turns, additional laps and weather modifiers. 
 
 ---
 
@@ -373,10 +360,10 @@ Camera plane rotates identically to keep FOV consistent.
 
 #### Terrain (sampled each frame from grid)
 
-| Terrain | topSpeed | friction |
-|----------|-------------|-------------|
-| Asphalt (grid = 1) | `baseTopSpeed` | `baseFriction` |
-| Grass (grid = 0) | `baseTopSpeed × 0.55` | `baseFriction × 2.0` |
+| Terrain | Gameplay Effect|
+|----------|-------------|
+| Asphalt| Normal speed and handling. |
+| Grass| Reduces speed and traction, making turning more difficult. |
 
 #### Kart vs Track Collision
 
@@ -391,10 +378,10 @@ On collision: both receive impulse away from each other. The Aggressive CPU uses
 
 | Card | Effect |
 |------|--------|
-| Racing Transmission | `acceleration += bonus` |
-| Heavy Chassis | Damage reduction %, impulse reduction on self, multiplied on opponent |
-| Sport Tires | `baseRotSpeed += bonus` (tighter turns at speed) |
-| Aerodynamic Spoiler | `baseTopSpeed += bonus` |
+| Racing Transmission | Improves vehicle acceleration. |
+| Heavy Chassis |Reduces collision damage and increases resistance to impacts |
+| Sport Tires | Improves grip and allows tighter turns at high speed. |
+| Aerodynamic Spoiler | Increases maximum speed |
 
 ---
 
