@@ -109,7 +109,7 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - Displays 3 randomly drawn cards from the 12-card pool
    - Player selects 1 with mouse/Enter
 
-   ![Alt text](/assets/imgs/card_seleection.png)
+   ![Alt text](/assets/imgs/card_selection.png)
 
 7. **Car Statistics Screen**
    - Shows cumulative passive upgrades: Tires, Spoiler Aero, Chassis, Transmission
