@@ -95,7 +95,7 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - HUD: health bar, race position, active cards (up to 3 offensive slots), minimap
    - ESC → Pause Menu
 
-   ![Alt text](/assets/imgs/playerview.png)
+   ![Alt text](/assets/imgs/gameplay.png)
 
 5. **Results Screen**
    - WIN variant: trophy + flag, level number, finish time
