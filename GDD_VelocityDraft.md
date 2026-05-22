@@ -215,7 +215,7 @@ At run start, the full 12-card pool is available. After each victorious race, 3 
 
 **Weather Modifiers (Global)**
 | Condition | Effect |
-
+|-----------|---------|
 | Clear | No modifiers, full visibility |
 | Rain | Grip multiplier reduced (wider turns), grey fog filter, rain streak animation, rain SFX |
 | Wind | Constant lateral force vector applied to all karts; players must counter-steer; wind SFX |
@@ -231,7 +231,7 @@ At run start, the full 12-card pool is available. After each victorious race, 3 
 The visual theme is retro arcade racing: vivid green grass, blue sky, palm trees and classic track-side elements. Each race uses a different time-of-day background (skybox) with its own atmosphere:
 
 | Time | Atmosphere | Sky |
-|---|---|---|
+|----------|-------------------------------|-------------------------|
 | Sunrise | Quiet, soft, fresh start | Orange/golden horizon |
 | Midday | Bright, warm, non-threatening | Blue sky with clouds |
 | Sunset | Warm, reflective, melancholic | Orange/purple gradient |
@@ -297,7 +297,7 @@ Track complexity increases with each level: more waypoints (turns), additional l
 ### **Abstract Classes / Components**
 
 | Class | Responsibility |
-|---|---|
+|----------------|----------------|
 | **GameLoop** | Core execution cycle via `requestAnimationFrame()`. Manages update/render pipeline. All components initialized here. |
 | **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes `isPressed(key)`. |
 | **Camera** | Player's POV. Stores `posX`, `posY`, `dirX`, `dirY`, `planeX`, `planeY`, `posZ`. Follows PlayerKart. |
@@ -310,7 +310,7 @@ Track complexity increases with each level: more waypoints (turns), additional l
 ### **Derived Classes / Component Compositions**
 
 | Class | Description |
-|---|---|
+|-------|-------------|
 | **FloorCaster** | Receives Camera + Track each frame. Mode 7-style floor projection per scanline, samples Track grid for asphalt/grass color. Writes to Canvas pixel buffer. |
 | **SpriteRenderer** | Receives Camera + list of Kart/Projectile objects. Computes screen position and scale per sprite (billboard). Painter's Algorithm sort. |
 | **Minimap** | Renders top-down overview on secondary canvas. Draws track edges, kart positions as colored dots, camera direction indicator. |
@@ -370,7 +370,7 @@ Camera plane rotates identically to keep FOV consistent.
 #### Terrain (sampled each frame from grid)
 
 | Terrain | topSpeed | friction |
-|---|---|---|
+|----------|-------------|-------------|
 | Asphalt (grid = 1) | `baseTopSpeed` | `baseFriction` |
 | Grass (grid = 0) | `baseTopSpeed × 0.55` | `baseFriction × 2.0` |
 
@@ -386,7 +386,7 @@ On collision: both receive impulse away from each other. The Aggressive CPU uses
 #### Card Stat Modifiers (applied at selection time, stackable)
 
 | Card | Effect |
-|---|---|
+|------|--------|
 | Racing Transmission | `acceleration += bonus` |
 | Heavy Chassis | Damage reduction %, impulse reduction on self, multiplied on opponent |
 | Sport Tires | `baseRotSpeed += bonus` (tighter turns at speed) |
@@ -413,7 +413,7 @@ Sprite resolution: **64×64 pixels** per kart and card. Health bar visible at al
 **Color palettes (proposed):**
 
 | Option | Primary | Shadow | Highlight |
-|---|---|---|---|
+|--------|---------|---------|-----------|
 | 1 (Red) | #E63946 | #E63946 | #E63946 |
 | 2 (Blue) | #2D9CDB | #1C2A44 | #56CCF2 |
 | 3 (Green) | #27AE60 | #145A32 | #6FCF97 |
@@ -464,7 +464,7 @@ Sound effects should be punchy and arcade-style — enough to confirm actions wi
 ### **Sounds Needed**
 
 | Sound | Reference |
-
+|--------|-----------|
 | Car Accelerating | [YouTube](https://www.youtube.com/watch?v=WWa441avBHs) |
 | Car Decelerating | [YouTube](https://www.youtube.com/watch?v=veP_A5bQT4c) |
 | Car Drifting (tire screech) | [YouTube](https://www.youtube.com/watch?v=iwJnfe69Glo) |
@@ -480,7 +480,7 @@ Sound effects should be punchy and arcade-style — enough to confirm actions wi
 All tracks original, composed and recorded by the team.
 
 | Track | Context |
-
+|-------|---------|
 | Main Menu | Title screen |
 | Card Selection | Between-race card screen |
 | Storyline | Cutscenes |
