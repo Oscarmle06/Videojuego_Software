@@ -4,16 +4,16 @@
 
 > 📌 **Note:** The prototype starts at the **Title Screen & Intro**, which will subsequently guide you to the card selection screen and the race.
 
-1. Navigate to the game folder (where the project files are located)
-
-```bash
-cd Game
-```
-
-2.  Clone the repository
+1.  Clone the repository
 
 ```bash
 git clone <URL_DE_SU_REPOSITORIO>
+```
+
+2. Navigate to the game folder (where the project files are located)
+
+```bash
+cd Game
 ```
 
 3. Install dependencies:
@@ -76,32 +76,34 @@ Oscar Lara, Emilio Lara, Aixa Mendoza — May 2026
 
 ## Features 
 
-✅ Terminado
+## Features 
 
-Motor 2.5D (Mode 7 floor, sprite scaling, sky scrolling)
-Pista generada proceduralmente con Catmull-Rom
-Física de karts (aceleración, fricción, steering, terreno)
-Colisiones kart vs kart con daño
-4 personalidades de CPU (Fast, Aggressive, Evasive, Strategic)
-Sistema de cartas — 4 pasivas y 6 activas
-Efectos de estado (SpeedDebuff, SpeedBoost, Knockback, Shield, etc.)
-HUD (HP, laps, posición, minimap, card HUD)
-VFX (shockwave, shield)
-Pantalla de selección de cartas
-Pantalla de título, intro, countdown, resultados
-Árboles procedurales
-Skybox por hora del día vinculado al nivel
+✅ Completed
+
+- 2.5D Engine (Mode 7 floor, sprite scaling, sky scrolling)
+- Procedurally generated track using Catmull-Rom
+- Kart physics (acceleration, friction, steering, terrain)
+- Kart-vs-kart collisions with damage mechanics
+- 4 CPU personalities (Fast, Aggressive, Evasive, Strategic)
+- Card system — 4 passives and 6 actives
+- Status effects (SpeedDebuff, SpeedBoost, Knockback, Shield, etc.)
+- HUD (HP, laps, position, minimap, card HUD)
+- VFX (shockwave, shield)
+- Card selection screen
+- Title screen, intro, countdown, and results screen
+- Procedural trees
+- Time-of-day skybox tied to the level
 
 
-🚧 En desarrollo / Faltante según GDD
+🚧 In Development / Missing according to GDD
 
-Múltiples niveles (actualmente solo 1 pista)
-Progresión roguelike entre carreras (selección de carta post-carrera)
-Weather system (lluvia, viento) y sus efectos en física
-Road cracks como hazard de daño
-Base de datos (usuarios, estadísticas, historial de runs)
-Música y efectos de sonido
-Pantalla de level selection
-Pantalla de estadísticas del carro
-Cutscenes de historia
-Créditos
+- Multiple levels (currently only 1 track available)
+- Roguelike progression between races (post-race card selection)
+- Weather system (rain, wind) and its impact on physics
+- Road cracks as damage hazards
+- Database integration (users, stats, run history)
+- Music and sound effects (SFX)
+- Level selection screen
+- Car statistics screen
+- Story cutscenes
+- Credits
