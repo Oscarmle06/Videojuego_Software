@@ -79,7 +79,7 @@ Oscar Lara, Emilio Lara, Aixa Mendoza — May 2026
 ✅ Completed
 
 - 2.5D Engine (Mode 7 floor, sprite scaling, sky scrolling)
-- Procedurally generated track using Catmull-Rom
+- Procedurally generated track using Catmull-Rom to add a random element
 - Kart physics (acceleration, friction, steering, terrain)
 - Kart-vs-kart collisions with damage mechanics
 - 4 CPU personalities (Fast, Aggressive, Evasive, Strategic)
@@ -97,6 +97,7 @@ Oscar Lara, Emilio Lara, Aixa Mendoza — May 2026
 
 - Multiple levels (currently only 1 track available)
 - Roguelike progression between races (post-race card selection)
+- Different number of rivals corresponding to each level
 - Weather system (rain, wind) and its impact on physics
 - Road cracks as damage hazards
 - Database integration (users, stats, run history)
@@ -105,3 +106,4 @@ Oscar Lara, Emilio Lara, Aixa Mendoza — May 2026
 - Car statistics screen
 - Story cutscenes
 - Credits
+
