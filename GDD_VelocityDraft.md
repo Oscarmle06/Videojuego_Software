@@ -95,7 +95,7 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - HUD: health bar, race position, active cards (up to 3 offensive slots), minimap
    - ESC → Pause Menu
 
-   ![Alt text](/assets/imgs/playerview.png)
+   ![Alt text](/assets/imgs/gameplay.png)
 
 5. **Results Screen**
    - WIN variant: trophy + flag, level number, finish time
@@ -109,7 +109,7 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - Displays 3 randomly drawn cards from the 12-card pool
    - Player selects 1 with mouse/Enter
 
-   ![Alt text](/assets/imgs/card_seleection.png)
+   ![Alt text](/assets/imgs/card_selection.png)
 
 7. **Car Statistics Screen**
    - Shows cumulative passive upgrades: Tires, Spoiler Aero, Chassis, Transmission
@@ -141,18 +141,18 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 
 ### **Controls**
 
-| Key | Action |
-|---|---|
-| W / ↑ | Accelerate |
-| S / ↓ | Brake / Reverse (when stopped) |
-| A / ← | Turn left |
-| D / → | Turn right |
-| E | Use offensive card |
-| R | Use repair card |
-| ESC | Pause game |
-| SPACE | Advance cutscene |
-| Mouse | Navigate menus, select cards |
-| Enter | Confirm card selection |
+| Key       | Action                                      |
+|-----------|---------------------------------------------|
+| W / ↑     | Accelerate                                  |
+| S / ↓     | Brake / Reverse (when stopped)              |
+| A / ←     | Turn left                                   |
+| D / →     | Turn right                                  |
+| O         | Select offensive/repair card                |
+| P         | Use selected offensive/repair card          |
+| ESC       | Pause game *(not implemented yet)*          |
+| SPACE     | Advance cutscene *(not implemented yet)*    |
+| Mouse     | Navigate menus, select cards in menu        |
+| Enter     | Confirm card selection in menu              |
 
 ---
 
@@ -165,42 +165,45 @@ A single persistent health bar replaces the traditional lives system. Damage is 
 Finish in the **top 3** to advance. Finishing 4th or lower ends the run immediately, regardless of HP remaining.
 
 #### Card System
-At run start, the full 12-card pool is available. After each victorious race, 3 random cards are drawn and the player picks 1. Card categories:
+At run start, the full 12-card pool is available. After each victorious race, 3 random cards are drawn and the player picks 1. Cards are only for the player not for the enemy or rivals. 
+Card categories:
 
 **Passives (Permanent upgrades — no button slot)**
+Passive cards work as upgrades for the car. They appear at the bottom of the screen and can only be selected by the player before the race. 
 - **Racing Transmission** — increases base acceleration
 - **Heavy Chassis** — reduces damage and impulse from kart collisions; multiplies opponent's impulse
 - **Sport Tires** — increases grip (rotation speed at high velocities, tighter turns)
 - **Aerodynamic Spoiler** — increases base top speed
 
 **Offensive (Active, key-triggered, limited durability 1–2 races, max 3 in deck)**
+Offensive cards work as powers/powerup's during gameplay. They appear untop of the passive cards, the player chooses when (during the race) to implement them.
 - **Tire Shredder** — projectile that causes rival to lose control and drop top speed for 3–5 sec
 - **EMP** — shockwave that disables nearby enemies' attacks and pushes them outward
 - **Grappler Hook** — latches onto the car ahead; steals 15% of their current speed
 - **Sonic Wave** — forward/backward sound blast that damages and pushes enemies sideways
 
 **Repair (Active, between or during races)**
+The repair cards form the normal deck with the offensive.
 - **Repair Bot** — recover 30% HP immediately
 - **Pit Stop** — recover 60% HP, but only usable between races
 - **Temporary Armor** — adds a shield bar that absorbs the next hit without damaging base HP
 - **Takedown Recovery** — recover 5–10% HP each time an enemy crashes or goes off-track via your cards
 
 #### Card Drop Probabilities
-
-"| Card | Category | Drop Rate |"
-
-| Racing Transmission | Passive | 13% |
-| Heavy Chassis | Passive | 13% |
-| Sport Tires | Passive | 13% |
-| Aerodynamic Spoiler | Passive | 13% |
-| Tire Shredder | Offensive | 8% |
-| EMP | Offensive | 8% |
-| Grappler Hook | Offensive | 8% |
-| Sonic Wave | Offensive | 8% |
-| Repair Bot | Repair | 5% |
-| Pit Stop | Repair | 4% |
-| Temporary Armor | Repair | 4% |
-| Takedown Recovery | Repair | 3% |
+| Card                 | Category  | Drop Rate |
+|----------------------|-----------|------------|
+| Racing Transmission  | Passive   | 13%        |
+| Heavy Chassis        | Passive   | 13%        |
+| Sport Tires          | Passive   | 13%        |
+| Aerodynamic Spoiler  | Passive   | 13%        |
+| Tire Shredder        | Offensive | 8%         |
+| EMP                  | Offensive | 8%         |
+| Grappler Hook        | Offensive | 8%         |
+| Sonic Wave           | Offensive | 8%         |
+| Repair Bot           | Repair    | 5%         |
+| Pit Stop             | Repair    | 4%         |
+| Temporary Armor      | Repair    | 4%         |
+| Takedown Recovery    | Repair    | 3%         |
 
 > Passives 52% total · Offensive 32% total · Repair 16% total
 
@@ -211,15 +214,15 @@ At run start, the full 12-card pool is available. After each victorious race, 3 
 - **The Evasive** — mirrors player movement to block position advances
 
 #### Obstacles & Environment
-- **Off-road terrain** — applies speed penalty (55% topSpeed), disables offensive cards
+- **Off-road terrain** — reduces speed, disables offensive cards
 - **Road cracks** — direct 5–10% HP damage + camera shake on contact
 
 **Weather Modifiers (Global)**
 | Condition | Effect |
-
-| Clear | No modifiers, full visibility |
-| Rain | Grip multiplier reduced (wider turns), grey fog filter, rain streak animation, rain SFX |
-| Wind | Constant lateral force vector applied to all karts; players must counter-steer; wind SFX |
+|-----------|---------|
+| Clear | Standard visibility and handling conditions|
+| Rain | Reduces traction, widens turns, and adds rain visual. |
+| Wind | Pushes vehicles sideways during races, forcing players to counter-steer. |
 
 ---
 
@@ -232,7 +235,7 @@ At run start, the full 12-card pool is available. After each victorious race, 3 
 The visual theme is retro arcade racing: vivid green grass, blue sky, palm trees and classic track-side elements. Each race uses a different time-of-day background (skybox) with its own atmosphere:
 
 | Time | Atmosphere | Sky |
-|---|---|---|
+|----------|-------------------------------|-------------------------|
 | Sunrise | Quiet, soft, fresh start | Orange/golden horizon |
 | Midday | Bright, warm, non-threatening | Blue sky with clouds |
 | Sunset | Warm, reflective, melancholic | Orange/purple gradient |
@@ -298,7 +301,7 @@ Track complexity increases with each level: more waypoints (turns), additional l
 ### **Abstract Classes / Components**
 
 | Class | Responsibility |
-|---|---|
+|----------------|----------------|
 | **GameLoop** | Core execution cycle via `requestAnimationFrame()`. Manages update/render pipeline. All components initialized here. |
 | **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes `isPressed(key)`. |
 | **Camera** | Player's POV. Stores `posX`, `posY`, `dirX`, `dirY`, `planeX`, `planeY`, `posZ`. Follows PlayerKart. |
@@ -311,7 +314,7 @@ Track complexity increases with each level: more waypoints (turns), additional l
 ### **Derived Classes / Component Compositions**
 
 | Class | Description |
-|---|---|
+|-------|-------------|
 | **FloorCaster** | Receives Camera + Track each frame. Mode 7-style floor projection per scanline, samples Track grid for asphalt/grass color. Writes to Canvas pixel buffer. |
 | **SpriteRenderer** | Receives Camera + list of Kart/Projectile objects. Computes screen position and scale per sprite (billboard). Painter's Algorithm sort. |
 | **Minimap** | Renders top-down overview on secondary canvas. Draws track edges, kart positions as colored dots, camera direction indicator. |
@@ -330,33 +333,20 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 ### **Technical Overview**
 
-#### 2.5D Implementation
+#### 2.5D Visual Style
+The game uses a retro-inspired pseudo-3d visual style similar to classic arcade racing games. Tracks are rendered using perspective-based floor projection techniques to create the illusion of depth, while karts and projectiles are displayed as scaled sprites that grow or shrink depending on distance from the camera. 
 
-The engine combines three techniques:
-
-**Mode 7 — Floor Projection**
-
-The canvas is split at `horizon = canvasHeight / 2`. Everything below is rendered per-scanline:
-
-Each pixel samples `track.grid[gridY][gridX]` → asphalt (80,80,80) or grass (34,100,34).
-
-**Sprite Scaling (Z-axis billboard)**
-
-Karts and projectiles are rendered as scaled billboards using inverse camera plane transform:
-
-Sorted back-to-front (Painter's Algorithm) before drawing.
-
-**Skybox**
-
-The sky half (above horizon) is filled with a flat color or a scrolling pixel-art background image that changes per time-of-day theme.
+The uppse hald of the screen displays the sky and environmental backgrounds, which change according to the current level theme and in-game time of day.
 
 #### Track Generation
+Tracks are procedurally generated using curved waypoint paths to create smooth racing circuits. Each track includes:
+1.Road boundaries
+2.Checkpoints
+3.Spawn positions
+4.Off-road terrain areas.
+If the player drives off to these areas it will lose all speed.
 
-1. Generate N waypoints in polar coordinates around (32, 32) with random radius variation
-2. Smooth with Catmull-Rom spline (50 steps per segment, circular wraparound with `(i±1+N)%N`)
-3. Generate left/right edges via normalized perpendicular vectors at each spline point
-4. Rasterize edges into 64×64 grid (linear interpolation left→right, `Math.floor()` to cell index)
-5. `findStartPosition()` returns `splinePoints[0]` with direction toward `splinePoints[1]`
+Track complexity increases throughout the game by introducing tighter turns, additional laps and weather modifiers. 
 
 ---
 
@@ -370,10 +360,10 @@ Camera plane rotates identically to keep FOV consistent.
 
 #### Terrain (sampled each frame from grid)
 
-| Terrain | topSpeed | friction |
-|---|---|---|
-| Asphalt (grid = 1) | `baseTopSpeed` | `baseFriction` |
-| Grass (grid = 0) | `baseTopSpeed × 0.55` | `baseFriction × 2.0` |
+| Terrain | Gameplay Effect|
+|----------|-------------|
+| Asphalt| Normal speed and handling. |
+| Grass| Reduces speed and traction, making turning more difficult. |
 
 #### Kart vs Track Collision
 
@@ -387,11 +377,11 @@ On collision: both receive impulse away from each other. The Aggressive CPU uses
 #### Card Stat Modifiers (applied at selection time, stackable)
 
 | Card | Effect |
-|---|---|
-| Racing Transmission | `acceleration += bonus` |
-| Heavy Chassis | Damage reduction %, impulse reduction on self, multiplied on opponent |
-| Sport Tires | `baseRotSpeed += bonus` (tighter turns at speed) |
-| Aerodynamic Spoiler | `baseTopSpeed += bonus` |
+|------|--------|
+| Racing Transmission | Improves vehicle acceleration. |
+| Heavy Chassis |Reduces collision damage and increases resistance to impacts |
+| Sport Tires | Improves grip and allows tighter turns at high speed. |
+| Aerodynamic Spoiler | Increases maximum speed |
 
 ---
 
@@ -414,7 +404,7 @@ Sprite resolution: **64×64 pixels** per kart and card. Health bar visible at al
 **Color palettes (proposed):**
 
 | Option | Primary | Shadow | Highlight |
-|---|---|---|---|
+|--------|---------|---------|-----------|
 | 1 (Red) | #E63946 | #E63946 | #E63946 |
 | 2 (Blue) | #2D9CDB | #1C2A44 | #56CCF2 |
 | 3 (Green) | #27AE60 | #145A32 | #6FCF97 |
@@ -465,7 +455,7 @@ Sound effects should be punchy and arcade-style — enough to confirm actions wi
 ### **Sounds Needed**
 
 | Sound | Reference |
-
+|--------|-----------|
 | Car Accelerating | [YouTube](https://www.youtube.com/watch?v=WWa441avBHs) |
 | Car Decelerating | [YouTube](https://www.youtube.com/watch?v=veP_A5bQT4c) |
 | Car Drifting (tire screech) | [YouTube](https://www.youtube.com/watch?v=iwJnfe69Glo) |
@@ -481,7 +471,7 @@ Sound effects should be punchy and arcade-style — enough to confirm actions wi
 All tracks original, composed and recorded by the team.
 
 | Track | Context |
-
+|-------|---------|
 | Main Menu | Title screen |
 | Card Selection | Between-race card screen |
 | Storyline | Cutscenes |
