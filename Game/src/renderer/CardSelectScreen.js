@@ -190,7 +190,7 @@ export class CardSelectScreen {
 
     // Image
     const img = this.images[name];
-    if (img && img.complete) {
+    if (img && img.complete && img.naturalWidth > 0) {
         ctx.drawImage(img, x + 4, y + 4, w - 8, h - 22);
     }
 
