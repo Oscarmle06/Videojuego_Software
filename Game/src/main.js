@@ -18,7 +18,7 @@ import { CardSystem }         from './game/cardSystem.js';
 import { CardHUD }            from './renderer/cardHUD.js';
 import { ActiveCards }        from './game/activeCards.js';
 import { VFX }                from './game/VFX.js';
-import { CardSelectScreen } from './renderer/cardSelectScreen.js';
+import { CardSelectScreen } from './renderer/CardSelectScreen.js';
 
 //  Canvas setup 
 const canvas = document.getElementById('gameCanvas');
