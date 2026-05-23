@@ -1,17 +1,22 @@
+// personality.js
+// This module defines the Personality class, which represents the AI behavior of CPU karts. It determines how they navigate the track.
+// On future versions we will implement also CPU reacting to player position nearby.
+// Oscar Lara, Emilio Lara, Aixa Mendoza, May 2026
+
 export class Personality {
     constructor(personality, lookahead, brakeThreshold) {
         this.personality = personality;
         this.lookahead = lookahead;
         this.brakeThreshold = brakeThreshold;
     }
-    getInput(kart, track) {
+    getInput(kart, track) { // The getInput method calculates the target point on the track based on the kart's current position and the track's spline points. It then determines the direction to that target point and decides whether to accelerate, brake, or turn based on the angle between the kart's current direction and the direction to the target point.
             let closestIndex = kart.currentSplineIndex;
             let closestDist = Infinity;
         for (let i = 0; i < 10; i++) {
             const index = (kart.currentSplineIndex + i) % track.splinePoints.length;
             const point = track.splinePoints[index];
-            const dx = point.x - kart.x;
-            const dy = point.y - kart.y;
+            const dx = point.x - kart.x; // Calculate the distance from the kart to this spline point
+            const dy = point.y - kart.y; 
             const dist = dx*dx + dy*dy;
             if (dist < closestDist) {
                 closestDist = dist;
@@ -28,14 +33,15 @@ export class Personality {
         const ty = dy / len;
         const nx = -ty;
         const ny = tx;
-        const distTangente = dx * tx + dy * ty;
-        const cross = kart.dirX * ty - kart.dirY * tx;
-        const dot = kart.dirX * tx + kart.dirY * ty;
+        const distTangente = dx * tx + dy * ty; // Distance along the tangent direction (positive if in front, negative if behind)
+        const distNormal = dx * nx + dy * ny;   // Distance along the normal direction (positive if to the right, negative if to the left)
+        const cross = kart.dirX * ty - kart.dirY * tx; // Cross product to determine if the target is to the left or right of the kart's current direction
+        const dot = kart.dirX * tx + kart.dirY * ty; // Dot product to determine how aligned the kart is with the target direction (positive if generally pointing towards it, negative if generally pointing away)
         
-        const accelerate = dot > this.brakeThreshold; // Acelerar si estamos apuntando hacia el checkpoint
-        const brake = !accelerate;      // Frenar si no estamos apuntando hacia el checkpoint
-        const turnLeft = cross < 0;  // Girar a la izquierda si el checkpoint está a la derecha
-        const turnRight = cross > 0; // Girar a la derecha si el checkpoint está a la izquierda
+        const accelerate = dot > this.brakeThreshold; // Accelerate if we are generally pointing towards the checkpoint, otherwise brake to try to turn towards it
+        const brake = !accelerate;      // Breake if we are not pointing towards the checkpoint
+        const turnLeft = cross < 0;  // Turn left if the checkpoint is to the left
+        const turnRight = cross > 0; // Turn right if the checkpoint is to the right
            
         return  {
             accelerate: accelerate,

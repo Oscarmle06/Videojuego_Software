@@ -1,3 +1,9 @@
+// Minimap.js
+// This module defines the Minimap class, responsible for rendering a top-down view of the track, the player's and CPU positions.
+// This draws on the second canvas.
+// Oscar Lara, Emilio Lara, Aixa Mendoza, May 2026
+
+
 export class Minimap {
   constructor(canvas) {
     this.canvas = canvas;
@@ -7,108 +13,92 @@ export class Minimap {
   }
 
   render(camera, sprites, track) {
-    this.ctx.clearRect(0, 0, this.width, this.height);
+    const ctx   = this.ctx;
     const scale = Math.min(this.width, this.height) / 70;
-    // 1. Limpiar el mapa
 
-    // 2. Dibujar la cuadrícula del piso
-    this.ctx.strokeStyle = '#2a3a2a';
-    this.ctx.lineWidth = 0.5;
+    ctx.clearRect(0, 0, this.width, this.height);
+
+    // Grid background
+    ctx.strokeStyle = '#2a3a2a';
+    ctx.lineWidth   = 0.5;
     for (let i = 0; i < 70; i++) {
-        // línea vertical en x=i
-        this.ctx.beginPath();
-        this.ctx.moveTo(i * scale, 0);
-        this.ctx.lineTo(i * scale, this.height);
-        this.ctx.stroke();
-        // línea horizontal en y=i — escríbela tú, es igual
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, i * scale);
-        this.ctx.lineTo(this.width, i * scale);
-        this.ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(i * scale, 0);
+      ctx.lineTo(i * scale, this.height);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(0, i * scale);
+      ctx.lineTo(this.width, i * scale);
+      ctx.stroke();
     }
 
-    // 3. Dibujar los sprites como puntos
-    for (const sprite of sprites) {
-        const sx = sprite.x * scale;
-        const sy = sprite.y * scale;
+    // Track main spline 
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(track.splinePoints[0].x * scale, track.splinePoints[0].y * scale);
+    for (let i = 1; i < track.splinePoints.length; i++) {
+      ctx.lineTo(track.splinePoints[i].x * scale, track.splinePoints[i].y * scale);
+    }
+    ctx.lineTo(track.splinePoints[0].x * scale, track.splinePoints[0].y * scale);
+    ctx.stroke();
 
-        this.ctx.fillStyle = sprite.color;
-        this.ctx.beginPath();
-        this.ctx.arc(sx, sy, 6, 0, Math.PI * 2);
-        this.ctx.fill();
+    // Left track edge
+    ctx.strokeStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.moveTo(track.leftEdge[0].x * scale, track.leftEdge[0].y * scale);
+    for (let i = 1; i < track.leftEdge.length; i++) {
+      ctx.lineTo(track.leftEdge[i].x * scale, track.leftEdge[i].y * scale);
+    }
+    ctx.stroke();
+
+    // Right track edge
+    ctx.strokeStyle = '#ffff00';
+    ctx.beginPath();
+    ctx.moveTo(track.rightEdge[0].x * scale, track.rightEdge[0].y * scale);
+    for (let i = 1; i < track.rightEdge.length; i++) {
+      ctx.lineTo(track.rightEdge[i].x * scale, track.rightEdge[i].y * scale);
+    }
+    ctx.stroke();
+
+    // Kart dots
+    for (let i = 0; i < sprites.length; i++) {
+      ctx.fillStyle = sprites[i].color ?? '#0000ff';
+      ctx.beginPath();
+      ctx.arc(sprites[i].x * scale, sprites[i].y * scale, 6, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    // 4. Dibujar la cámara y su dirección
+    // Player camera dot and direction line
     const cx = camera.posX * scale;
     const cy = camera.posY * scale;
 
-    // punto de la cámara
-    this.ctx.fillStyle = '#FFD700';
-    this.ctx.beginPath();
-    this.ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-    this.ctx.fill();
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fill();
 
-    // línea de dirección — apunta hacia donde mira
-    this.ctx.strokeStyle = '#FFD700';
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.moveTo(cx, cy);
-    this.ctx.lineTo(cx + camera.dirX * 10, cy + camera.dirY * 10);
-    this.ctx.stroke();
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth   = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + camera.dirX * 10, cy + camera.dirY * 10);
+    ctx.stroke();
 
-    this.ctx.strokeStyle = '#00ff00';
-    this.ctx.lineWidth = 1;
-    this.ctx.beginPath();
+    this.drawCheckpoints(track, scale);
+  }
 
-    // 5. Dibujar minimapa
-    const points = track.splinePoints;
-      const first = points[0];
-
-      this.ctx.strokeStyle = '#00ff00';
-      this.ctx.beginPath();
-      this.ctx.moveTo(first.x * scale, first.y * scale);
-
-      for (const p of points) {
-          this.ctx.lineTo(p.x * scale, p.y * scale);
-      }
-
-      this.ctx.lineTo(first.x * scale, first.y * scale);
-      this.ctx.stroke();
-
-      // borde izquierdo
-      this.ctx.strokeStyle = '#ffffff';
-      this.ctx.beginPath();
-      this.ctx.moveTo(track.leftEdge[0].x * scale, track.leftEdge[0].y * scale);
-      for (const p of track.leftEdge) {
-        this.ctx.lineTo(p.x * scale, p.y * scale);
-      }
-      this.ctx.stroke();
-
-      // borde derecho
-      this.ctx.strokeStyle = '#ffff00';
-      this.ctx.beginPath();
-      this.ctx.moveTo(track.rightEdge[0].x * scale, track.rightEdge[0].y * scale);
-      for (const p of track.rightEdge) {
-        this.ctx.lineTo(p.x * scale, p.y * scale);
-      }
-      this.ctx.stroke();
-
-      this.drawCheckpoints(track, scale);
-        }
-
-      drawCheckpoints(track, scale) {
-    for (const cp of track.checkpoints) {
-        const x1 = (cp.cx + cp.nx * track.trackWidth) * scale;
-        const y1 = (cp.cy + cp.ny * track.trackWidth) * scale;
-        const x2 = (cp.cx - cp.nx * track.trackWidth) * scale;
-        const y2 = (cp.cy - cp.ny * track.trackWidth) * scale;
-
-        this.ctx.strokeStyle = '#ff00ff';
-        this.ctx.lineWidth = 1;
-        this.ctx.beginPath();
-        this.ctx.moveTo(x1, y1);
-        this.ctx.lineTo(x2, y2);
-        this.ctx.stroke();
+  drawCheckpoints(track, scale) {
+    const ctx = this.ctx;
+    ctx.strokeStyle = '#00000000';
+    ctx.lineWidth   = 1;
+    for (let i = 0; i < track.checkpoints.length; i++) {
+      const cp = track.checkpoints[i];
+      ctx.beginPath();
+      ctx.moveTo((cp.cx + cp.nx * cp.width) * scale, (cp.cy + cp.ny * cp.width) * scale);
+      ctx.lineTo((cp.cx - cp.nx * cp.width) * scale, (cp.cy - cp.ny * cp.width) * scale);
+      ctx.stroke();
     }
-}
+  }
 }
