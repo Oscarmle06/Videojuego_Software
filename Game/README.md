@@ -2,19 +2,33 @@
 
 ## How to run
 
-1. Clone the repository
-2. Install dependencies:
+> 📌 **Note:** The prototype starts at the **Title Screen & Intro**, which will subsequently guide you to the card selection screen and the race.
+
+1. Navigate to the game folder (where the project files are located)
+
+```bash
+cd Game
+```
+
+2.  Clone the repository
+
+```bash
+git clone <URL_DE_SU_REPOSITORIO>
+```
+
+3. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Start the dev server:
+4. Start the dev server:
+
 ```bash
 npm run dev
 ```
 
-4. Open your browser at `http://localhost:5173`
+5. Open your browser at `http://localhost:5173`
 
 ## How to play
 
