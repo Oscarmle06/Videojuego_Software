@@ -74,9 +74,7 @@ Before the race, pick your loadout:
 Oscar Lara, Emilio Lara, Aixa Mendoza — May 2026
 
 
-## Features 
-
-## Features 
+## Features  
 
 ✅ Completed
 
