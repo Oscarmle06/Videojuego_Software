@@ -21,7 +21,7 @@ export class CardHUD {
       'Aerodynamic Spoiler': './assets/cards/aerodynamic_spoiler.png',
       'Heavy Chassis':       './assets/cards/heavychasis.png',
       'Sport Tires':         './assets/cards/sporttires.png',
-      'Racing Transmission': './assets/cards/racing-transmition.PNG',
+      'Racing Transmission': './assets/cards/racing-transmition.png',
       'Tire Shredder':       './assets/cards/tireshredder.png',
       'Sonic Wave':          './assets/cards/sonicwave.png',
       'Grappler Hook':       './assets/cards/grapplerhook.png',
