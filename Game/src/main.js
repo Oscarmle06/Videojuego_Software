@@ -109,7 +109,7 @@ const cardSelectScreen = new CardSelectScreen(canvas, ctx, cardHUD.images, (pass
   for (let i = 0; i < raceCards.length; i++) {
     activeCards.equip({ name: raceCards[i], type: 'battle' });
   }
-  gameState = 'title';
+  gameState = 'intro'; // important
 });
 
 //  Sprites / images 
@@ -151,7 +151,7 @@ const POS_CELLS  = [
 ];
 
 //  Game state 
-let gameState        = 'cardSelect'; // title → intro → settling → countdown → racing → results
+let gameState        = 'cardselect'; // title → intro → settling → countdown → racing → results
 let introElapsed     = 0;
 let settleElapsed    = 0;
 let countdownElapsed = 0;
