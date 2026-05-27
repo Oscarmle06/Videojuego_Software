@@ -1,9 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// ... aquí abajo sigue tu código actual de conexión ...
 header("Content-Type: application/json; charset=utf-8");
 
 // Cambiado a tu base de datos: catcafe

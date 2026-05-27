@@ -1,10 +1,4 @@
 <?php
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// ... aquí abajo sigue tu código actual de conexión ...
 header("Content-Type: application/json; charset=utf-8");
 
 // Conexión a tu base de datos corregida: catcafe
@@ -19,6 +13,13 @@ if ($conexion->connect_error) {
 $dia_recibido = isset($_GET['dia_semana']) ? $_GET['dia_semana'] : 'Lunes';
 
 // Función para quitar tildes y asegurar que haga match con el ENUM de tu SQL
+function limpiarAcentos($cadena) {
+    $buscar  = ['á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú'];
+    $reemplazar = ['a', 'e', 'i', 'o', 'u', 'A', 'É', 'I', 'O', 'U'];
+    return str_replace($buscar, $reemplazar, $cadena);
+}
+
+$dia_limpio = limpiarAcentos($dia_recibido);
 
 // Consulta Relacional SQL usando la estructura de tu script
 $sql = "SELECT p.nombre, p.imagen, p.descripcion 
