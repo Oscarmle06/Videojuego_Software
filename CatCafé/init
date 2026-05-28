@@ -1,0 +1,17 @@
+const mysql = require('mysql2');
+
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'catcafe',
+  password: 'catcafe123', 
+  database: 'catcafe',   
+  type: "module",
+});
+
+connection.connect((err) => {
+  if (err) {
+    console.error('Error conectando a la base de datos: ' + err.stack);
+    return;
+  }
+  console.log('¡Conectado exitosamente a la base de datos catcafe!');
+});

@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    const dias = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
     const hoy = dias[new Date().getDay()];
 
     function obtenerGatosBD() {
@@ -12,6 +12,8 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error("Error al traer los gatos ninja: ", error);
+                console.error("Estado HTTP:", xhr.status);
+                console.error("Respuesta del servidor:", xhr.responseText);
             }
         });
     }
@@ -27,6 +29,8 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error("Error al traer el menú del día: ", error);
+                console.error("Estado HTTP:", xhr.status);
+                console.error("Respuesta del servidor:", xhr.responseText);
             }
         });
     }

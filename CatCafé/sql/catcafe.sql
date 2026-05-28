@@ -58,8 +58,8 @@ INSERT INTO platillos (id, nombre, imagen, descripcion) VALUES
 INSERT INTO menu_dias (dia_semana, platillo_id) VALUES
 ('Lunes', 1), ('Lunes', 2),
 ('Martes', 3), ('Martes', 4),
-('Miércoles', 5), ('Miércoles', 6),
+('Miercoles', 5), ('Miercoles', 6),
 ('Jueves', 7), ('Jueves', 8),
 ('Viernes', 9), ('Viernes', 10),
-('Sábado', 11), ('Sábado', 12),
+('Sabado', 11), ('Sabado', 12),
 ('Domingo', 13), ('Domingo', 14);
