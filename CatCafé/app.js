@@ -17,7 +17,7 @@ const PORT = 3000
 
 app.use(express.static('.')) 
 app.use(express.json())
-app.get('/api/gatos.php', async (req, res) => {
+app.get('/api/gatos', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT nombre, edad, caracter, imagen FROM gatos')
     res.json(rows)
