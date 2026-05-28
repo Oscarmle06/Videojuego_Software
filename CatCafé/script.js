@@ -4,7 +4,7 @@ $(document).ready(function() {
 
     function obtenerGatosBD() {
         $.ajax({
-            url: 'api/gatos.php', 
+            url: 'api/gatos', 
             type: 'GET',
             dataType: 'json',
             success: function(gatosDesdeBD) {
@@ -12,15 +12,13 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error("Error al traer los gatos ninja: ", error);
-                console.error("Estado HTTP:", xhr.status);
-                console.error("Respuesta del servidor:", xhr.responseText);
             }
         });
     }
 
     function obtenerMenuBD(dia) {
         $.ajax({
-            url: 'api/menu.php',
+            url: 'api/menu',
             type: 'GET',
             data: { dia_semana: dia },
             dataType: 'json',
@@ -29,8 +27,6 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error("Error al traer el menú del día: ", error);
-                console.error("Estado HTTP:", xhr.status);
-                console.error("Respuesta del servidor:", xhr.responseText);
             }
         });
     }
@@ -81,10 +77,6 @@ $(document).ready(function() {
         });
         $("#menuContainer").html(htmlMenu);
     }
-
-    // ==========================================
-    // INTERACCIONES Y EVENTOS
-    // ==========================================
 
     // Clic en un platillo para abrir el modal de Bootstrap
     $(document).on("click", ".menu-item", function() {

@@ -27,7 +27,7 @@ app.get('/api/gatos.php', async (req, res) => {
   }
 })
 
-app.get('/api/gatos.php', async (req, res) => {
+app.get('/api/gatos', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT nombre, edad, caracter, imagen FROM gatos')
     res.json(rows)
@@ -37,7 +37,7 @@ app.get('/api/gatos.php', async (req, res) => {
   }
 })
 
-app.get('/api/menu.php', async (req, res) => {
+app.get('/api/menu', async (req, res) => {
   const diaSemana = req.query.dia_semana
 
   try {
