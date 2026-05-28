@@ -15,12 +15,13 @@ export class Track {
 
   generate() {
     // Generar Waypoints
-    this.generateWaypoints(15, 36, 34, 15, 17);
+    this.generateWaypoints(14, 40, 34, 18, 13);
     this.generateCurve();
     this.generateEdges(3);
     this.generateCheckpoints();
     this.rasterize();
     this.findStartPosition();
+    this.generateRacingLine();
   }
 
     generateWaypoints(N, centerX, centerY, baseRadius, variation){ // The generateWaypoints method creates a set of waypoints arranged in a circular pattern around a specified center point.
@@ -185,6 +186,102 @@ export class Track {
           });
       }
     }
-  }
+
+    findClosestSplineIndex(waypoint) {
+    let closestIndex = 0;
+    let closestDist = Infinity;
+    for (let i = 0; i < this.splinePoints.length; i++) {
+        const dx = this.splinePoints[i].x - waypoint.x;
+        const dy = this.splinePoints[i].y - waypoint.y;
+        const dist = dx*dx + dy*dy;
+        if (dist < closestDist) {
+            closestDist = dist;
+            closestIndex = i;
+        }
+    }
+    return closestIndex;
+}
+
+  generateRacingLine() {
+    const racingWaypoints = [];
+
+    for (let i = 0; i < this.waypoints.length; i++) {
+        const idx = this.findClosestSplineIndex(this.waypoints[i]);
+        
+        const N = this.splinePoints.length;
+        const prev = this.splinePoints[(idx - 1 + N) % N];
+        const curr = this.splinePoints[idx];
+        const next = this.splinePoints[(idx + 1) % N];
+
+        const t1x = curr.x - prev.x;
+        const t1y = curr.y - prev.y;
+        const t2x = next.x - curr.x;
+        const t2y = next.y - curr.y;
+        const t1len = Math.sqrt(t1x*t1x + t1y*t1y);
+        const t2len = Math.sqrt(t2x*t2x + t2y*t2y);
+        const curvature = (t1x/t1len) * (t2y/t2len) - (t1y/t1len) * (t2x/t2len);
+
+        let apex;
+        if (Math.abs(curvature) > 0.03) {
+            const pct = 0.4;
+            const edge = curvature < 0 ? this.rightEdge[idx] : this.leftEdge[idx];
+            apex = {
+                x: curr.x + (edge.x - curr.x) * pct,
+                y: curr.y + (edge.y - curr.y) * pct
+            };
+        } else {
+            apex = this.splinePoints[idx];
+        }
+        racingWaypoints.push(apex);  // ← faltaba esto
+    }
+
+    // Filtrar waypoints muy cercanos antes del Catmull-Rom
+    const filtered = [racingWaypoints[0]];
+    for (let i = 1; i < racingWaypoints.length; i++) {
+        const prev = filtered[filtered.length - 1];
+        const curr = racingWaypoints[i];
+        const dx = curr.x - prev.x;
+        const dy = curr.y - prev.y;
+        if (dx*dx + dy*dy > 4) { // distancia mínima de 2 unidades
+            filtered.push(curr);
+        }
+    }
+
+    // Catmull-Rom afuera del loop ← aquí
+    this.racingLinePoints = [];
+    const N2 = racingWaypoints.length;
+    for (let i = 0; i < N2; i++) {
+        const P0 = racingWaypoints[(i - 1 + N2) % N2];
+        const P1 = racingWaypoints[i];
+        const P2 = racingWaypoints[(i + 1) % N2];
+        const P3 = racingWaypoints[(i + 2) % N2];
+
+        for (let step = 0; step < 50; step++) {
+            const t = step / 50;
+            this.racingLinePoints.push(this.catmullRom(P0, P1, P2, P3, t));
+        }
+    }
+}
+
+smoothRacingLine(iterations = 2) {
+    for (let iter = 0; iter < iterations; iter++) {
+        const N = this.racingLinePoints.length;
+        const smoothed = [];
+        for (let i = 0; i < N; i++) {
+            const prev = this.racingLinePoints[(i - 1 + N) % N];
+            const curr = this.racingLinePoints[i];
+            const next = this.racingLinePoints[(i + 1) % N];
+            smoothed.push({
+                x: (prev.x + curr.x + next.x) / 3,
+                y: (prev.y + curr.y + next.y) / 3
+            });
+        }
+        this.racingLinePoints = smoothed;
+    }
+}
+
+
+}
+
 
 //NEWEST VERSION

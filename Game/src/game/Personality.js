@@ -8,13 +8,14 @@ export class Personality {
         this.personality = personality;
         this.lookahead = lookahead;
         this.brakeThreshold = brakeThreshold;
+        this.blockFrame = 0;
     }
     getInput(kart, track) { // The getInput method calculates the target point on the track based on the kart's current position and the track's spline points. It then determines the direction to that target point and decides whether to accelerate, brake, or turn based on the angle between the kart's current direction and the direction to the target point.
             let closestIndex = kart.currentSplineIndex;
             let closestDist = Infinity;
         for (let i = 0; i < 10; i++) {
-            const index = (kart.currentSplineIndex + i) % track.splinePoints.length;
-            const point = track.splinePoints[index];
+            const index = (kart.currentSplineIndex + i) % track.racingLinePoints.length;
+            const point = track.racingLinePoints[index];
             const dx = point.x - kart.x; // Calculate the distance from the kart to this spline point
             const dy = point.y - kart.y; 
             const dist = dx*dx + dy*dy;
@@ -24,8 +25,8 @@ export class Personality {
             }
         }
         kart.currentSplineIndex = closestIndex;
-        const targetIndex = (closestIndex + this.lookahead) % track.splinePoints.length;
-        const targetPoint = track.splinePoints[targetIndex];
+        const targetIndex = (closestIndex + this.lookahead) % track.racingLinePoints.length;
+        const targetPoint = track.racingLinePoints[targetIndex];
         const dx = targetPoint.x - kart.x;
         const dy = targetPoint.y - kart.y;
         const len = Math.sqrt(dx*dx + dy*dy);
@@ -47,7 +48,55 @@ export class Personality {
             accelerate: accelerate,
             brake: brake,
             turnLeft: turnLeft,
-            turnRight: turnRight
+            turnRight: turnRight,
+            cross: cross
             }
         }
+
+        detectPlayer(kart) {
+            const player = kart.player; 
+            const dx = player.x - kart.x;
+            const dy = player.y - kart.y;
+            const distSq = dx * dx + dy * dy;
+            const dist = Math.sqrt(distSq);
+
+            // Is the player within detection range?
+            const dot = (dx / dist) * kart.dirX + (dy / dist) * kart.dirY;
+
+            return {
+                dist,       // distance to the player
+                dx, dy,     // vector towards the player
+                inFront: dot > 0.3,   // true if the player is in front
+                behind:  dot < -0.3,  // true if the player is behind
+            };
+        }
+
+        applyBlocking(kart, track, cross, turnLeft, turnRight, detectionDist = 8, intensity = 1.0) {
+    const playerInfo = this.detectPlayer(kart);
+    if (!kart.player || isNaN(playerInfo.dist) || playerInfo.dist === 0) return { turnLeft, turnRight };
+    if (playerInfo.behind && playerInfo.dist < detectionDist) {
+        const checkpoint = track.checkpoints[kart.nextCheckpoint ?? 0];
+        if (!checkpoint) return { turnLeft, turnRight };       
+const cpuLateral    = kart.x * checkpoint.nx + kart.y * checkpoint.ny;
+        const playerLateral = kart.player.x * checkpoint.nx + kart.player.y * checkpoint.ny;
+        const diff = playerLateral - cpuLateral;
+
+        const desperation = (1 - Math.min(playerInfo.dist / detectionDist, 1)) * intensity;
+        const curveThreshold = 0.4 + desperation * 0.4;
+        const lateralThreshold = 0.3 - desperation * 0.2;
+        const inCurve = Math.abs(cross) > curveThreshold;
+
+        if (Math.abs(diff) > lateralThreshold && !inCurve) {
+            this.blockFrame++;
+            if (this.blockFrame % 2 === 0) {
+                turnLeft  = diff < 0;
+                turnRight = diff > 0;
+            }
+        }
+    }
+    return { turnLeft, turnRight };
 }
+}
+
+    
+        

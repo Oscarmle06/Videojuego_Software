@@ -10,7 +10,7 @@ export class PlayerKart {
     this.y = y;
     this.dirX = dirX;
     this.dirY = dirY;
-    this.maxHP = 100;
+    this.maxHP = 50;
     this.hp = this.maxHP;
     this.speed = 0;
     this.maxSpeed = 6;

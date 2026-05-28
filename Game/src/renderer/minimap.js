@@ -12,7 +12,8 @@ export class Minimap {
     this.height = canvas.height;
   }
 
-  render(camera, sprites, track) {
+  render(camera, sprites, track, level) {
+
     const ctx   = this.ctx;
     const scale = Math.min(this.width, this.height) / 70;
 
@@ -62,6 +63,18 @@ export class Minimap {
     }
     ctx.stroke();
 
+    if (track.racingLinePoints && track.racingLinePoints.length > 0) {
+        ctx.strokeStyle = '#ff6600';
+        ctx.lineWidth   = 1;
+        ctx.beginPath();
+        ctx.moveTo(track.racingLinePoints[0].x * scale, track.racingLinePoints[0].y * scale);
+        for (let i = 1; i < track.racingLinePoints.length; i++) {
+            ctx.lineTo(track.racingLinePoints[i].x * scale, track.racingLinePoints[i].y * scale);
+        }
+        ctx.lineTo(track.racingLinePoints[0].x * scale, track.racingLinePoints[0].y * scale);
+        ctx.stroke();
+    }
+
     // Kart dots
     for (let i = 0; i < sprites.length; i++) {
       ctx.fillStyle = sprites[i].color ?? '#0000ff';
@@ -87,6 +100,7 @@ export class Minimap {
     ctx.stroke();
 
     this.drawCheckpoints(track, scale);
+    this.renderRaceNumber(level);
   }
 
   drawCheckpoints(track, scale) {
@@ -101,4 +115,12 @@ export class Minimap {
       ctx.stroke();
     }
   }
+
+  renderRaceNumber(level) {
+    this.ctx.fillStyle = '#ffffff';
+this.ctx.font      = 'bold 30px monospace';
+this.ctx.textAlign = 'center';
+this.ctx.fillText(`Race ${level}`, this.width-100, 30);
+this.ctx.textAlign = 'left';
+}
 }
