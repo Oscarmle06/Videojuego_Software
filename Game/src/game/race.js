@@ -17,6 +17,18 @@ import { SkyRenderer } from '../renderer/skyRenderer.js';
 import { Minimap } from '../renderer/minimap.js';
 import { CardHUD } from '../renderer/cardHUD.js';
 
+//  SFX
+const SFX = {
+    raceStart: './assets/audios/raceStart.mp3',
+    explosion: './assets/audios/explosion.mp3',
+};
+
+function playSFX(name, volume = 1.0) {
+    const sfx = new Audio(SFX[name]);
+    sfx.volume = volume;
+    sfx.play().catch(() => {});
+}
+
 // Cartas que pueden recibir los CPUs (todas menos Repair Bot)
 const CPU_CARD_POOL = [
     { name: 'Aerodynamic Spoiler', type: 'passive' },
@@ -45,7 +57,7 @@ export const LEVEL_CONFIGS = {
         level: 1,
         track: { N: 10, centerX: 32, centerY: 32, baseRadius: 16, variation: 6 },
         laps: 1,
-        cpus: [],
+        cpus: ['fast'],
         weather: 'clear',
         timeOfDay: 'day',
     },
@@ -189,6 +201,11 @@ export class Race {
         const cfg = this.config;
         const t   = cfg.track;
 
+        // Audio API 
+
+        this.audioCtx = new AudioContext();
+
+
         // Pista
         this.track = new Track(64);
         this.track.generateWaypoints(t.N, t.centerX, t.centerY, t.baseRadius, t.variation);
@@ -236,9 +253,10 @@ export class Race {
             const slot        = i + 1;
             const pos         = this.track.findStartPosition(slot);
             const personality = createPersonality(cfg.cpus[i], this.playerKart);
-            const cpu         = new CPUKart(pos.x, pos.y, pos.dirX, pos.dirY, personality, this.playerKart);
+            const cpu         = new CPUKart(pos.x, pos.y, pos.dirX, pos.dirY, personality, this.playerKart, this.audioCtx);
             cpu.startPos = slot;
             this.cpus.push(cpu);
+            cpu.initEngineSound();
         }
 
         this.allKarts = [this.playerKart];
@@ -282,7 +300,29 @@ export class Race {
             scrollSpeed:   0.08,
         });
         this.minimap = new Minimap(this.mapCanvas);
-    }
+
+        // Web Audio API for better Loops
+        const audioCtx = new AudioContext();
+        fetch('./assets/audios/motor.mp3')
+            .then(r => r.arrayBuffer())
+            .then(buf => audioCtx.decodeAudioData(buf))
+            .then(decoded => {
+                const source = audioCtx.createBufferSource();
+                source.buffer = decoded;
+                source.loopStart = 0;
+                source.loopEnd = decoded.duration;
+                source.loop = true;
+                source.loopStart = 0.1;
+                source.loopEnd = decoded.duration - 0.1;
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.value = 4.0; // súbelo al gusto
+                source.connect(gainNode);
+                gainNode.connect(audioCtx.destination);                
+                source.start();
+                this.playerKart.engineSound = source;
+                this.playerKart.engineAudioCtx = this.audioCtx;;
+            });
+            }
 
     // ── Loop de carrera ─────────────────────────────────────────────────────────
 
@@ -301,7 +341,10 @@ export class Race {
         let resolved         = false;
         let resultTimer      = null;
 
-        const INTRO_DURATION  = 7.0;
+        // Flag for raceStart.sfx
+        let raceStartSoundPlayed = false;
+
+        const INTRO_DURATION  = 3.0;
         const SETTLE_DURATION = 0.8;
         const TARGET_LAPS     = this.config.laps;
 
@@ -351,6 +394,11 @@ export class Race {
                 if (settleElapsed >= SETTLE_DURATION) raceState = 'countdown';
 
             } else if (raceState === 'countdown') {
+                if (!raceStartSoundPlayed) {
+                    raceStartSoundPlayed = true;
+                    playSFX('raceStart', 0.6)
+                }
+                
                 countdownElapsed += dt;
                 this.camera.followPlayer(this.playerKart, dt);
                 this._renderScene();
@@ -401,6 +449,7 @@ export class Race {
                     exploding      = true;
                     explosionFrame = 0;
                     explosionTimer = 0;
+                    playSFX('explosion', 0.8); 
                 }
 
                 const expResult = this._renderExplosion(explosionFrame, explosionTimer, dt, exploding);
@@ -423,6 +472,10 @@ export class Race {
                 }
                 if (resultTimer === null) resultTimer = timestamp;
                 if (timestamp - resultTimer >= 3000) {
+                    this.playerKart.engineSound.stop();
+                    for (let i = 0; i < this.cpus.length; i++) {
+                        if (this.cpus[i].engineSound) this.cpus[i].engineSound.stop();
+                    }
                     onFinish(finalPosition <= 3);
                     return;
                 }

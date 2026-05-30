@@ -4,17 +4,30 @@
 
 import { Shield } from './cardEffects.js';
 
+const SFX = {
+    select:    './assets/audios/selectSound.mp3',
+    raceStart: './assets/audios/raceStart.mp3',
+    crash:     './assets/audios/crash.mp3',
+    explosion: './assets/audios/explosion.mp3',
+};
+
+function playSFX(name, volume = 1.0) {
+    const sfx = new Audio(SFX[name]);
+    sfx.volume = volume;
+    sfx.play().catch(() => {});
+}
+
 export class PlayerKart {
   constructor(x, y, dirX, dirY) {
     this.x = x;
     this.y = y;
     this.dirX = dirX;
     this.dirY = dirY;
-    this.maxHP = 50;
+    this.maxHP = 50; // 50
     this.hp = this.maxHP;
     this.speed = 0;
-    this.maxSpeed = 6;
-    this.acceleration = 1.5;
+    this.maxSpeed = 6; // 6
+    this.acceleration = 1.5; // 1.5
     this.friction = 0.25;
     this.baseRotationSpeed = 3.0;
     this.laps = 0;
@@ -25,9 +38,24 @@ export class PlayerKart {
     this.activeEffects  = [];
     this.cardsDisabled  = false;
     this.hasShield      = false;
+    this.crashCooldown = 0;
   }
 
   update(decisions, track, deltaTime) { // The update method takes the decisions from the CPU personality (or player input) and applies them to update the kart's speed, direction, position, and effects. It also checks for checkpoint progress and lap completion.
+
+    // Cooldown for crash SFX
+    if (this.crashCooldown > 0) this.crashCooldown -= deltaTime;
+
+    if (this.engineSound) {
+      const rate = 0.6 + (this.speed / this.maxSpeed) * 1.1;
+      const clamped = Math.max(0.1, rate);
+      if (this.engineSound.playbackRate?.value !== undefined) {
+          this.engineSound.playbackRate.value = clamped; // Web Audio (jugador)
+      } else {
+          this.engineSound.playbackRate = clamped; // new Audio (CPUs)
+      }
+  }
+
     if (decisions.accelerate) { // If the accelerate decision is true, increase the speed by the acceleration rate multiplied by deltaTime. This allows for smooth acceleration over time.
       this.speed += this.acceleration * deltaTime;
     }
@@ -74,6 +102,7 @@ export class PlayerKart {
       }
     }
 
+
     this.checkCheckpoints(track);
   }
 
@@ -117,6 +146,10 @@ export class PlayerKart {
         }
     }
     this.hp = Math.max(0, this.hp - amount);
+    if (this.crashCooldown <= 0) {
+        playSFX('crash');
+        this.crashCooldown = 0.5; // segundos
+    }
 }
 
   _isOnGrass(track) { // The _isOnGrass method checks the track's grid to determine if the kart's current position is on a grass tile or not.
