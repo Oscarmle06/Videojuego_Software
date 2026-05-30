@@ -165,7 +165,7 @@ A single persistent health bar replaces the traditional lives system. Damage is 
 Finish in the **top 3** to advance. Finishing 4th or lower ends the run immediately, regardless of HP remaining.
 
 #### Card System
-At run start, the full 12-card pool is available. After each victorious race, 3 random cards are drawn and the player picks 1. Cards are only for the player not for the enemy or rivals. 
+At run start, the full 12-card pool is available. After each victorious race, 3 random cards are drawn and the player picks 1. Every race the rivals recieve a random card.
 Card categories:
 
 **Passives (Permanent upgrades — no button slot)**

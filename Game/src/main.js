@@ -5,7 +5,7 @@ import { Input } from './engine/input.js';
 import { PlayerKart } from './game/playerKart.js';
 import { CardSystem } from './game/cardSystem.js';
 import { CardHUD } from './renderer/cardHUD.js';
-import { CardSelectScreen } from './renderer/cardSelectScreen.js';
+import { CardSelectScreen } from './renderer/CardSelectScreen.js';
 import { Race, LEVEL_CONFIGS } from './game/race.js';
 import { ActiveCards } from './game/activeCards.js';
 import { VFX } from './game/VFX.js'
