@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Play — Velocity Draft</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { overflow: hidden; }
+
+    /* Floating help button */
+    .help-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 500;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: rgba(12, 12, 30, .88);
+      border: 1px solid var(--border);
+      color: var(--primary);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.3rem; font-weight: 900;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .2s, color .2s;
+      backdrop-filter: blur(6px);
+    }
+    .help-btn:hover { border-color: var(--primary); }
+
+    /* Modal dark theme */
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+    }
+    .modal-header { border-bottom: 1px solid var(--border); }
+    .modal-footer { border-top: 1px solid var(--border); }
+    .modal-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.3rem; font-weight: 900;
+      color: var(--primary); letter-spacing: 2px;
+    }
+
+    /* Nav tabs inside modal */
+    .nav-tabs { border-bottom-color: var(--border); }
+    .nav-tabs .nav-link {
+      color: var(--muted);
+      border: none; border-bottom: 2px solid transparent;
+      border-radius: 0; padding: .5rem 1rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .9rem; font-weight: 700; letter-spacing: 1px;
+      background: transparent;
+    }
+    .nav-tabs .nav-link:hover { color: var(--text); border-bottom-color: var(--border); }
+    .nav-tabs .nav-link.active {
+      color: var(--primary); background: transparent;
+      border-bottom: 2px solid var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="index.html">VELOCITY DRAFT</a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#navMain"
+              aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="game.html">Play</a></li>
+          <li class="nav-item"><a class="nav-link" href="tutorial.html">Tutorial</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <span class="text-dimmed" id="navUser" style="font-size:.8rem;"></span>
+          <button class="btn btn-outline-secondary btn-sm" onclick="logout()">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- GAME WRAPPER (full height minus navbar) -->
+  <div class="game-wrapper">
+    <div class="game-frame-wrap" id="gameContainer">
+
+      <!-- Fallback shown until game loads -->
+      <div class="game-fallback" id="gameFallback">
+        <h2>Loading game…</h2>
+        <p class="text-dimmed" style="max-width:500px;font-size:.9rem;line-height:1.7;">
+          Make sure the project is open with
+          <b class="text-white">Live Server</b> from the
+          <code class="text-cyan">Game/</code> folder.
+        </p>
+        <button class="btn btn-primary" onclick="tryLoadGame()">Try again</button>
+      </div>
+
+      <!-- Game iframe -->
+      <iframe
+        id="gameFrame"
+        class="game-iframe"
+        style="display:none;"
+        title="Velocity Draft — Game"
+        allow="autoplay"
+      ></iframe>
+    </div>
+  </div>
+
+  <!-- FLOATING HELP BUTTON -->
+  <button class="help-btn" data-bs-toggle="modal" data-bs-target="#helpModal"
+          title="How to play">?</button>
+
+  <!-- ─── HELP MODAL ─── -->
+  <div class="modal fade" id="helpModal" tabindex="-1"
+       aria-labelledby="helpModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+
+        <div class="modal-header px-4 pt-4 pb-3">
+          <span class="modal-title" id="helpModalLabel">HOW TO PLAY</span>
+          <button type="button" class="btn-close btn-close-white"
+                  data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body px-4 py-3">
+
+          <!-- Tabs -->
+          <ul class="nav nav-tabs mb-4" id="helpTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="tab-controls"
+                      data-bs-toggle="tab" data-bs-target="#pane-controls"
+                      type="button" role="tab">Controls</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="tab-passive"
+                      data-bs-toggle="tab" data-bs-target="#pane-passive"
+                      type="button" role="tab">Passive Cards</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="tab-active"
+                      data-bs-toggle="tab" data-bs-target="#pane-active"
+                      type="button" role="tab">Active Cards</button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+
+            <!-- CONTROLS TAB -->
+            <div class="tab-pane fade show active" id="pane-controls" role="tabpanel">
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex align-items-center gap-3 py-2 px-3">
+                      <span class="key-badge" style="font-size:.8rem;min-width:52px;">W</span>
+                      <span style="font-size:.86rem;">Accelerate</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex align-items-center gap-3 py-2 px-3">
+                      <span class="key-badge" style="font-size:.8rem;min-width:52px;">S</span>
+                      <span style="font-size:.86rem;">Brake / Reverse</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex align-items-center gap-3 py-2 px-3">
+                      <span class="key-badge" style="font-size:.8rem;min-width:52px;">A</span>
+                      <span style="font-size:.86rem;">Steer left</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex align-items-center gap-3 py-2 px-3">
+                      <span class="key-badge" style="font-size:.8rem;min-width:52px;">D</span>
+                      <span style="font-size:.86rem;">Steer right</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex align-items-center gap-3 py-2 px-3">
+                      <span class="key-badge" style="font-size:.8rem;min-width:52px;">O</span>
+                      <span style="font-size:.86rem;">Cycle active card slot</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card h-100">
+                    <div class="card-body d-flex align-items-center gap-3 py-2 px-3">
+                      <span class="key-badge" style="font-size:.8rem;min-width:52px;">P</span>
+                      <span style="font-size:.86rem;">Use selected active card</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-dimmed mb-0" style="font-size:.82rem;">
+                Steering scales with speed — the faster you go, the sharper your turns.
+                Driving on grass reduces speed significantly.
+              </p>
+            </div>
+
+            <!-- PASSIVE CARDS TAB -->
+            <div class="tab-pane fade" id="pane-passive" role="tabpanel">
+              <p class="text-dimmed mb-3" style="font-size:.83rem;">
+                Passive cards apply permanent stat upgrades. Selecting the same card twice levels it up.
+              </p>
+              <div class="row g-3">
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile passive card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/aerodynamic_spoiler.png" alt="Aerodynamic Spoiler"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Aerodynamic Spoiler</div>
+                      <div class="card-tile-type mb-1">Passive</div>
+                      <div class="card-tile-desc">+Top speed · +Acceleration</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile passive card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/heavychasis.png" alt="Heavy Chassis"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Heavy Chassis</div>
+                      <div class="card-tile-type mb-1">Passive</div>
+                      <div class="card-tile-desc">+20% max HP. Restores HP when applied.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile passive card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/sporttires.png" alt="Sport Tires"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Sport Tires</div>
+                      <div class="card-tile-type mb-1">Passive</div>
+                      <div class="card-tile-desc">+Steering speed for tighter corners.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile passive card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/racing-transmition.png" alt="Racing Transmission"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Racing Transmission</div>
+                      <div class="card-tile-type mb-1">Passive</div>
+                      <div class="card-tile-desc">Reach top speed much faster.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACTIVE CARDS TAB -->
+            <div class="tab-pane fade" id="pane-active" role="tabpanel">
+              <p class="text-dimmed mb-3" style="font-size:.83rem;">
+                Hold up to 3 active cards. Press <b class="text-white">O</b> to cycle slots,
+                <b class="text-white">P</b> to activate. Cards are consumed on use.
+              </p>
+              <div class="row g-3">
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile active card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/tireshredder.png" alt="Tire Shredder"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Tire Shredder</div>
+                      <div class="card-tile-type mb-1">Active</div>
+                      <div class="card-tile-desc">Slows the nearest rival ahead of you.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile active card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/grapplerhook.png" alt="Grappler Hook"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Grappler Hook</div>
+                      <div class="card-tile-type mb-1">Active</div>
+                      <div class="card-tile-desc">Steals speed from the rival ahead and gives it to you.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile active card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/sonicwave.png" alt="Sonic Wave"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Sonic Wave</div>
+                      <div class="card-tile-type mb-1">Active</div>
+                      <div class="card-tile-desc">Pushes all nearby rivals away from you.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile active card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/EMP.png" alt="EMP"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">EMP</div>
+                      <div class="card-tile-type mb-1">Active</div>
+                      <div class="card-tile-desc">Disables nearby rivals' cards for 2 seconds.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile active card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/temporaryArmour.png" alt="Temporary Armor"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Temporary Armor</div>
+                      <div class="card-tile-type mb-1">Active</div>
+                      <div class="card-tile-desc">Absorbs the next collision with no damage.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="card card-tile active card-tile-sm h-100">
+                    <div class="card-body text-center p-3">
+                      <img src="../assets/cards/repairbot.png" alt="Repair Bot"
+                           class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                      <div class="card-tile-name mb-1">Repair Bot</div>
+                      <div class="card-tile-type mb-1">Active</div>
+                      <div class="card-tile-desc">Instantly heals 30% of your max HP.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /.tab-content -->
+        </div><!-- /.modal-body -->
+
+        <div class="modal-footer px-4 pb-4 pt-3">
+          <p class="text-dimmed mb-0" style="font-size:.8rem;">
+            The game keeps running while this panel is open. Close it to resume playing.
+          </p>
+          <button type="button" class="btn btn-primary btn-sm ms-auto"
+                  data-bs-dismiss="modal">Back to race</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- /.modal -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/stats.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('navUser').textContent = getUsername();
+
+    const frame     = document.getElementById('gameFrame');
+    const fallback  = document.getElementById('gameFallback');
+    let playStart      = null;
+    let sessionCounted = false;
+
+    function showGame() {
+      frame.style.display = 'block';
+      fallback.style.display = 'none';
+      if (!sessionCounted) {
+        sessionCounted = true;
+        incrementSessions();
+        playStart = Date.now();
+      }
+    }
+
+    function showFallback() {
+      frame.style.display = 'none';
+      fallback.style.display = 'flex';
+    }
+
+    function tryLoadGame() {
+      frame.style.display = 'block';
+      fallback.style.display = 'none';
+      frame.src = '../play.html?' + Date.now();
+    }
+
+    frame.addEventListener('load', function () {
+      try {
+        const href = frame.contentWindow.location.href;
+        if (href && href !== 'about:blank') showGame();
+        else showFallback();
+      } catch {
+        showGame();
+      }
+    });
+
+    frame.addEventListener('error', showFallback);
+
+    window.addEventListener('beforeunload', function () {
+      if (playStart) addPlayTime((Date.now() - playStart) / 1000);
+    });
+
+    tryLoadGame();
+  </script>
+</body>
+</html>

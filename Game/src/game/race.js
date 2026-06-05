@@ -154,9 +154,20 @@ export class Race {
         this.minimap       = null;
         this._skyOverlay   = null;
 
-        // Sprites
-        this.kartSprite = new Image();
-        this.kartSprite.src = './assets/playercar2.png';
+        // Kart Sprites
+        this.kartSpriteRed = new Image();
+        this.kartSpriteRed.src = './assets/redkart.png';
+        this.kartSpriteBlue = new Image();
+        this.kartSpriteBlue.src = './assets/bluekart.png';
+        this.kartSpriteGreen = new Image();
+        this.kartSpriteGreen.src = './assets/greenkart.png';
+        this.kartSpriteYellow = new Image();
+        this.kartSpriteYellow.src = './assets/yellowkart.png';
+        this.kartSpriteGrey = new Image();
+        this.kartSpriteGrey.src = './assets/greykart.png'; 
+
+
+        // Other Sprites
         this.explosionSprite = new Image();
         this.explosionSprite.src = './assets/Explosion.png';
         this.HPSprite = new Image();
@@ -254,6 +265,12 @@ export class Race {
             const pos         = this.track.findStartPosition(slot);
             const personality = createPersonality(cfg.cpus[i], this.playerKart);
             const cpu         = new CPUKart(pos.x, pos.y, pos.dirX, pos.dirY, personality, this.playerKart, this.audioCtx);
+
+            if (cfg.cpus[i] === 'fast')        cpu.kartSprite = this.kartSpriteGrey;
+            if (cfg.cpus[i] === 'aggressive')  cpu.kartSprite = this.kartSpriteBlue;
+            if (cfg.cpus[i] === 'strategic')    cpu.kartSprite = this.kartSpriteGreen;
+            if (cfg.cpus[i] === 'provocative')  cpu.kartSprite = this.kartSpriteYellow;
+            if (!cpu.kartSprite) cpu.kartSprite = this.kartSpriteRed;
             cpu.startPos = slot;
             this.cpus.push(cpu);
             cpu.initEngineSound();
@@ -355,11 +372,13 @@ export class Race {
             }
             lastTime = timestamp;
 
+
+
             const kartSprites = [];
             for (let i = 0; i < this.cpus.length; i++) {
-                kartSprites.push({ x: this.cpus[i].x, y: this.cpus[i].y, image: this.kartSprite });
+                kartSprites.push({ x: this.cpus[i].x, y: this.cpus[i].y, image: this.cpus[i].kartSprite, isPlayer: false });
             }
-            kartSprites.push({ x: this.playerKart.x, y: this.playerKart.y, image: this.kartSprite, isPlayer: true });
+            kartSprites.push({ x: this.playerKart.x, y: this.playerKart.y, image: this.kartSpriteRed, isPlayer: true });
 
             const allSprites = [];
             for (let i = 0; i < kartSprites.length; i++) {
