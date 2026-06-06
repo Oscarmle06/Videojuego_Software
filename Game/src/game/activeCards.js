@@ -47,6 +47,10 @@ export class ActiveCards {
   _activate(slot) { // Activates the effect of the card in the selected slot, 
   // applying different effects to the player or CPU karts based on the card's name. 
   // After activation, the card is consumed and removed from the slot.
+    
+    // Extraemos los efectos dinámicos que vienen desde la base de datos
+    const dbEffects = slot.effects || {};
+
     switch (slot.name) {
 
       case 'Tire Shredder': { // Finds the nearest CPU kart in front of the player and applies a speed debuff to it.
@@ -55,7 +59,7 @@ export class ActiveCards {
           console.log('No target in front'); 
           return; 
         }
-        target.applyEffect(new SpeedDebuff(4, 0.4));
+        target.applyEffect(new SpeedDebuff(dbEffects));
         console.log('Tire Shredder hit', target);
         break;
       }
@@ -66,41 +70,51 @@ export class ActiveCards {
           console.log('No target in front'); 
           return; 
         }
-        const stolen = target.speed * 0.15;
-        target.applyEffect(new SpeedDrain(3, 0.15));
-        this.player.applyEffect(new SpeedBoost(3, stolen));
+        const fraction = dbEffects.SpeedDrain_Fraction || 0.15;
+        const stolen = target.speed * fraction;
+        target.applyEffect(new SpeedDrain(dbEffects));
+        this.player.applyEffect(new SpeedBoost(dbEffects.SpeedBoost_Duration || 3, stolen));
         break;
       }
 
       case 'Sonic Wave': { // Creates a shockwave effect and applies a knockback to all CPU karts within a radius, pushing them away from the player.
         this.vfx.addShockwave(this.player.x, this.player.y);
-        const targets = this._getInRadius(3.5);
+        const radius = dbEffects.Effect_Radius || 3.5;
+        const targets = this._getInRadius(radius);
+        
+        const force = dbEffects.Knockback_Force || 30;
+        const dmg = dbEffects.Knockback_Damage || 15;
+
         for (const t of targets) {
           const dx    = t.x - this.player.x;
           const dy    = t.y - this.player.y;
           const perpX = -this.player.dirY;
           const perpY =  this.player.dirX;
           const side  = (dx * perpX + dy * perpY) > 0 ? 1 : -1;
-          t.applyEffect(new Knockback(perpX * side * 30, perpY * side * 30, 15));
+          t.applyEffect(new Knockback(perpX * side * force, perpY * side * force, dmg));
         }
         break;
       }
 
       case 'EMP': { // Creates an EMP shockwave effect and applies a card disable effect to all CPU karts within a radius, preventing them from using their cards for a short time.
         this.vfx.addShockwave(this.player.x, this.player.y, 'emp');
-        const targets = this._getInRadius(4);
+        const radius = dbEffects.Effect_Radius || 4;
+        const targets = this._getInRadius(radius);
+        
+        const force = dbEffects.Knockback_Force || 30;
+
         for (const t of targets) {
           const dx   = t.x - this.player.x;
           const dy   = t.y - this.player.y;
           const dist = Math.sqrt(dx*dx + dy*dy) || 1;
-          t.applyEffect(new Knockback((dx/dist) * 30, (dy/dist) * 30, 0));
-          t.applyEffect(new CardDisable(2));
+          t.applyEffect(new Knockback((dx/dist) * force, (dy/dist) * force, 0));
+          t.applyEffect(new CardDisable(dbEffects));
         }
         break;
       }
 
       case 'Repair Bot': { // Heals the player instantly.
-        this.player.applyEffect(new InstantHeal(0.30));
+        this.player.applyEffect(new InstantHeal(dbEffects));
         break;
       }
 
@@ -116,7 +130,7 @@ export class ActiveCards {
             const shieldVFX = this.vfx.addShield(this.player.x, this.player.y);
             console.log('shieldVFX creado:', shieldVFX);
             
-            const shieldEffect = new Shield(20, shieldVFX);
+            const shieldEffect = new Shield(dbEffects, shieldVFX);
             console.log('Shield effect:', shieldEffect);
             
             this.player.applyEffect(shieldEffect);

@@ -1,15 +1,15 @@
 DELIMITER $$
 
--- Crear automáticamente un Deck por defecto ("Starter Deck") al registrar un nuevo PLAYER
+-- 1. Crear automáticamente un Deck por defecto al registrar un nuevo PLAYER
 CREATE TRIGGER tr_after_player_insert
 AFTER INSERT ON PLAYER
 FOR EACH ROW
 BEGIN
     INSERT INTO DECK (name, player_id) 
-    VALUES ('Starter Deck', NEW_PLAYER.player_id);
+    VALUES ('Default Starter Deck', NEW.player_id); -- Corregido: NEW en lugar de NEW_PLAYER
 END$$
 
--- Validar que la edad del usuario sea realista antes de insertar
+-- 2. Validar que la edad del usuario sea realista antes de insertar
 CREATE TRIGGER tr_before_user_insert
 BEFORE INSERT ON USERS
 FOR EACH ROW
@@ -20,12 +20,11 @@ BEGIN
     END IF;
 END$$
 
--- Registrar de forma automática el uso de una carta en CARD_Stats al agregarla a un mazo
+-- 3. Registrar de forma automática el uso de una carta en CARD_Stats
 CREATE TRIGGER tr_after_deck_card_insert
 AFTER INSERT ON DECK_CARDS
 FOR EACH ROW
 BEGIN
-    -- Obtenemos el user_id a través del mazo
     DECLARE v_user_id INT;
     SELECT p.user_id INTO v_user_id 
     FROM DECK d 
@@ -34,10 +33,10 @@ BEGIN
 
     INSERT INTO CARD_Stats (user_id, card_id, usage_count)
     VALUES (v_user_id, NEW.card_id, 1)
-    ON DUPLICATE KEY UPDATE usage_count = usage_count + 1;
+    ON DUPLICATE KEY UPDATE usage_count = usage_count + 1; -- Corregido: Actualizar count, no el ID
 END$$
 
--- Impedir que un mazo tenga más de 5 copias de la misma carta
+-- 4. Impedir que un mazo tenga más de 5 copias de la misma carta
 CREATE TRIGGER tr_before_deck_card_update
 BEFORE UPDATE ON DECK_CARDS
 FOR EACH ROW
@@ -48,7 +47,7 @@ BEGIN
     END IF;
 END$$
 
--- Actualizar automáticamente el tiempo promedio de carrera del jugador cuando termina una sesión
+-- 5. Actualizar el tiempo promedio del jugador al terminar una sesión
 CREATE TRIGGER tr_after_player_game_insert
 AFTER INSERT ON PLAYER_GAME
 FOR EACH ROW
@@ -64,7 +63,7 @@ BEGIN
     WHERE player_id = NEW.player_id;
 END$$
 
--- Log de seguridad preventivo: Evitar cambios en el correo de usuarios registrados
+-- 6. Evitar cambios en el correo de usuarios registrados
 CREATE TRIGGER tr_before_user_update
 BEFORE UPDATE ON USERS
 FOR EACH ROW

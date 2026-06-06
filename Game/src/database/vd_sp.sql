@@ -26,8 +26,11 @@ CREATE PROCEDURE sp_add_card_to_deck(
     IN p_card_id INT
 )
 BEGIN
-    INSERT INTO DECK_CARDS (deck_id, card_id, quantity)
-    VALUES (p_deck_id, p_card_id, 1)
+    DECLARE v_deck_name VARCHAR(100);
+    SELECT name INTO v_deck_name FROM DECK WHERE deck_id = p_deck_id;
+
+    INSERT INTO DECK_CARDS (deck_id, card_id, quantity, name_of_deck)
+    VALUES (p_deck_id, p_card_id, 1, v_deck_name)
     ON DUPLICATE KEY UPDATE quantity = quantity + 1;
 END$$
 

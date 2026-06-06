@@ -21,24 +21,29 @@ export class CardSystem { //
     }
 
     applyPassive(card, kart) { // This method applies the passive effect of a card to the kart. It checks the type of the card and applies the corresponding stat changes to the kart based on the card's name.
+        
+        // Extraemos los efectos pasivos dinámicos que vienen desde la base de datos
+        const dbEffects = card.effects || {};
+
         if (card.type === "passive") {
             if (card.name === "Aerodynamic Spoiler") {
                 // Apply the passive effect
-                kart.maxSpeed += 1;
-                kart.acceleration += 0.1;
+                kart.maxSpeed += dbEffects.Passive_MaxSpeed_Add || 1;
+                kart.acceleration += dbEffects.Passive_Acceleration_Add || 0.1;
             }
             if (card.name === "Heavy Chassis") {
                 // Apply the passive effect
-                kart.maxHP *= 1.2;
+                const multiplier = dbEffects.Passive_MaxHP_Multiplier || 1.2;
+                kart.maxHP *= multiplier;
                 kart.hp = kart.maxHP; 
             }
             if (card.name === "Sport Tires") {
                 // Apply the passive effect
-                kart.baseRotationSpeed += 1;
+                kart.baseRotationSpeed += dbEffects.Passive_RotationSpeed_Add || 1;
             }
             if (card.name === "Racing Transmission") {
                 // Apply the passive effect
-                kart.acceleration += 0.25;
+                kart.acceleration += dbEffects.Passive_Acceleration_Add || 0.25;
             }
             }
         }

@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS CARD_Stats (
     usage_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     card_id INT NOT NULL,
+    usage_count INT DEFAULT 1,
     CONSTRAINT fk_stats_user FOREIGN KEY (user_id) REFERENCES USERS(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_stats_card FOREIGN KEY (card_id) REFERENCES CARD(card_id) ON DELETE CASCADE
 );

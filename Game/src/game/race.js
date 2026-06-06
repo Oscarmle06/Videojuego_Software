@@ -1,6 +1,7 @@
 // race.js
 // Maneja la lógica principal de la carrera: inicialización, loop de juego y renderizado.
-// Oscar Lara, Emilio Lara, Aixa Mendoza, May 2026
+// Sincronizado dinámicamente con la API de MariaDB para el balanceo de cartas.
+// Oscar Lara, Emilio Lara, Aixa Mendoza, May 2026 (Actualizado Junio 2026)
 
 import { Track } from './track.js';
 import { CPUKart } from './CPUKart.js';
@@ -29,8 +30,8 @@ function playSFX(name, volume = 1.0) {
     sfx.play().catch(() => {});
 }
 
-// Cartas que pueden recibir los CPUs (todas menos Repair Bot)
-const CPU_CARD_POOL = [
+// Pool de cartas para los CPUs (Se poblará dinámicamente desde MariaDB, excluyendo Repair Bot)
+let CPU_CARD_POOL = [
     { name: 'Aerodynamic Spoiler', type: 'passive' },
     { name: 'Heavy Chassis',       type: 'passive' },
     { name: 'Sport Tires',         type: 'passive' },
@@ -41,6 +42,50 @@ const CPU_CARD_POOL = [
     { name: 'EMP',                 type: 'active'  },
     { name: 'Temporary Armor',     type: 'active'  },
 ];
+
+// Almacén global en memoria del mazo balanceado con los efectos de la base de datos
+let BALANCED_DECK = {};
+
+// Conexión asíncrona con el backend de Express para jalar la configuración viva de la DB
+async function sincronizarBalanceDesdeMariaDB() {
+    try {
+        const response = await fetch('http://localhost:3000/api/cards');
+        const result = await response.json();
+        
+        if (result.success) {
+            const nuevoPool = [];
+            BALANCED_DECK = {};
+
+            result.data.forEach(row => {
+                if (!BALANCED_DECK[row.card_name]) {
+                    const isPassive = row.category.startsWith('Passive');
+                    BALANCED_DECK[row.card_name] = {
+                        name: row.card_name,
+                        category: row.category,
+                        type: isPassive ? 'passive' : 'active',
+                        effects: {}
+                    };
+                    
+                    // Las IAs no reciben la carta curativa 'Repair Bot'
+                    if (row.card_name !== 'Repair Bot') {
+                        nuevoPool.push({ 
+                            name: row.card_name, 
+                            type: isPassive ? 'passive' : 'active' 
+                        });
+                    }
+                }
+                // Mapeamos los valores SQL a flotantes numéricos para el motor de físicas
+                BALANCED_DECK[row.card_name].effects[row.effect_type] = parseFloat(row.value);
+            });
+
+            // Reemplazamos los fallbacks estáticos por el balance real de la DB
+            CPU_CARD_POOL = nuevoPool;
+            console.log("🚀 ¡Velocity Draft sincronizado con MariaDB exitosamente!", BALANCED_DECK);
+        }
+    } catch (error) {
+        console.error("⚠️ Error al conectar con el backend de MariaDB. Usando valores locales por defecto.", error);
+    }
+}
 
 function createPersonality(type, player) {
     if (type === 'fast')        return new FastPersonality(player);
@@ -53,62 +98,13 @@ function createPersonality(type, player) {
 const RANDOM_WEATHER = ['clear', 'rain', 'wind'];
 
 export const LEVEL_CONFIGS = {
-    1: {
-        level: 1,
-        track: { N: 10, centerX: 32, centerY: 32, baseRadius: 16, variation: 6 },
-        laps: 1,
-        cpus: ['fast'],
-        weather: 'clear',
-        timeOfDay: 'day',
-    },
-    2: {
-        level: 2,
-        track: { N: 12, centerX: 36, centerY: 32, baseRadius: 16, variation: 9 },
-        laps: 2,
-        cpus: ['fast', 'aggressive', 'strategic'],
-        weather: 'clear',
-        timeOfDay: 'day',
-    },
-    3: {
-        level: 3,
-        track: { N: 13, centerX: 36, centerY: 32, baseRadius: 17, variation: 11 },
-        laps: 2,
-        cpus: ['fast', 'aggressive', 'provocative'],
-        weather: 'clear',
-        timeOfDay: 'sunrise',
-    },
-    4: {
-        level: 4,
-        track: { N: 14, centerX: 38, centerY: 32, baseRadius: 17, variation: 12 },
-        laps: 3,
-        cpus: ['fast', 'aggressive', 'strategic'],
-        weather: 'rain',
-        timeOfDay: 'sunset',
-    },
-    5: {
-        level: 5,
-        track: { N: 15, centerX: 40, centerY: 34, baseRadius: 18, variation: 13 },
-        laps: 3,
-        cpus: ['fast', 'aggressive', 'strategic', 'provocative'],
-        weather: 'random',
-        timeOfDay: 'day',
-    },
-    6: {
-        level: 6,
-        track: { N: 16, centerX: 40, centerY: 34, baseRadius: 18, variation: 14 },
-        laps: 3,
-        cpus: ['fast', 'aggressive', 'strategic', 'provocative'],
-        weather: 'random',
-        timeOfDay: 'sunset',
-    },
-    7: {
-        level: 7,
-        track: { N: 17, centerX: 40, centerY: 34, baseRadius: 18, variation: 15 },
-        laps: 3,
-        cpus: ['fast', 'aggressive', 'strategic', 'provocative'],
-        weather: 'random',
-        timeOfDay: 'sunrise',
-    },
+    1: { level: 1, track: { N: 10, centerX: 32, centerY: 32, baseRadius: 16, variation: 6 }, laps: 1, cpus: ['fast'], weather: 'clear', timeOfDay: 'day' },
+    2: { level: 2, track: { N: 12, centerX: 36, centerY: 32, baseRadius: 16, variation: 9 }, laps: 2, cpus: ['fast', 'aggressive', 'strategic'], weather: 'clear', timeOfDay: 'day' },
+    3: { level: 3, track: { N: 13, centerX: 36, centerY: 32, baseRadius: 17, variation: 11 }, laps: 2, cpus: ['fast', 'aggressive', 'provocative'], weather: 'clear', timeOfDay: 'sunrise' },
+    4: { level: 4, track: { N: 14, centerX: 38, centerY: 32, baseRadius: 17, variation: 12 }, laps: 3, cpus: ['fast', 'aggressive', 'strategic'], weather: 'rain', timeOfDay: 'sunset' },
+    5: { level: 5, track: { N: 15, centerX: 40, centerY: 34, baseRadius: 18, variation: 13 }, laps: 3, cpus: ['fast', 'aggressive', 'strategic', 'provocative'], weather: 'random', timeOfDay: 'day' },
+    6: { level: 6, track: { N: 16, centerX: 40, centerY: 34, baseRadius: 18, variation: 14 }, laps: 3, cpus: ['fast', 'aggressive', 'strategic', 'provocative'], weather: 'random', timeOfDay: 'sunset' },
+    7: { level: 7, track: { N: 17, centerX: 40, centerY: 34, baseRadius: 18, variation: 15 }, laps: 3, cpus: ['fast', 'aggressive', 'strategic', 'provocative'], weather: 'random', timeOfDay: 'sunrise' },
 };
 
 const SKY_ASSETS = {
@@ -131,9 +127,8 @@ export class Race {
         this.cardSystem = cardSystem;
         this.cardHUD    = cardHUD;
         this.mapCanvas  = mapCanvas;
-        this.raceCards = raceCards
-        this.activeCards = activeCards
-
+        this.raceCards = raceCards;
+        this.activeCards = activeCards;
 
         if (config.weather === 'random') {
             this.weather = RANDOM_WEATHER[Math.floor(Math.random() * RANDOM_WEATHER.length)];
@@ -172,39 +167,34 @@ export class Race {
         this.positionSprite = new Image();
         this.positionSprite.src = './assets/Positions.png';
 
-        // Fases del countdown
         this.COUNTDOWN_PHASES = [
-            { start: 0.0, sx: 535, sy:   3, sw: 256, sh: 256 }, // 3
-            { start: 1.0, sx: 270, sy:   3, sw: 256, sh: 256 }, // 2
-            { start: 2.0, sx:   3, sy:   3, sw: 256, sh: 256 }, // 1
-            { start: 3.0, sx:   3, sy: 268, sw: 510, sh: 256 }, // GO!
+            { start: 0.0, sx: 535, sy:   3, sw: 256, sh: 256 },
+            { start: 1.0, sx: 270, sy:   3, sw: 256, sh: 256 },
+            { start: 2.0, sx:   3, sy:   3, sw: 256, sh: 256 },
+            { start: 3.0, sx:   3, sy: 268, sw: 510, sh: 256 },
         ];
         this.COUNTDOWN_TOTAL = 4.0;
 
-        // Celdas del spritesheet de posición
         this.POS_CELL_W = Math.floor(677 / 5);
         this.POS_CELL_H = Math.floor(369 / 2 - 70);
         this.POS_CELLS  = [
             null,
-            { col: 0, row: 0 }, // 1er lugar
-            { col: 1, row: 0 }, // 2do lugar
-            { col: 2, row: 0 }, // 3er lugar
-            { col: 3, row: 0 }, // 4to lugar
-            { col: 4, row: 0 }, // 5to lugar
+            { col: 0, row: 0 },
+            { col: 1, row: 0 },
+            { col: 2, row: 0 },
+            { col: 3, row: 0 },
+            { col: 4, row: 0 },
         ];
     }
 
-    // ── Inicialización ──────────────────────────────────────────────────────────
+    // ── Inicialización interna de la carrera ──────────────────────────────────────
 
     _init() {
-
         const cfg = this.config;
         const t   = cfg.track;
 
         // Audio API 
-
         this.audioCtx = new AudioContext();
-
 
         // Pista
         this.track = new Track(64);
@@ -269,21 +259,25 @@ export class Race {
 
         // VFX y cartas del jugador
         this.vfx         = new VFX();
-        this.activeCards.vfx = this.vfx
-        this.activeCards.cpus = this.cpus
+        this.activeCards.vfx = this.vfx;
+        this.activeCards.cpus = this.cpus;
 
-        // Equipar race cards
+        // Inyectamos las cartas del jugador leyendo los efectos reales traídos de MariaDB
         for (let i = 0; i < this.raceCards.length; i++) {
-                this.activeCards.equip({ name: this.raceCards[i], type: 'battle' });
+            const cardName = this.raceCards[i];
+            const dbCard = BALANCED_DECK[cardName] || { name: cardName, type: 'active', effects: {} };
+            this.activeCards.equip(JSON.parse(JSON.stringify(dbCard)));
         }
 
-        // Inicializar sistema de cartas de cada CPU y darle 1 carta aleatoria
+        // Inicializamos los sistemas de cartas de las CPU con los datos numéricos de la DB
         for (let i = 0; i < this.cpus.length; i++) {
             this.cpus[i].initCardSystem(this.allKarts, this.vfx);
             const randomIndex = Math.floor(Math.random() * CPU_CARD_POOL.length);
-            const card        = CPU_CARD_POOL[randomIndex];
-            this.cpus[i].cardSystem.equip(card);
-            console.log('CPU ' + i + ' (' + this.cpus[i].personality.personality + ') recibió: ' + card.name + ' [' + card.type + ']');
+            const poolCard    = CPU_CARD_POOL[randomIndex];
+            
+            const dbCard = BALANCED_DECK[poolCard.name] || { name: poolCard.name, type: poolCard.type, effects: {} };
+            this.cpus[i].cardSystem.equip(JSON.parse(JSON.stringify(dbCard)));
+            console.log(`CPU ${i} (${this.cpus[i].personality.personality}) recibió de DB: ${dbCard.name}`);
         }
 
         // Renderers
@@ -301,7 +295,7 @@ export class Race {
         });
         this.minimap = new Minimap(this.mapCanvas);
 
-        // Web Audio API for better Loops
+        // Web Audio API Engine Loop
         const audioCtx = new AudioContext();
         fetch('./assets/audios/motor.mp3')
             .then(r => r.arrayBuffer())
@@ -309,24 +303,26 @@ export class Race {
             .then(decoded => {
                 const source = audioCtx.createBufferSource();
                 source.buffer = decoded;
-                source.loopStart = 0;
-                source.loopEnd = decoded.duration;
                 source.loop = true;
                 source.loopStart = 0.1;
                 source.loopEnd = decoded.duration - 0.1;
                 const gainNode = audioCtx.createGain();
-                gainNode.gain.value = 4.0; // súbelo al gusto
+                gainNode.gain.value = 4.0;
                 source.connect(gainNode);
                 gainNode.connect(audioCtx.destination);                
                 source.start();
                 this.playerKart.engineSound = source;
-                this.playerKart.engineAudioCtx = this.audioCtx;;
+                this.playerKart.engineAudioCtx = this.audioCtx;
             });
-            }
+    }
 
-    // ── Loop de carrera ─────────────────────────────────────────────────────────
+    // ── Loop de carrera asíncrono para esperar la API ──────────────────────────────
 
-    startRace(onFinish) {
+    async startRace(onFinish) {
+        // 1. Forzamos la descarga del balance dinámico antes de instanciar componentes
+        await sincronizarBalanceDesdeMariaDB();
+
+        // 2. Ejecutamos el armado de la escena con los mazos inyectados
         this._init();
 
         let raceState        = 'intro';
@@ -340,8 +336,6 @@ export class Race {
         let explosionTimer   = 0;
         let resolved         = false;
         let resultTimer      = null;
-
-        // Flag for raceStart.sfx
         let raceStartSoundPlayed = false;
 
         const INTRO_DURATION  = 3.0;
@@ -396,7 +390,7 @@ export class Race {
             } else if (raceState === 'countdown') {
                 if (!raceStartSoundPlayed) {
                     raceStartSoundPlayed = true;
-                    playSFX('raceStart', 0.6)
+                    playSFX('raceStart', 0.6);
                 }
                 
                 countdownElapsed += dt;
@@ -610,6 +604,10 @@ export class Race {
             -displayW * 0.5, -displayH * 0.5, displayW, displayH,
         );
         this.ctx.restore();
+    }
+
+    _renderCameraAlongSpline(t) { // Mantengo el helper por consistencia de código
+         this._moveCameraAlongSpline(t);
     }
 
     _moveCameraAlongSpline(t) {

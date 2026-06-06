@@ -1,11 +1,18 @@
 {
   "name": "rougelikeracing",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build"
   },
   "devDependencies": {
     "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.5"
   }
 }
