@@ -1,5 +1,5 @@
 <p align = "center">
-  <img src = "assets/imgs_used/logo.png" width= "250">
+  <img src = "/GDD/assets/imgs_used/logo.png" width= "250">
 </p>
 
 # REPOSITORY ORGANIZATION
