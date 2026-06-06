@@ -59,7 +59,7 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 
 ### **LOGO**
 
-![Alt text](/assets/imgs/logo.png)
+![Alt text](assets/imgs_used/logo.png)
 
 ---
 
@@ -74,49 +74,49 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - OPTIONS → brightness, sound, music sliders
    - EXIT → closes the game
 
-![Alt text](/assets/imgs/titlescreen.png)
+![Alt text](assets/imgs_used/titlescreen.png)
 
 2. **Level Selection**
    - Level buttons 1–7 + Trophy (final race), unlocked sequentially
    - Locked levels are non-interactive
    - BACK → Title Screen
 
-   ![Alt text](/assets/imgs/levelselection.png)
+   ![Alt text](assets/imgs_used/levelselection.png)
 
 3. **Options / Pause Menu** *(doubles as pause screen)*
    - Sliders: Sound (SFX volume), Music, Brightness
    - SAVE & EXIT → returns to Level Selection
    - BACK → returns to game
 
-   ![Alt text](/assets/imgs/option.png)
+   ![Alt text](assets/imgs_used/option.png)
 
 4. **Gameplay Screen**
    - Main 2.5D race view (Mode 7 floor + sprite karts)
    - HUD: health bar, race position, active cards (up to 3 offensive slots), minimap
    - ESC → Pause Menu
 
-   ![Alt text](/assets/imgs/gameplay.png)
+   ![Alt text](assets/imgs_used/gameplay.png)
 
 5. **Results Screen**
    - WIN variant: trophy + flag, level number, finish time
    - TRY AGAIN variant: same layout, different header
    - Triggers Card Selection on WIN
 
-   ![Alt text](/assets/imgs/win.png)
+   ![Alt text](assets/imgs_used/win.png)
 
 6. **Card Selection Screen**
    - Shown after each win (Level 1 onward)
    - Displays 3 randomly drawn cards from the 12-card pool
    - Player selects 1 with mouse/Enter
 
-   ![Alt text](/assets/imgs/card_selection.png)
+   ![Alt text](assets/imgs_used/card_selection.png)
 
 7. **Car Statistics Screen**
    - Shows cumulative passive upgrades: Tires, Spoiler Aero, Chassis, Transmission
    - Progress bars per stat — persists across runs (not lost on death)
    - BACK → returns to game
 
-   ![Alt text](/assets/imgs/statistics.png)
+   ![Alt text](assets/imgs_used/statistics.png)
 
 8. **Storytelling / Cutscenes**
    - Intro cutscene (reserve driver backstory)
@@ -124,14 +124,14 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
    - Permadeath cutscene
    - Simplistic pixel art style, text-driven, advanced with SPACE
 
-   ![Alt text](/assets/imgs/story.png)
+   ![Alt text](assets/imgs_used/story.png)
 
 9. **Credits Screen**
    - Team names, music credits, sprites credits, legal notices
    - Background music playing
    - BACK TO MAIN MENU button
 
-   ![Alt text](/assets/imgs/credit_scene.png)
+   ![Alt text](assets/imgs_used/credit_scene.png)
 
 10. **Game Over Screen**
     - Triggered by health = 0 or finish outside top 3
