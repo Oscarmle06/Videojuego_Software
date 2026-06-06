@@ -39,7 +39,7 @@ export class SpeedDebuff extends StatusEffect {  // Reduces the kart's max speed
     }
 
     onExpire(kart) { // When the effect expires, it restores the kart's max speed to its original value.
-        kart.maxSpeed = this.originalMax;
+        karto.maxSpeed = this.originalMax;
     }
 }
 
@@ -63,7 +63,7 @@ export class SpeedBoost extends StatusEffect { // Increases the kart's current s
         this.amount = amount;
     }
     onApply(kart) { // When applied, it increases the kart's speed by a fraction of its current speed, but does not allow the speed to exceed 130% of the kart's max speed.
-        kart.speed += Math.min(kart.speed * this.amount, kart.maxSpeed *1.3);
+        kart.speed += Math.min(kart.speed * this.amount, kart.maxSpeed * 1.3);
     }
 }
 
@@ -78,7 +78,7 @@ export class Knockback extends StatusEffect { // Applies an instantaneous force 
         const vx = kart.dirX * kart.speed + this.forceX;
         const vy = kart.dirY * kart.speed + this.forceY;
         const newSpeed = Math.sqrt(vx * vx + vy * vy);
-        if (newSpeed > 0.01 ) { // 
+        if (newSpeed > 0.01) { // 
             kart.speed = Math.min(newSpeed, kart.maxSpeed * 1.5);
             kart.dirX = vx / newSpeed;
             kart.dirY = vy / newSpeed;
@@ -92,7 +92,8 @@ export class Knockback extends StatusEffect { // Applies an instantaneous force 
 
 export class CardDisable extends StatusEffect { // Prevents the kart from using its card for a certain duration.
     constructor(effects = {}) {
-        const duration = effects.CardDisable_Duration || 2;
+        // Mantenemos tu mapeo de DB, pero si no viene nada, tomamos los 30 de balance que querían tus compañeros
+        const duration = effects.CardDisable_Duration || 30;
         super(duration);
     }
     onApply(kart) {

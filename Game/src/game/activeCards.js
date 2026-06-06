@@ -138,36 +138,36 @@ export class ActiveCards {
           }
           break;
         }
-            }
-            // Consumir la carta después de usarla
-            this.slots[this.selectedSlot] = null;
-          }
+    }
+    // Consumir la carta después de usarla
+    this.slots[this.selectedSlot] = null;
+  }
 
-      _getNearestInFront() { // Finds the nearest CPU kart in front of the player by checking the dot product between the player's direction and the vector to each CPU kart. Returns the nearest kart or null if no karts are in front.
-        let nearest = null;
-        let minDist = Infinity;
-        for (const cpu of this.cpus) {
-          const dx  = cpu.x - this.player.x;
-          const dy  = cpu.y - this.player.y;
-          const dot = dx * this.player.dirX + dy * this.player.dirY; // Dot product to check if the CPU kart is in front of the player
-          if (dot <= 0) continue; // If the CPU kart is behind the player, skip it
-          const dist = dx*dx + dy*dy;
-          if (dist < minDist) { 
-            minDist = dist; nearest = cpu; 
-          }
-        }
-        return nearest;
+  _getNearestInFront() { // Finds the nearest CPU kart in front of the player by checking the dot product between the player's direction and the vector to each CPU kart. Returns the nearest kart or null if no karts are in front.
+    let nearest = null;
+    let minDist = Infinity;
+    for (const cpu of this.cpus) {
+      const dx  = cpu.x - this.player.x;
+      const dy  = cpu.y - this.player.y;
+      const dot = dx * this.player.dirX + dy * this.player.dirY; // Dot product to check if the CPU kart is in front of the player
+      if (dot <= 0) continue; // If the CPU kart is behind the player, skip it
+      const dist = dx*dx + dy*dy;
+      if (dist < minDist) { 
+        minDist = dist; nearest = cpu; 
       }
+    }
+    return nearest;
+  }
 
-        _getInRadius(radius) { // Finds all CPU karts within a certain radius from the player by checking the distance between the player and each CPU kart. Returns an array of karts within the radius.
-            const inRadius = [];
-            for (let i = 0; i < this.cpus.length; i++) {
-                const dx = this.cpus[i].x - this.player.x;
-                const dy = this.cpus[i].y - this.player.y;
-                if (dx*dx + dy*dy <= radius*radius) {
-                    inRadius.push(this.cpus[i]);
-                }
-            }
-            return inRadius;
+  _getInRadius(radius) { // Finds all CPU karts within a certain radius from the player by checking the distance between the player and each CPU kart. Returns an array of karts within the radius.
+    const inRadius = [];
+    for (let i = 0; i < this.cpus.length; i++) {
+        const dx = this.cpus[i].x - this.player.x;
+        const dy = this.cpus[i].y - this.player.y;
+        if (dx*dx + dy*dy <= radius*radius) {
+            inRadius.push(this.cpus[i]);
         }
-      }
+    }
+    return inRadius;
+  }
+}

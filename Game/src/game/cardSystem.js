@@ -45,6 +45,6 @@ export class CardSystem { //
                 // Apply the passive effect
                 kart.acceleration += dbEffects.Passive_Acceleration_Add || 0.25;
             }
-            }
         }
     }
+}

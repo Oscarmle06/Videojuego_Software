@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutorial — Velocity Draft</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="index.html">VELOCITY DRAFT</a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#navMain"
+              aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="game.html">Play</a></li>
+          <li class="nav-item"><a class="nav-link active" href="tutorial.html">Tutorial</a></li>
+        </ul>
+        <div id="navRight"></div>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top:56px;">
+
+    <div class="page-header text-center">
+      <h1 class="text-cyan mb-2">Tutorial</h1>
+      <p class="text-dimmed mb-0">Everything you need to know to dominate the track</p>
+    </div>
+
+    <div class="container py-5" style="max-width:900px;">
+
+      <!-- CONTROLS -->
+      <div class="mb-5">
+        <div class="tut-heading mb-4">Controls</div>
+        <div class="row g-3">
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100">
+              <div class="card-body d-flex align-items-center gap-3 py-3">
+                <span class="key-badge">W</span>
+                <span style="font-size:.86rem;">Accelerate</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100">
+              <div class="card-body d-flex align-items-center gap-3 py-3">
+                <span class="key-badge">S</span>
+                <span style="font-size:.86rem;">Brake / Reverse</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100">
+              <div class="card-body d-flex align-items-center gap-3 py-3">
+                <span class="key-badge">A</span>
+                <span style="font-size:.86rem;">Steer left</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100">
+              <div class="card-body d-flex align-items-center gap-3 py-3">
+                <span class="key-badge">D</span>
+                <span style="font-size:.86rem;">Steer right</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100">
+              <div class="card-body d-flex align-items-center gap-3 py-3">
+                <span class="key-badge">O</span>
+                <span style="font-size:.86rem;">Cycle active card slot</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6 col-md-4">
+            <div class="card h-100">
+              <div class="card-body d-flex align-items-center gap-3 py-3">
+                <span class="key-badge">P</span>
+                <span style="font-size:.86rem;">Use selected active card</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-dimmed mt-3" style="font-size:.82rem;">
+          Steering speed scales with your current velocity — the faster you go, the sharper you can turn.
+          Driving on grass significantly reduces your speed, so stay on the track.
+        </p>
+      </div>
+
+      <!-- RACE MECHANICS -->
+      <div class="mb-5">
+        <div class="tut-heading mb-4">Race Mechanics</div>
+        <div class="d-flex flex-column gap-3">
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title mb-1">HP — Hit Points</div>
+              <p class="card-text mb-0">
+                Your kart starts with 50 HP. Every collision with another kart costs life.
+                Drop to 0 HP and you lose the race. Use recovery cards to stay alive.
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title mb-1">Laps and Checkpoints</div>
+              <p class="card-text mb-0">
+                You must pass every checkpoint in order for the lap to count.
+                The lap counter and minimap show your progress in real time.
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title mb-1">Card Selection Between Laps</div>
+              <p class="card-text mb-0">
+                At the end of each lap a card selection screen opens. Choose between
+                <b class="text-cyan">passive cards</b> (permanent stat upgrades) and
+                <b class="text-purple">active cards</b> (one-use abilities stored in up to 3 slots,
+                triggered mid-race with O + P).
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title mb-1">Race Position</div>
+              <p class="card-text mb-0">
+                The HUD shows your current position against the CPU rivals.
+                Finish in 1st place after all laps to win.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASSIVE CARDS -->
+      <div class="mb-5">
+        <div class="tut-heading mb-2">Passive Cards — Permanent Upgrades</div>
+        <p class="text-dimmed mb-4" style="font-size:.86rem;">
+          Passive cards apply stat upgrades instantly and remain active for the whole race.
+          Picking the same card twice levels it up and doubles the effect.
+        </p>
+        <div class="row g-3">
+          <div class="col-6 col-md-3">
+            <div class="card card-tile passive card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/aerodynamic_spoiler.png" alt="Aerodynamic Spoiler"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Aerodynamic Spoiler</div>
+                <div class="card-tile-type mb-2">Passive</div>
+                <div class="card-tile-desc">+Top speed &middot; +Acceleration</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile passive card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/heavychasis.png" alt="Heavy Chassis"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Heavy Chassis</div>
+                <div class="card-tile-type mb-2">Passive</div>
+                <div class="card-tile-desc">+20% max HP. Restores HP when applied.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile passive card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/sporttires.png" alt="Sport Tires"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Sport Tires</div>
+                <div class="card-tile-type mb-2">Passive</div>
+                <div class="card-tile-desc">+Steering speed for tighter corners.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile passive card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/racing-transmition.png" alt="Racing Transmission"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Racing Transmission</div>
+                <div class="card-tile-type mb-2">Passive</div>
+                <div class="card-tile-desc">Reach top speed much faster than before.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE CARDS -->
+      <div class="mb-5">
+        <div class="tut-heading mb-2">Active Cards — In-Race Abilities</div>
+        <p class="text-dimmed mb-4" style="font-size:.86rem;">
+          You can hold up to <b class="text-white">3 active cards</b> at once.
+          Use <b class="text-cyan">O</b> to cycle through slots and
+          <b class="text-cyan">P</b> to activate the selected card. Cards are consumed on use.
+        </p>
+        <div class="row g-3">
+          <div class="col-6 col-md-3">
+            <div class="card card-tile active card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/tireshredder.png" alt="Tire Shredder"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Tire Shredder</div>
+                <div class="card-tile-type mb-2">Active</div>
+                <div class="card-tile-desc">Reduces the speed of the nearest rival ahead of you.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile active card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/grapplerhook.png" alt="Grappler Hook"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Grappler Hook</div>
+                <div class="card-tile-type mb-2">Active</div>
+                <div class="card-tile-desc">Steals speed from the rival ahead and transfers it to you.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile active card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/sonicwave.png" alt="Sonic Wave"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Sonic Wave</div>
+                <div class="card-tile-type mb-2">Active</div>
+                <div class="card-tile-desc">Shockwave that pushes all nearby rivals away.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile active card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/EMP.png" alt="EMP"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">EMP</div>
+                <div class="card-tile-type mb-2">Active</div>
+                <div class="card-tile-desc">Disables the cards of all nearby rivals for 2 seconds.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile active card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/temporaryArmour.png" alt="Temporary Armor"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Temporary Armor</div>
+                <div class="card-tile-type mb-2">Active</div>
+                <div class="card-tile-desc">Shield that absorbs the next collision with no damage.</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card card-tile active card-hover h-100">
+              <div class="card-body text-center p-3">
+                <img src="../assets/cards/repairbot.png" alt="Repair Bot"
+                     class="mb-2 d-block mx-auto" onerror="this.style.opacity='.2'">
+                <div class="card-tile-name mb-1">Repair Bot</div>
+                <div class="card-tile-type mb-2">Active</div>
+                <div class="card-tile-desc">Instantly heals 30% of your maximum HP.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI PERSONALITIES -->
+      <div class="mb-5">
+        <div class="tut-heading mb-4">AI Rival Personalities</div>
+        <div class="d-flex flex-column gap-3">
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title text-cyan mb-1">Fast</div>
+              <p class="card-text mb-0">
+                Speed above all else. Always on full throttle, takes corners at maximum velocity.
+                Dangerous on straights, more manageable through tight curves.
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title text-red mb-1">Aggressive</div>
+              <p class="card-text mb-0">
+                Deliberately aims to crash into you. Uses active cards offensively
+                and will sacrifice speed for a clean hit. Stay out of its range.
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title text-purple mb-1">Evasive</div>
+              <p class="card-text mb-0">
+                Avoids collisions and uses defensive cards strategically.
+                Hard to hit with your active cards. Competes through pure speed rather than contact.
+              </p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-4">
+              <div class="mechanic-title mb-1" style="color:#e0b000;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:1px;">Strategic</div>
+              <p class="card-text mb-0">
+                Calculates every move. Saves cards for the exact right moment, manages HP carefully,
+                and decides when to attack versus when to hold back. The hardest rival.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIPS -->
+      <div class="mb-5">
+        <div class="tut-heading mb-4">Tips</div>
+        <div class="d-flex flex-column gap-2">
+          <div class="card">
+            <div class="card-body p-3" style="font-size:.87rem;color:var(--muted);line-height:1.65;">
+              Combine passive and active cards. <b class="text-white">Aerodynamic Spoiler + Grappler Hook</b>
+              is a strong combo — you go faster and also steal speed from rivals.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-3" style="font-size:.87rem;color:var(--muted);line-height:1.65;">
+              Stay on the track at all costs. Grass drops your speed significantly and can cost you
+              multiple positions in seconds.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-3" style="font-size:.87rem;color:var(--muted);line-height:1.65;">
+              Do not ignore your HP. Using a <b class="text-white">Repair Bot</b> at 30% health is
+              far better than waiting until the last moment.
+              <b class="text-white">Temporary Armor</b> is ideal before a straight where you expect collisions.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-3" style="font-size:.87rem;color:var(--muted);line-height:1.65;">
+              <b class="text-white">EMP</b> and <b class="text-white">Sonic Wave</b> affect multiple rivals simultaneously.
+              Use them when surrounded to create space fast.
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body p-3" style="font-size:.87rem;color:var(--muted);line-height:1.65;">
+              You have 3 active card slots. Use <b class="text-white">O</b> to reorder priority
+              and always have the right card ready for the situation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer py-3 text-center">
+    <p class="mb-0">Velocity Draft &copy; 2026 &mdash; Oscar Lara, Emilio Lara, Aixa Mendoza</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script>setupNav();</script>
+</body>
+</html>

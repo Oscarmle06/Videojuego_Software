@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velocity Draft</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="index.html">VELOCITY DRAFT</a>
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#navMain"
+              aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="game.html">Play</a></li>
+          <li class="nav-item"><a class="nav-link" href="tutorial.html">Tutorial</a></li>
+        </ul>
+        <div id="navRight"></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-section pt-5">
+    <div class="hero-grid"></div>
+    <div class="container position-relative text-center py-5">
+      <h1 class="hero-title mb-4">VELOCITY<br>DRAFT</h1>
+      <p class="text-dimmed mx-auto mb-4" style="max-width:580px;font-size:1.05rem;line-height:1.75;">
+        A high-speed racing game where card strategy decides who crosses the finish line first.
+        Face AIs with unique personalities on procedurally generated tracks.
+        Every lap is different. Every card can change everything.
+      </p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
+        <a href="game.html" class="btn btn-primary px-4">Play Now</a>
+        <a href="tutorial.html" class="btn btn-outline-primary px-4">How to Play</a>
+      </div>
+      <div class="hero-img d-inline-block">
+        <img src="../assets/Title_Screen.png" alt="Velocity Draft"
+             onerror="this.parentElement.style.display='none'">
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS VELOCITY DRAFT -->
+  <section class="py-5 mt-2">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title mb-2">
+          What is <span class="text-cyan">Velocity Draft</span>?
+        </h2>
+        <p class="text-dimmed">A mix of arcade racing, roguelike, and card strategy</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card card-hover h-100">
+            <div class="card-body p-4">
+              <h5 class="card-title">2.5D Racing</h5>
+              <p class="card-text">
+                Immersive Mode-7 style perspective with real-time rendering.
+                Dynamic sky (dawn, day, dusk), roadside trees, and high-octane visual effects.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-hover h-100">
+            <div class="card-body p-4">
+              <h5 class="card-title">Card System</h5>
+              <p class="card-text">
+                Between laps, choose passive upgrades that boost your stats or active cards
+                you deploy mid-race: Spoiler, Grappler Hook, Sonic Wave, EMP, and more.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-hover h-100">
+            <div class="card-body p-4">
+              <h5 class="card-title">AI Personalities</h5>
+              <p class="card-text">
+                Four rivals with their own AI:
+                the <b class="text-cyan">Fast</b> pushes flat-out,
+                the <b class="text-red">Aggressive</b> crashes into you on purpose,
+                the <b class="text-purple">Evasive</b> dodges everything, and
+                the <b style="color:#e0b000">Strategic</b> calculates every move.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-hover h-100">
+            <div class="card-body p-4">
+              <h5 class="card-title">Procedural Tracks</h5>
+              <p class="card-text">
+                Each race generates a unique circuit using Catmull-Rom curves.
+                No matter how many times you play, you will never run the same track twice.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-hover h-100">
+            <div class="card-body p-4">
+              <h5 class="card-title">HP Management</h5>
+              <p class="card-text">
+                Every collision costs HP. Hit zero and you lose the race.
+                Use Repair Bots, Temporary Armor, and Pit Stops to stay on track.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-hover h-100">
+            <div class="card-body p-4">
+              <h5 class="card-title">Roguelike Mechanics</h5>
+              <p class="card-text">
+                Every run is fresh. Card selection forces strategic decisions
+                that shape how you face each lap — no two races play alike.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-5 text-center" style="border-top:1px solid var(--border);">
+    <div class="container">
+      <h2 class="section-title mb-3">The track is waiting</h2>
+      <p class="text-dimmed mb-4">The cards are about to be dealt.</p>
+      <a href="game.html" class="btn btn-primary px-5 py-2" style="font-size:.95rem;">
+        Start Race
+      </a>
+    </div>
+  </section>
+
+  <footer class="footer py-3 text-center">
+    <p class="mb-0">Velocity Draft &copy; 2026 &mdash; Oscar Lara, Emilio Lara, Aixa Mendoza</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script>setupNav();</script>
+</body>
+</html>
