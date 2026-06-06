@@ -59,7 +59,7 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 
 ### **LOGO**
 
-![Alt text](assets/imgs/logo.png)
+![Alt text](assets/imgs_used/logo.png)
 
 ---
 
