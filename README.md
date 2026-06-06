@@ -6,7 +6,7 @@
 This repository is organized into several main directories to facilitate navegation of the project's documentation, source code, assets and other supporting materals.
 
 ## Game
-Contains the game's implementation, including the source code, assets and sprites currently implemented and instructions for dowloading and running the project.
+Contains the game's implementation, including the source code, assets and sprites currently implemented and instructions for downloading and running the project.
 
 ## Sprites 
 A centralized library containing all sprites created for the project. These include sprites that are currently implemented in the game and experimental/future assets not yet integrated. Shows the evolution of the game's visual design.
@@ -18,7 +18,7 @@ Contains the project's user stories and SCRUM-related documentation. These user 
 Contains the project's intial presentation and elevator pitch materials as well as the future final pitch. 
 
 ## Other
-Contains coursework and supporting academic activities. Examples include cat cafe and database schemas with their respective justifications-
+Contains coursework and supporting academic activities. Examples include cat cafe and database schemas with their respective justifications.
 
 
 # Getting started?
