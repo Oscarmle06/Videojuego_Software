@@ -3,13 +3,13 @@
 </p>
 
 # REPOSITORY ORGANIZATION
-This repository is organizaed into several main directories to facilitate navegation of the project's documentation, source code, assets and other supporting materals.
+This repository is organized into several main directories to facilitate navegation of the project's documentation, source code, assets and other supporting materals.
 
 ## Game
 Contains the game's implementation, including the source code, assets and sprites currently implemented and instructions for dowloading and running the project.
 
 ## Sprites 
-A centralized libraru containing all sprites created for the project. These include sprites that are currently implemented in the game and experimental/future assets not yet integrated. Shows the evolution of the game's visual design.
+A centralized library containing all sprites created for the project. These include sprites that are currently implemented in the game and experimental/future assets not yet integrated. Shows the evolution of the game's visual design.
 
 ## UserStories
 Contains the project's user stories and SCRUM-related documentation. These user stories serve as the foundation for the repository's issues, tasks, and objectives.
