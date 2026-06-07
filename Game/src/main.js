@@ -32,6 +32,7 @@ const titleImage   = new Image();  titleImage.src   = './assets/Title_Screen.png
 const gameOverImage = new Image(); gameOverImage.src = './assets/Lose_Screen.png';
 const winImage     = new Image();  winImage.src     = './assets/Win_Screen.png';
 const storyscreen = new Image(); storyscreen.src = './assets/storyscreen.png';
+const championshipWinImage = new Image(); championshipWinImage.src = './assets/ChampionshipWin.png';
 
 const racePracticeIntro = new Image(); racePracticeIntro.src = './assets/RacePracticeIntro.png';
 const raceIntroImage1 = new Image(); raceIntroImage1.src = './assets/Race1Intro.png';
@@ -172,7 +173,7 @@ function startCurrentRace() {
     canvas,
     ctx,
     input,
-    cardSystem,
+    cardSystem, 
     cardHUD,
     mapCanvas,
     selectedRaceCards,
@@ -248,6 +249,9 @@ function gameLoop(timestamp) {
         else if (currentLevel === 6) introImage = raceIntroImage5;
         else if (currentLevel === 7) introImage = racechampionshipIntro;
         ctx.drawImage (introImage,0,0,canvas.width,canvas.height);
+        ctx.fillText (
+            'CLICK TO CONTINUE', canvas.width/2, 550
+        );
       }
 
     else if (gameState === 'cardSelect') {
@@ -264,7 +268,7 @@ function gameLoop(timestamp) {
         ctx.fillText('CLICK ANYWHERE TO GO BACK TO TITLE SCREEN', canvas.width / 2, canvas.height - 28);
 
     } else if (gameState === 'championship') {
-        ctx.drawImage(winImage, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(championshipWinImage, 0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'rgba(0, 0, 0)';
         ctx.fillRect(canvas.width / 2 - 320, canvas.height - 60, 640, 45);
         ctx.fillStyle = 'white';
