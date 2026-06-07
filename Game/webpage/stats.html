@@ -6,10 +6,44 @@
   <title>Stats — Velocity Draft</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .arcade-table {
+      background: rgba(5, 5, 10, 0.85);
+      border: 2px solid var(--border);
+      font-family: 'inter', sans-serif;
+    }
+    .arcade-table th {
+      color: #00d4ff;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-bottom: 2px solid #00ffcc;
+    }
+    .arcade-table tr:hover {
+      background: rgba(0, 255, 204, 0.1) !important;
+      cursor: pointer;
+    }
+    .rank-top {
+      color: #ffe600;
+      font-weight: bold;
+    }
+    .rank-me {
+      background: rgba(0, 255, 204, 0.15);
+      border-left: 4px solid #00ffcc;
+    }
+    .badge-arcade {
+      font-size: 0.85rem;
+      padding: 5px 10px;
+      border-radius: 2px;
+    }
+    .admin-card {
+      background: rgba(20, 10, 10, 0.6);
+      border: 1px solid #ff5555;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container-fluid px-4">
       <a class="navbar-brand" href="index.html">VELOCITY DRAFT</a>
@@ -23,65 +57,83 @@
           <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="game.html">Play</a></li>
           <li class="nav-item"><a class="nav-link" href="tutorial.html">Tutorial</a></li>
+          <li class="nav-item"><a class="nav-link active" href="stats.html">Stats</a></li>
         </ul>
-        <div class="d-flex align-items-center gap-3">
-          <span class="text-dimmed" id="navUser" style="font-size:.8rem;"></span>
-          <button class="btn btn-outline-secondary btn-sm" onclick="logout()">Sign out</button>
-        </div>
+        <div id="navRight"></div>
       </div>
     </div>
   </nav>
 
   <main style="padding-top:56px;">
-
-    <div class="page-header text-center">
-      <h1 class="text-cyan mb-2">Stats</h1>
-      <p class="text-dimmed mb-0">Your Velocity Draft play history</p>
+    <div class="page-header text-center py-4">
+      <h1 class="text-cyan mb-2">STATS HUB</h1>
+      <p class="text-dimmed mb-0">Global Classification Table</p>
     </div>
 
-    <div class="container py-5" style="max-width:900px;">
+    <div class="container py-4" style="max-width:950px;">
 
-      <!-- STAT CARDS -->
-      <div class="row g-4 mb-4">
-        <div class="col-md-4">
-          <div class="stat-card text-center p-4">
-            <div class="stat-value" id="statSessions">0</div>
-            <div class="stat-label mt-1">Game sessions</div>
+      <div id="view-player">
+        <div class="row g-4 mb-4">
+          <div class="col-md-3">
+            <div class="stat-card text-center p-4">
+              <div class="stat-value" id="statSessions">0</div>
+              <div class="stat-label mt-1">Total Games</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card text-center p-4" style="border-color: #00ffcc;">
+              <div class="stat-value" id="statWins" style="color: #00ffcc;">0</div>
+              <div class="stat-label mt-1">Wins (1st)</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card purple text-center p-4">
+              <div class="stat-value" id="statBestLap">0.00s</div>
+              <div class="stat-label mt-1">Best Lap (Record)</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat-card red text-center p-4">
+              <div class="stat-value" id="statAvgTime" style="font-size:1.8rem;">0.00s</div>
+              <div class="stat-label mt-1">Average Time</div>
+            </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="stat-card purple text-center p-4">
-            <div class="stat-value" id="statTime">0s</div>
-            <div class="stat-label mt-1">Time played</div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="stat-card red text-center p-4">
-            <div class="stat-value" id="statLast" style="font-size:1.4rem;line-height:1.3;">—</div>
-            <div class="stat-label mt-1">Last session</div>
+
+        <div class="card arcade-table p-4 mb-4">
+          <h3 class="text-cyan mb-3 text-center" style="letter-spacing: 2px;">GLOBAL LEADERBOARD</h3>
+          <div class="table-responsive">
+            <table class="table table-dark table-striped align-middle mb-0 text-center">
+              <thead>
+                <tr>
+                  <th style="width: 10%;">RANK</th>
+                  <th style="width: 40%; text-align: left;">PLAYER</th>
+                  <th style="width: 15%;">GAMES</th>
+                  <th style="width: 15%;">WINS</th>
+                  <th style="width: 20%;">BEST LAP</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- INFO NOTE -->
-      <div class="card mb-4">
-        <div class="card-body p-4" style="font-size:.86rem;color:var(--muted);line-height:1.7;">
-          <b class="text-white">How stats are tracked</b><br>
-          Stats are saved in your browser via <code class="text-cyan">localStorage</code>.
-          Each time you visit the Play page and the game loads successfully, a session is recorded.
-          Play time accumulates while the game tab is open and active.
-          Detailed in-game stats (wins, positions, cards used) will be available
-          in a future integration with the game engine.
+      <div id="view-admin" class="d-none">
+        <div class="card p-4 admin-card">
+          <h3 class="text-danger mb-3 text-center" style="letter-spacing: 1px;">⚙️ CONTROL PANEL — ADMINISTRADOR</h3>
+          <p class="text-dimmed text-center mb-4">Gestión de la simulación del motor de videojuegos y telemetría global.</p>
+          
+          <div id="admin-content">
+             </div>
         </div>
       </div>
 
-      <!-- ACTIONS -->
-      <div class="d-flex gap-3 flex-wrap mb-5">
-        <a href="game.html" class="btn btn-primary">Play now</a>
-        <a href="tutorial.html" class="btn btn-outline-primary">View tutorial</a>
-        <button class="btn btn-outline-secondary" onclick="confirmReset()">Reset stats</button>
+      <div class="d-flex gap-3 flex-wrap mb-5 justify-content-center">
+        <a href="game.html" class="btn btn-primary px-4">Play now</a>
+        <a href="tutorial.html" class="btn btn-outline-primary px-4">View Tutorial</a>
       </div>
-
 
     </div>
   </main>
@@ -94,24 +146,17 @@
   <script src="js/auth.js"></script>
   <script src="js/stats.js"></script>
   <script>
-    requireAuth();
-    document.getElementById('navUser').textContent = getUsername();
-
-    function renderStats() {
-      const s = getStats();
-      document.getElementById('statSessions').textContent = s.sessions || 0;
-      document.getElementById('statTime').textContent     = fmtTime(s.playSeconds);
-      document.getElementById('statLast').textContent     = fmtDate(s.lastPlayed);
-    }
-
-    function confirmReset() {
-      if (confirm('Are you sure you want to reset all your stats? This cannot be undone.')) {
-        resetStats();
-        renderStats();
+  document.addEventListener('DOMContentLoaded', async () => {      
+      requireAuth();
+      setupNav(); 
+      
+      try {
+          const userRole = getUserRole(); 
+          await initViews(userRole);
+      } catch (error) {
+          console.error("❌ Error crítico:", error);
       }
-    }
-
-    renderStats();
-  </script>
+  });
+</script>
 </body>
 </html>

@@ -151,7 +151,7 @@ export class Race {
 
         // Sprites
         this.kartSprite = new Image();
-        this.kartSprite.src = './assets/playercar2.png';
+        this.kartSprite.src = './assets/redkart.png';
         this.explosionSprite = new Image();
         this.explosionSprite.src = './assets/Explosion.png';
         this.HPSprite = new Image();
@@ -166,6 +166,12 @@ export class Race {
         this.countdownSprite.src = './assets/321GOMK1.png';
         this.positionSprite = new Image();
         this.positionSprite.src = './assets/Positions.png';
+        const cpuColors = ['bluekart.png', 'greenkart.png', 'greykart.png', 'yellowkart.png'];
+        this.cpuSprites = cpuColors.map(colorFile => {
+            const img = new Image();
+            img.src = `./assets/${colorFile}`;
+            return img;
+        });
 
         this.COUNTDOWN_PHASES = [
             { start: 0.0, sx: 535, sy:   3, sw: 256, sh: 256 },
@@ -351,7 +357,12 @@ export class Race {
 
             const kartSprites = [];
             for (let i = 0; i < this.cpus.length; i++) {
-                kartSprites.push({ x: this.cpus[i].x, y: this.cpus[i].y, image: this.kartSprite });
+                const spriteData = this.cpuSprites[i % this.cpuSprites.length];
+                kartSprites.push({ 
+                    x: this.cpus[i].x, 
+                    y: this.cpus[i].y, 
+                    image: spriteData 
+                });
             }
             kartSprites.push({ x: this.playerKart.x, y: this.playerKart.y, image: this.kartSprite, isPlayer: true });
 

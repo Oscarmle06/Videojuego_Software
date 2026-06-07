@@ -39,7 +39,7 @@ export class SpeedDebuff extends StatusEffect {  // Reduces the kart's max speed
     }
 
     onExpire(kart) { // When the effect expires, it restores the kart's max speed to its original value.
-        karto.maxSpeed = this.originalMax;
+        kart.maxSpeed = this.originalMax;
     }
 }
 

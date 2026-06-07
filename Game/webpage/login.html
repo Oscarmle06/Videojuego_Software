@@ -46,13 +46,14 @@
   <script>
     if (isLoggedIn()) window.location.href = 'index.html';
 
-    function handleLogin(e) {
+    async function handleLogin(e) {
       e.preventDefault();
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value;
       const errorEl  = document.getElementById('loginError');
 
-      if (login(username, password)) {
+      // AGREGAMOS EL 'await' AQUÍ
+      if (await login(username, password)) { 
         window.location.href = 'index.html';
       } else {
         errorEl.classList.remove('d-none');
