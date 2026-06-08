@@ -31,6 +31,16 @@ const activeCards = new ActiveCards(playerKart, [], vfx)
 const titleImage   = new Image();  titleImage.src   = './assets/Title_Screen.png';
 const gameOverImage = new Image(); gameOverImage.src = './assets/Lose_Screen.png';
 const winImage     = new Image();  winImage.src     = './assets/Win_Screen.png';
+const storyscreen = new Image(); storyscreen.src = './assets/storyscreen.png';
+const championshipWinImage = new Image(); championshipWinImage.src = './assets/ChampionshipWin.png';
+
+const racePracticeIntro = new Image(); racePracticeIntro.src = './assets/RacePracticeIntro.png';
+const raceIntroImage1 = new Image(); raceIntroImage1.src = './assets/Race1Intro.png';
+const raceIntroImage2 = new Image(); raceIntroImage2.src = './assets/Race2Intro.png';
+const raceIntroImage3 = new Image(); raceIntroImage3.src = './assets/Race3Intro.png';
+const raceIntroImage4 = new Image(); raceIntroImage4.src = './assets/Race4Intro.png';
+const raceIntroImage5 = new Image(); raceIntroImage5.src = './assets/Race5Intro.png';
+const racechampionshipIntro = new Image();racechampionshipIntro.src = './assets/RaceChampionshipIntro.png';
 
 //  Game state 
 let gameState    = 'title'; // title → cardSelect → racing → gameOver → championship
@@ -38,6 +48,40 @@ let currentLevel = 1;
 let lastTime     = 0;
 let currentRace  = null;
 let selectedRaceCards = [];
+
+//Story screen
+let storyPage = 0;
+const storyText = [ 
+    [
+    "You are a rookie racer with talent",
+    "BUT NO REPUTATION",
+    " ",
+    "On the eve of the racing season", 
+    "your team manager and your entire pit crew quit",
+    "leaving you with a car in need of upgrades"],
+     
+    [
+    "With no support",
+    "everyone expects you to fail",
+    "",
+    "Instead, you decide",
+    "TO PROVE THEM WRONG"
+    ],
+    [
+    "To become champion",
+    "you must win 7 races",
+    "",
+    "Earn upgrades and power-ups",
+    "along the way"
+    ],
+
+    [
+    "PLAY YOUR CARDS RIGHT",
+    "",
+    "Good luck, driver!"
+    ]
+    
+];
 
 //  Music
 const music = new Audio()
@@ -83,15 +127,29 @@ function handleClick(e) {
         if (mouseX > 410 && mouseX < 630 && mouseY > 455 && mouseY < 500) {
             playSFX('select');
             if (currentLevel === 1) {
-                gameState = 'racing';
-                setMusic('racing');
-                startCurrentRace();
+                gameState = 'storyScreen';
+                
             } else {
                 gameState = 'cardSelect';
                 setMusic('cardSelect');
             }
         }
-    } else if (gameState === 'gameOver') {
+    } 
+    else if (gameState === 'storyScreen'){
+        playSFX('select');
+        storyPage++;
+        if (storyPage >= storyText.length){
+            storyPage = 0;
+            gameState = 'raceIntro';
+        }
+    }
+    else if (gameState === 'raceIntro'){
+        playSFX('select');
+        gameState = 'racing';
+        setMusic('racing');
+        startCurrentRace ();
+    }
+    else if (gameState === 'gameOver') {
         playSFX('select');
         currentLevel = 1;
         let cardSystem = new CardSystem();
@@ -115,7 +173,7 @@ function startCurrentRace() {
     canvas,
     ctx,
     input,
-    cardSystem,
+    cardSystem, 
     cardHUD,
     mapCanvas,
     selectedRaceCards,
@@ -150,9 +208,7 @@ function startCurrentRace() {
       } else {
           selectedRaceCards = [card.name];
       }
-      gameState = 'racing';
-      setMusic('racing');
-      startCurrentRace();
+      gameState = 'raceIntro';
   });
 
 //  Game loop 
@@ -167,6 +223,36 @@ function gameLoop(timestamp) {
     } 
     else if (gameState === 'racing') {
       return}
+    
+    else if (gameState === 'storyScreen') {
+        ctx.drawImage (storyscreen, 0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'white';
+        ctx.font = '28px "Russo One"';
+        ctx.textAlign = 'center';
+        const lines = storyText [storyPage];
+        for (let i = 0; i<lines.length; i++)
+        {
+            ctx.fillText (lines[i], canvas.width/2, 220+i*40);
+        }
+         ctx.fillText (
+            'CLICK TO CONTINUE', canvas.width/2, 550
+        );
+    }
+
+    else if (gameState === 'raceIntro') {
+        let introImage;
+        if (currentLevel === 1) introImage = racePracticeIntro;
+        else if (currentLevel === 2) introImage = raceIntroImage1;
+        else if (currentLevel === 3) introImage = raceIntroImage2;
+        else if (currentLevel === 4) introImage = raceIntroImage3;
+        else if (currentLevel === 5) introImage = raceIntroImage4;
+        else if (currentLevel === 6) introImage = raceIntroImage5;
+        else if (currentLevel === 7) introImage = racechampionshipIntro;
+        ctx.drawImage (introImage,0,0,canvas.width,canvas.height);
+        ctx.fillText (
+            'CLICK TO CONTINUE', canvas.width/2, 550
+        );
+      }
 
     else if (gameState === 'cardSelect') {
     if (!cardSelectScreen.active) cardSelectScreen._deal();
@@ -182,7 +268,7 @@ function gameLoop(timestamp) {
         ctx.fillText('CLICK ANYWHERE TO GO BACK TO TITLE SCREEN', canvas.width / 2, canvas.height - 28);
 
     } else if (gameState === 'championship') {
-        ctx.drawImage(winImage, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(championshipWinImage, 0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'rgba(0, 0, 0)';
         ctx.fillRect(canvas.width / 2 - 320, canvas.height - 60, 640, 45);
         ctx.fillStyle = 'white';
