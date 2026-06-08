@@ -60,6 +60,7 @@
       border-bottom: 2px solid var(--primary);
     }
   </style>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
 
@@ -77,10 +78,9 @@
           <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
           <li class="nav-item"><a class="nav-link active" href="game.html">Play</a></li>
           <li class="nav-item"><a class="nav-link" href="tutorial.html">Tutorial</a></li>
+          <li class="nav.item"><a class="nav-link" href="stats.html">Stats</a></li>
         </ul>
-        <div class="d-flex align-items-center gap-3">
-          <span class="text-dimmed" id="navUser" style="font-size:.8rem;"></span>
-          <button class="btn btn-outline-secondary btn-sm" onclick="logout()">Sign out</button>
+        <div id = "navRight"></div>
         </div>
       </div>
     </div>
@@ -359,7 +359,7 @@
   <script src="js/stats.js"></script>
   <script>
     requireAuth();
-    document.getElementById('navUser').textContent = getUsername();
+    setupNav();
 
     const frame     = document.getElementById('gameFrame');
     const fallback  = document.getElementById('gameFallback');

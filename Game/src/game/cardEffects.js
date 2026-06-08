@@ -23,9 +23,10 @@ export class StatusEffect { // Base class for all status effects
 }
 
 export class SpeedDebuff extends StatusEffect {  // Reduces the kart's max speed for a certain duration. 
-    constructor(duration = 4, speedMultiplier = 0.4) {
+    constructor(effects = {}) {
+        const duration = effects.SpeedDebuff_Duration || 4;
         super(duration);
-        this.speedMultiplier = speedMultiplier;
+        this.speedMultiplier = effects.SpeedDebuff_Multiplier || 0.4;
         this.originalMax = 0;
     }
 
@@ -43,9 +44,10 @@ export class SpeedDebuff extends StatusEffect {  // Reduces the kart's max speed
 }
 
 export class SpeedDrain extends StatusEffect { // Reduces the kart's current speed by a fraction for a certain duration. 
-    constructor(duration = 3, drainFraction = 0.15) {
+    constructor(effects = {}) {
+        const duration = effects.SpeedDrain_Duration || 3;
         super(duration);
-        this.drainFraction = drainFraction;
+        this.drainFraction = effects.SpeedDrain_Fraction || 0.15;
         this.stolenSpeed = 0;
     }
     onApply(kart) { // When applied, it calculates the amount of speed to drain based on the kart's current speed and the drain fraction, then reduces the kart's speed by that amount.
@@ -53,7 +55,6 @@ export class SpeedDrain extends StatusEffect { // Reduces the kart's current spe
         kart.speed -= this.stolenSpeed;
         if (kart.speed < 0) kart.speed = 0;
     }
-
 }
 
 export class SpeedBoost extends StatusEffect { // Increases the kart's current speed by a fraction for a certain duration, up to a maximum of 130% of the kart's max speed.
@@ -62,8 +63,7 @@ export class SpeedBoost extends StatusEffect { // Increases the kart's current s
         this.amount = amount;
     }
     onApply(kart) { // When applied, it increases the kart's speed by a fraction of its current speed, but does not allow the speed to exceed 130% of the kart's max speed.
-        kart.speed += Math.min(kart.speed * this.amount, kart.maxSpeed *1.3);
-
+        kart.speed += Math.min(kart.speed * this.amount, kart.maxSpeed * 1.3);
     }
 }
 
@@ -78,7 +78,7 @@ export class Knockback extends StatusEffect { // Applies an instantaneous force 
         const vx = kart.dirX * kart.speed + this.forceX;
         const vy = kart.dirY * kart.speed + this.forceY;
         const newSpeed = Math.sqrt(vx * vx + vy * vy);
-        if (newSpeed > 0.01 ) { // 
+        if (newSpeed > 0.01) { // 
             kart.speed = Math.min(newSpeed, kart.maxSpeed * 1.5);
             kart.dirX = vx / newSpeed;
             kart.dirY = vy / newSpeed;
@@ -91,7 +91,9 @@ export class Knockback extends StatusEffect { // Applies an instantaneous force 
 }
 
 export class CardDisable extends StatusEffect { // Prevents the kart from using its card for a certain duration.
-    constructor(duration = 30) {
+    constructor(effects = {}) {
+        // Mantenemos tu mapeo de DB, pero si no viene nada, tomamos los 30 de balance que querían tus compañeros
+        const duration = effects.CardDisable_Duration || 30;
         super(duration);
     }
     onApply(kart) {
@@ -103,9 +105,9 @@ export class CardDisable extends StatusEffect { // Prevents the kart from using 
 }
 
 export class InstantHeal extends StatusEffect { // Heals the kart instantly by a certain fraction of its max health.
-    constructor(fraction = 0.30) {
+    constructor(effects = {}) {
         super(0);
-        this.fraction = fraction; 
+        this.fraction = effects.InstantHeal_Fraction || 0.30; 
     }
     onApply(kart) {
         kart.hp = Math.min(kart.maxHP, kart.hp + kart.maxHP * this.fraction);
@@ -114,7 +116,8 @@ export class InstantHeal extends StatusEffect { // Heals the kart instantly by a
 }
 
 export class Shield extends StatusEffect { // Provides a temporary shield that absorbs one instance of damage or knockback.
-    constructor(duration = 20, vfxRef = null) {
+    constructor(effects = {}, vfxRef = null) {
+        const duration = effects.Shield_Duration || 20;
         super(duration);
         this.vfxRef = vfxRef;
     }
@@ -132,4 +135,4 @@ export class Shield extends StatusEffect { // Provides a temporary shield that a
         this.expired = true;
         if (this.vfxRef) this.vfxRef.active = false;  // ← turn off the visual effect immediately when the shield absorbs an attack
     }
-    }
+}

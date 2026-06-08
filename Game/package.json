@@ -1,11 +1,21 @@
 {
   "name": "rougelikeracing",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
-  },
+  "dev:frontend": "vite",
+  "dev:backend": "node src/database/app.js",
+  "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+},
   "devDependencies": {
+    "concurrently": "^10.0.3",
     "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.22.5"
   }
+  
 }

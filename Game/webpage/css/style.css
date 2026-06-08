@@ -269,3 +269,44 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .bg-surface   { background: var(--surface) !important; }
 .border-dim   { border-color: var(--border) !important; }
 .font-heading { font-family: 'Barlow Condensed', sans-serif; }
+
+/* ── LEADERBOARD ── */
+.arcade-table {
+  background: rgba(5, 5, 10, 0.85);
+  border: 2px solid var(--border);
+  font-family: 'inter', sans-serif;
+}
+
+.arcade-table th {
+    color: #00d4ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px solid #00ffcc;
+}
+    
+.arcade-table tr:hover {
+  background: rgba(0, 255, 204, 0.1) !important;
+  cursor: pointer;
+}
+
+.rank-top {
+  color: #ffe600;
+  font-weight: bold;
+}
+
+.rank-me {
+  background: rgba(0, 255, 204, 0.15) !important;
+  border-left: 4px solid #00ffcc;
+  box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.1);
+}
+    
+.badge-arcade {
+    font-size: 0.85rem;  
+    padding: 5px 10px;
+    border-radius: 2px;    
+}
+
+.admin-card {
+  background: rgba(20, 10, 10, 0.6);
+  border: 1px solid #ff5555;
+}
