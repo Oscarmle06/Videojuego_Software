@@ -1,7 +1,6 @@
--- ========================================================
--- FILE: velocity_draft_data.sql (ANTI-DUPLICATE VERSION)
--- DATABASE: velocity_draft_db
--- ========================================================
+-- velocity_draft_data.sql
+-- Data initialization script for Velocity Draft game database. This script creates the necessary tables and populates them using sample data for testing and development purposes. It also includes commands to reset the database state for consistent testing.
+-- Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
 
 USE velocity_draft_db;
 
@@ -30,42 +29,42 @@ ALTER TABLE CARD_Stats AUTO_INCREMENT = 1;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. USERS
-INSERT INTO USERS (user_id, email, username, password, age, gender) VALUES
-(1, 'emilio@velocity.com', 'Emilio_Lara', 'emilio123', 20, 'Male'),
-(2, 'oscar@velocity.com', 'Oscar_Lara', 'oscar123', 21, 'Male'),
-(3, 'aixa@velocity.com', 'Aixa_Mendoza', 'aixa123', 20, 'Female'),
-(4, 'checo@formula1.com', 'ChecoPerez', 'checo123', 36, 'Male'),
-(5, 'guest_driver@velocity.com', 'GuestPlayer', 'guest123', 25, 'Other'),
-(6, 'driver6@test.com', 'TurboRacer', 'pass123', 22, 'Male'),
-(7, 'driver7@test.com', 'ApexPredator', 'pass123', 19, 'Female'),
-(8, 'driver8@test.com', 'DriftKing', 'pass123', 24, 'Male'),
-(9, 'driver9@test.com', 'SpeedyGonzales', 'pass123', 23, 'Male'),
-(10, 'driver10@test.com', 'ShadowRider', 'pass123', 21, 'Female'),
-(11, 'driver11@test.com', 'NitroBlast', 'pass123', 26, 'Male'),
-(12, 'driver12@test.com', 'PixelBurner', 'pass123', 20, 'Other'),
-(13, 'driver13@test.com', 'ShiftQueen', 'pass123', 22, 'Female'),
-(14, 'driver14@test.com', 'AsphaltCowboy', 'pass123', 28, 'Male'),
-(15, 'driver15@test.com', 'CyberSpeed', 'pass123', 25, 'Male'),
-(16, 'driver16@test.com', 'VectorDrift', 'pass123', 18, 'Female'),
-(17, 'driver17@test.com', 'OverdriveX', 'pass123', 30, 'Male'),
-(18, 'driver18@test.com', 'GridRunner', 'pass123', 21, 'Male'),
-(19, 'driver19@test.com', 'MachOne', 'pass123', 27, 'Male'),
-(20, 'driver20@test.com', 'ViperBite', 'pass123', 23, 'Female'),
-(21, 'driver21@test.com', 'HyperDrive', 'pass123', 24, 'Other'),
-(22, 'driver22@test.com', 'ZenithRacer', 'pass123', 22, 'Male'),
-(23, 'driver23@test.com', 'QuantumShift', 'pass123', 26, 'Female'),
-(24, 'driver24@test.com', 'BlazeTrail', 'pass123', 19, 'Male'),
-(25, 'driver25@test.com', 'NeonLight', 'pass123', 20, 'Female'),
-(26, 'driver26@test.com', 'SonicBoom', 'pass123', 25, 'Male'),
-(27, 'driver27@test.com', 'PulseRider', 'pass123', 22, 'Male'),
-(28, 'driver28@test.com', 'InfinityLoop', 'pass123', 29, 'Other'),
-(29, 'driver29@test.com', 'ApexChaser', 'pass123', 21, 'Female'),
-(30, 'driver30@test.com', 'VelocityGhost', 'pass123', 24, 'Male'),
-(31, 'driver31@test.com', 'RedlineX', 'pass123', 23, 'Male'),
-(32, 'driver32@test.com', 'BurnoutPro', 'pass123', 27, 'Male'),
-(33, 'driver33@test.com', 'ChronoDriver', 'pass123', 26, 'Female'),
-(34, 'driver34@test.com', 'MatrixDrift', 'pass123', 20, 'Male'),
-(35, 'driver35@test.com', 'ZephyrRider', 'pass123', 22, 'Female')
+INSERT INTO USERS (user_id, email, username, password, age, gender, role) VALUES
+(1, 'emilio@velocity.com', 'Emilio_Lara', 'emilio123', 20, 'Male', 'admin'),
+(2, 'oscar@velocity.com', 'Oscar_Lara', 'oscar123', 21, 'Male', 'user'),
+(3, 'aixa@velocity.com', 'Aixa_Mendoza', 'aixa123', 20, 'Female', 'user'),
+(4, 'checo@formula1.com', 'ChecoPerez', 'checo123', 36, 'Male', 'user'),
+(5, 'guest_driver@velocity.com', 'GuestPlayer', 'guest123', 25, 'Other', 'user'),
+(6, 'driver6@test.com', 'TurboRacer', 'pass123', 22, 'Male', 'user'),
+(7, 'driver7@test.com', 'ApexPredator', 'pass123', 19, 'Female', 'user'),
+(8, 'driver8@test.com', 'DriftKing', 'pass123', 24, 'Male', 'user'),
+(9, 'driver9@test.com', 'SpeedyGonzales', 'pass123', 23, 'Male', 'user'),
+(10, 'driver10@test.com', 'ShadowRider', 'pass123', 21, 'Female', 'user'),
+(11, 'driver11@test.com', 'NitroBlast', 'pass123', 26, 'Male', 'user'),
+(12, 'driver12@test.com', 'PixelBurner', 'pass123', 20, 'Other', 'user'),
+(13, 'driver13@test.com', 'ShiftQueen', 'pass123', 22, 'Female', 'user'),
+(14, 'driver14@test.com', 'AsphaltCowboy', 'pass123', 28, 'Male', 'user'),
+(15, 'driver15@test.com', 'CyberSpeed', 'pass123', 25, 'Male', 'user'),
+(16, 'driver16@test.com', 'VectorDrift', 'pass123', 18, 'Female', 'user'),
+(17, 'driver17@test.com', 'OverdriveX', 'pass123', 30, 'Male', 'user'),
+(18, 'driver18@test.com', 'GridRunner', 'pass123', 21, 'Male', 'user'),
+(19, 'driver19@test.com', 'MachOne', 'pass123', 27, 'Male', 'user'),
+(20, 'driver20@test.com', 'ViperBite', 'pass123', 23, 'Female', 'user'),
+(21, 'driver21@test.com', 'HyperDrive', 'pass123', 24, 'Other', 'user'),
+(22, 'driver22@test.com', 'ZenithRacer', 'pass123', 22, 'Male', 'user'),
+(23, 'driver23@test.com', 'QuantumShift', 'pass123', 26, 'Female', 'user'),
+(24, 'driver24@test.com', 'BlazeTrail', 'pass123', 19, 'Male', 'user'),
+(25, 'driver25@test.com', 'NeonLight', 'pass123', 20, 'Female', 'user'),
+(26, 'driver26@test.com', 'SonicBoom', 'pass123', 25, 'Male', 'user'),
+(27, 'driver27@test.com', 'PulseRider', 'pass123', 22, 'Male', 'user'),
+(28, 'driver28@test.com', 'InfinityLoop', 'pass123', 29, 'Other', 'user'),
+(29, 'driver29@test.com', 'ApexChaser', 'pass123', 21, 'Female', 'user'),
+(30, 'driver30@test.com', 'VelocityGhost', 'pass123', 24, 'Male', 'user'),
+(31, 'driver31@test.com', 'RedlineX', 'pass123', 23, 'Male', 'user'),
+(32, 'driver32@test.com', 'BurnoutPro', 'pass123', 27, 'Male', 'user'),
+(33, 'driver33@test.com', 'ChronoDriver', 'pass123', 26, 'Female', 'user'),
+(34, 'driver34@test.com', 'MatrixDrift', 'pass123', 20, 'Male', 'user'),
+(35, 'driver35@test.com', 'ZephyrRider', 'pass123', 22, 'Female', 'user')
 ON DUPLICATE KEY UPDATE user_id=VALUES(user_id);
 
 -- 2. PLAYER
@@ -83,6 +82,8 @@ INSERT INTO PLAYER (player_id, user_id, game_name, car_level, average_race_time)
 (31, 31, 'Redline', 3, 44.700), (32, 32, 'Burnout', 2, 48.000), (33, 33, 'ChronoD', 4, 42.100),
 (34, 34, 'MatrixD', 2, 47.500), (35, 35, 'Zephyr', 3, 45.800)
 ON DUPLICATE KEY UPDATE player_id=VALUES(player_id);
+
+-- CARD and CARD_EFFECTS use real game data for future use in the game logic and balance testing.
 
 -- 3. CARD
 INSERT INTO CARD (card_id, name, category) VALUES

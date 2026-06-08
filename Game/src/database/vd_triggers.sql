@@ -1,3 +1,7 @@
+-- vd_triggers.sql
+-- Triggers for Velocity Draft game database. This script defines various triggers to automate certain actions such as creating default decks for new players, validating user data, tracking card usage, and updating player statistics. These triggers help maintain data integrity and enforce business rules within the database, ensuring a consistent and reliable gaming experience.
+-- Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
+
 DELIMITER $$
 
 -- 1. Crear automáticamente un Deck por defecto al registrar un nuevo PLAYER

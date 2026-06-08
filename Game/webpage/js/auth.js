@@ -1,22 +1,20 @@
-// auth.js — Sistema de Sesiones Real (Conectado a LocalStorage)
+// auth.js — Real time session management and role-based access control for Velocity Draft
+// This file contains functions to manage user authentication, session storage, and role-based access control for the Velocity Draft game. It includes logic to check if a user is logged in, retrieve their username and role from localStorage, and handle logout functionality. The setupNav function dynamically updates the navigation bar based on the user's role, displaying an admin badge for admins and a player badge for regular users.
+// Oscar Lara, Emilio Lara, Aixa Mendoza, Junio 2026
 
 const AUTH_KEY = 'vd_session';
 
-// 1. VALIDACIÓN DE SESIÓN REAL
 function isLoggedIn() {
-  // Verificamos si existe la llave en localStorage
   const session = localStorage.getItem(AUTH_KEY);
   return session !== null;
 }
 
 function requireAuth() {
-  // Si NO está logueado, lo mandamos directo a login.html
   if (!isLoggedIn()) {
     window.location.href = 'login.html';
   }
 }
 
-// 2. EXTRACCIÓN DINÁMICA DE DATOS
 function getUsername() {
   const sessionData = localStorage.getItem(AUTH_KEY);
   if (sessionData) {
@@ -30,14 +28,22 @@ function getUserRole() {
   const sessionData = localStorage.getItem(AUTH_KEY);
   if (sessionData) {
     const session = JSON.parse(sessionData);
-    return session.role || 'player'; // Retorna 'player' o 'admin' según la DB
+    return session.role || 'player'; 
   }
   return 'player'; 
 }
 
-// 3. FUNCIONES COMPLEMENTARIAS
+function getPlayerId() {
+  const sessionData = localStorage.getItem(AUTH_KEY);
+  if (sessionData) {
+    const session = JSON.parse(sessionData);
+    return session.player_id || null; 
+  }
+  return null; 
+}
+
 function logout() {
-  localStorage.removeItem(AUTH_KEY); // Limpia la sesión
+  localStorage.removeItem(AUTH_KEY); 
   window.location.href = 'login.html';
 }
 
@@ -48,7 +54,6 @@ function setupNav() {
   const username = getUsername();
   const role = getUserRole();
 
-  // 💡 Extra: Le agregamos un pequeño Badge visual para distinguir al Admin en el Navbar
   const roleBadge = role === 'admin' 
     ? `<span class="badge bg-danger text-uppercase" style="font-size:0.7rem;">Admin</span>` 
     : `<span class="badge bg-secondary text-uppercase" style="font-size:0.7rem;">Player</span>`;
@@ -75,10 +80,11 @@ async function login(username, password) {
     const result = await response.json();
 
     if (result.success) {
+      // AQUÍ ESTABA EL ERROR: Asegúrate de guardar el player_id que viene del backend
       localStorage.setItem(AUTH_KEY, JSON.stringify({
         username: result.username,
         role: result.role,
-        player_id: result.player_id
+        player_id: result.player_id // <--- ESTO ES LO QUE ESTABA FALTANDO GUARDAR
       }));
       return true;
     } else {

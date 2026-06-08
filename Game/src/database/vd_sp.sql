@@ -1,3 +1,7 @@
+-- vd_sp.sql
+-- Stored procedures for Velocity Draft game database. This script defines various stored procedures to handle common operations such as player registration, car upgrades, deck management, game session creation, and result recording. These procedures encapsulate the business logic for interacting with the database, ensuring data integrity and simplifying application development.
+-- Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
+
 DELIMITER $$
 
 -- Registrar un nuevo jugador vinculándolo a su usuario

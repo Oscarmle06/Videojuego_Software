@@ -1,7 +1,6 @@
-// race.js
-// Maneja la lógica principal de la carrera: inicialización, loop de juego y renderizado.
-// Sincronizado dinámicamente con la API de MariaDB para el balanceo de cartas.
-// Oscar Lara, Emilio Lara, Aixa Mendoza, May 2026 (Actualizado Junio 2026)
+// race.js 
+// Main game logic for Velocity Draft, including track generation, kart management, race state machine, and rendering. This file orchestrates the entire racing experience, from the initial countdown to the final results screen.
+// Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
 
 import { Track } from './track.js';
 import { CPUKart } from './CPUKart.js';
@@ -30,7 +29,6 @@ function playSFX(name, volume = 1.0) {
     sfx.play().catch(() => {});
 }
 
-// Pool de cartas para los CPUs (Se poblará dinámicamente desde MariaDB, excluyendo Repair Bot)
 let CPU_CARD_POOL = [
     { name: 'Aerodynamic Spoiler', type: 'passive' },
     { name: 'Heavy Chassis',       type: 'passive' },
@@ -43,10 +41,8 @@ let CPU_CARD_POOL = [
     { name: 'Temporary Armor',     type: 'active'  },
 ];
 
-// Almacén global en memoria del mazo balanceado con los efectos de la base de datos
 let BALANCED_DECK = {};
 
-// Conexión asíncrona con el backend de Express para jalar la configuración viva de la DB
 async function sincronizarBalanceDesdeMariaDB() {
     try {
         const response = await fetch('http://localhost:3000/api/cards');
@@ -66,7 +62,6 @@ async function sincronizarBalanceDesdeMariaDB() {
                         effects: {}
                     };
                     
-                    // Las IAs no reciben la carta curativa 'Repair Bot'
                     if (row.card_name !== 'Repair Bot') {
                         nuevoPool.push({ 
                             name: row.card_name, 
@@ -74,16 +69,14 @@ async function sincronizarBalanceDesdeMariaDB() {
                         });
                     }
                 }
-                // Mapeamos los valores SQL a flotantes numéricos para el motor de físicas
                 BALANCED_DECK[row.card_name].effects[row.effect_type] = parseFloat(row.value);
             });
 
-            // Reemplazamos los fallbacks estáticos por el balance real de la DB
             CPU_CARD_POOL = nuevoPool;
-            console.log("🚀 ¡Velocity Draft sincronizado con MariaDB exitosamente!", BALANCED_DECK);
+            console.log("Velocity Draft synced!", BALANCED_DECK);
         }
     } catch (error) {
-        console.error("⚠️ Error al conectar con el backend de MariaDB. Usando valores locales por defecto.", error);
+        console.error("Error while syncing with MariaDB:", error);
     }
 }
 
@@ -192,8 +185,6 @@ export class Race {
             { col: 4, row: 0 },
         ];
     }
-
-    // ── Inicialización interna de la carrera ──────────────────────────────────────
 
     _init() {
         const cfg = this.config;
@@ -322,13 +313,8 @@ export class Race {
             });
     }
 
-    // ── Loop de carrera asíncrono para esperar la API ──────────────────────────────
-
     async startRace(onFinish) {
-        // 1. Forzamos la descarga del balance dinámico antes de instanciar componentes
         await sincronizarBalanceDesdeMariaDB();
-
-        // 2. Ejecutamos el armado de la escena con los mazos inyectados
         this._init();
 
         let raceState        = 'intro';

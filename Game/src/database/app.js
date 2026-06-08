@@ -1,3 +1,7 @@
+// app.js — Express Backend for Velocity Draft
+// This file sets up an Express server that connects to a MariaDB database, providing API endpoints for the game to fetch card data and record race results. It also includes endpoints for player statistics and admin analytics.
+// Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
+
 import express from 'express';
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
@@ -5,21 +9,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cors from 'cors';
 
-// 1. Configuraciones de rutas para ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Le decimos a dotenv que busque el .env exactamente en la misma carpeta que este app.js
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-// 2. Inicializar Express (¡Esto tiene que ir ANTES de usar app.use!)
 const app = express();
 const port = process.env.PORT || 3000;
 
-// 3. Middlewares globales
-app.use(cors()); // Ahora sí funciona sin romper el servidor
+app.use(cors()); 
 
-// Agrega esto debajo de app.use(cors());
 app.use((req, res, next) => {
   res.setHeader("Content-Security-Policy", "default-src 'self' http://localhost:3000 http://localhost:5173; connect-src 'self' http://localhost:3000 http://localhost:5173;");
   next();
@@ -27,7 +26,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// 4. Pool de conexiones a MariaDB
+// Conection pool for MariaDB - allows us to reuse connections and handle multiple requests efficiently
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -38,7 +37,7 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Añade esto justo antes de tus endpoints /api en app.js
+// 1. ENDPOINT: Health Check
 app.get('/', (req, res) => {
     res.status(200).json({
         status: "online",
@@ -47,7 +46,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// 5. ENDPOINT: Obtener cartas y efectos (Sincronizado con race.js)
+// 2. ENDPOINT: Get all cards with their effects
 app.get('/api/cards', async (req, res) => {
     try {
         // Aseguramos que los nombres de las columnas coincidan con lo que race.js espera mapear
@@ -75,7 +74,7 @@ app.get('/api/cards', async (req, res) => {
     }
 });
 
-// 6. ENDPOINT: Guardar los resultados al cruzar la meta
+// 3. ENDPOINT: Record race results and calculate average play time
 app.post('/api/race/result', async (req, res) => {
     const { player_id, game_id, position, total_time, fastest_lap } = req.body;
     
@@ -91,7 +90,7 @@ app.post('/api/race/result', async (req, res) => {
     }
 });
 
-// 7. ENDPOINT: Iniciar nueva carrera (Usa variable OUT para regresar el ID generado)
+// 4. ENDPOINT: Start a new race session
 app.post('/api/race/start', async (req, res) => {
     const { rival_type, rival_qty } = req.body;
     
@@ -108,9 +107,9 @@ app.post('/api/race/start', async (req, res) => {
     }
 });
 
+// 5. ENDPOINT: Get player statistics
 app.get('/api/stats', async (req, res) => {
-    // ID del usuario activo (Emilio)
-    const player_id = 1; 
+    const player_id = req.query.player_id;
 
     try {
         const [rows] = await pool.query(`
@@ -143,71 +142,42 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
-// Endpoint de autenticación en tu backend Express
+// 6. ENDPOINT: Login process - validates user credentials and returns session info including role (player or admin)
 app.post('/api/login', async (req, res) => {
-    // 1. Recibimos también el 'role' que seleccionó el usuario en login.html
-    const { username, password, role } = req.body;
-
+    const { username, password } = req.body;
+    
     try {
-        // 2. Lista blanca de administradores (Sin modificar tu base de datos)
-        const ADMINS_PERMITIDOS = ['Emilio_Lara', 'Oscar_Lara', 'Aixa_Mendoza'];
-
-        // 3. Consulta real usando la estructura exacta de tu script SQL (USERS y PLAYER)
+        // AQUÍ es donde aplicas el JOIN por user_id
         const query = `
-            SELECT u.user_id, u.username, u.password, p.player_id 
+            SELECT u.username, u.role, p.player_id 
             FROM USERS u
             LEFT JOIN PLAYER p ON u.user_id = p.user_id 
-            WHERE u.username = ?
+            WHERE u.username = ? AND u.password = ?
         `;
-
-        const [users] = await pool.query(query, [username]);
-
-        // Si no se encuentra el registro en tu tabla USERS
-        if (users.length === 0) {
-            return res.status(200).json({ success: false, message: 'User not found.' });
+        const [rows] = await pool.query(query, [username, password]);
+        
+        if (rows.length > 0) {
+            const user = rows[0];
+            res.status(200).json({ 
+                success: true, 
+                username: user.username, 
+                role: user.role, 
+                player_id: user.player_id 
+            });
+        } else {
+            res.status(401).json({ success: false, message: "Credenciales incorrectas" });
         }
-
-        const user = users[0];
-
-        // 4. Validación de contraseña (usando tu columna real 'password')
-        if (password !== user.password) {
-            return res.status(200).json({ success: false, message: 'Invalid password.' });
-        }
-
-        // 5. Validación lógica del rol seleccionado en el formulario
-        let rolAsignado = 'player'; // Por defecto entra como jugador
-
-        if (role === 'admin') {
-            // Si seleccionó Admin en la interfaz, verificamos que esté en el arreglo
-            if (ADMINS_PERMITIDOS.includes(user.username)) {
-                rolAsignado = 'admin';
-            } else {
-                // Si la contraseña es correcta pero no es admin, bloqueamos el inicio de sesión
-                return res.status(200).json({ 
-                    success: false, 
-                    message: 'You do not have admin privileges. Please log in as a player.' 
-                });
-            }
-        }
-
-        // 6. Respuesta exitosa estructurada idéntica a lo que espera tu login.html
-        res.status(200).json({
-            success: true,
-            role: rolAsignado,
-            username: user.username,
-            player_id: user.player_id || null // Si es admin puro sin auto-registro en PLAYER, devuelve null
-        });
-
     } catch (error) {
-        console.error("Auth Error:", error);
-        res.status(500).json({ success: false, error: 'Error interno del servidor' });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
+// 7. ENDPOINT: Leaderboard (Top 10 players by wins and best lap time)
 app.get('/api/leaderboard', async (req, res) => {
     try {
         const query = `
             SELECT 
+                p.player_id,  -- ¡AQUÍ ESTÁ EL CAMBIO!
                 p.game_name as name, 
                 COUNT(pg.game_id) as games, 
                 SUM(CASE WHEN pg.position = 1 THEN 1 ELSE 0 END) as wins,
@@ -226,7 +196,65 @@ app.get('/api/leaderboard', async (req, res) => {
     }
 });
 
-// 8. Encendido del servidor
+// 8. ENDPOINT: Admin analytics (top cards, time trends, race distribution) 
+app.get('/api/admin/top-cards', async (req, res) => {
+    try {
+        const query = `
+            SELECT c.name, SUM(cs.usage_count) as total_uses
+            FROM CARD_Stats cs
+            JOIN CARD c ON cs.card_id = c.card_id
+            GROUP BY c.name
+            ORDER BY total_uses DESC
+            LIMIT 10;
+        `;
+        const [rows] = await pool.query(query);
+        res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 9. ENDPOINT: Time trends for the last week (average play time per day)
+app.get('/api/admin/time-trends', async (req, res) => {
+    try {
+        const query = `
+            SELECT DATE(g.login_date) as day, 
+                   AVG(pg.total_play_time) as avg_time
+            FROM PLAYER_GAME pg
+            JOIN GAMESESSION g ON pg.game_id = g.game_id
+            GROUP BY DATE(g.login_date)
+            ORDER BY day ASC
+            LIMIT 7;
+        `;
+        const [rows] = await pool.query(query);
+        res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 10. ENDPOINT: Race distribution (percentage of players in top 3, middle 3, and bottom 3 positions)
+app.get('/api/admin/race-distribution', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                CASE 
+                    WHEN position <= 3 THEN 'Podio (1-3)'
+                    WHEN position <= 6 THEN 'Media (4-6)'
+                    ELSE 'Baja (7+)'
+                END as category,
+                COUNT(*) as count
+            FROM PLAYER_GAME
+            GROUP BY category;
+        `;
+        const [rows] = await pool.query(query);
+        res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Server listening on specified port
 app.listen(port, () => {
-  console.log(`Servidor de Velocity Draft corriendo en http://localhost:${port}`);
+  console.log(`Backend server running at http://localhost:${port}`);
 });

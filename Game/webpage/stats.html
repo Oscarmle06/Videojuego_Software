@@ -7,40 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <style>
-    .arcade-table {
-      background: rgba(5, 5, 10, 0.85);
-      border: 2px solid var(--border);
-      font-family: 'inter', sans-serif;
-    }
-    .arcade-table th {
-      color: #00d4ff;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      border-bottom: 2px solid #00ffcc;
-    }
-    .arcade-table tr:hover {
-      background: rgba(0, 255, 204, 0.1) !important;
-      cursor: pointer;
-    }
-    .rank-top {
-      color: #ffe600;
-      font-weight: bold;
-    }
-    .rank-me {
-      background: rgba(0, 255, 204, 0.15);
-      border-left: 4px solid #00ffcc;
-    }
-    .badge-arcade {
-      font-size: 0.85rem;
-      padding: 5px 10px;
-      border-radius: 2px;
-    }
-    .admin-card {
-      background: rgba(20, 10, 10, 0.6);
-      border: 1px solid #ff5555;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -67,7 +34,7 @@
   <main style="padding-top:56px;">
     <div class="page-header text-center py-4">
       <h1 class="text-cyan mb-2">STATS HUB</h1>
-      <p class="text-dimmed mb-0">Global Classification Table</p>
+      <p class="text-dimmed mb-0">Track your performance and compete with others</p>
     </div>
 
     <div class="container py-4" style="max-width:950px;">
@@ -120,17 +87,25 @@
         </div>
       </div>
 
-      <div id="view-admin" class="d-none">
-        <div class="card p-4 admin-card">
-          <h3 class="text-danger mb-3 text-center" style="letter-spacing: 1px;">⚙️ CONTROL PANEL — ADMINISTRADOR</h3>
-          <p class="text-dimmed text-center mb-4">Gestión de la simulación del motor de videojuegos y telemetría global.</p>
-          
-          <div id="admin-content">
-             </div>
+      <div id="admin-analytics-section" class="d-none">
+    <div class="mx-auto" style="max-width: 800px;">
+        
+        <div class="card admin-card p-4 mb-4">
+            <canvas id="adminCardsChart"></canvas>
         </div>
-      </div>
 
-      <div class="d-flex gap-3 flex-wrap mb-5 justify-content-center">
+        <div class="card admin-card p-4 mb-4">
+            <canvas id="adminTimeTrendsChart"></canvas> 
+        </div>
+
+        <div class="card admin-card p-4 mb-4">
+            <canvas id="adminRaceDistributionChart"></canvas>
+        </div>
+
+    </div>
+</div>
+
+      <div class="d-flex gap-3 flex-wrap mb-5 justify-content-center" style="margin-top:30px;">
         <a href="game.html" class="btn btn-primary px-4">Play now</a>
         <a href="tutorial.html" class="btn btn-outline-primary px-4">View Tutorial</a>
       </div>
@@ -154,7 +129,7 @@
           const userRole = getUserRole(); 
           await initViews(userRole);
       } catch (error) {
-          console.error("❌ Error crítico:", error);
+          console.error("Error initializing views:", error);
       }
   });
 </script>

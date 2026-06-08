@@ -1,3 +1,7 @@
+-- vd_views.sql
+-- SQL views for Velocity Draft game database. This script defines various views to simplify data retrieval and reporting for player profiles, deck compositions, card effects, race leaderboards, session analytics, and more. These views are designed to provide easy access to commonly needed data for both the game logic and potential administrative dashboards.
+-- Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
+
 -- Perfil completo del jugador con su cuenta de usuario
 CREATE VIEW vw_player_profiles AS
 SELECT p.player_id, u.username, u.email, p.game_name, p.car_level, p.average_race_time

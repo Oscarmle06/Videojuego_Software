@@ -1,3 +1,7 @@
+-- velocity_draft_db.sql
+-- Database schema for Velocity Draft game. This script creates the necessary tables to store user information, player profiles, game sessions, rivals, decks, cards, and their effects. It also defines the relationships between tables using foreign keys and sets up constraints for data integrity. This schema is designed to support the core functionalities of the game, including player management, game tracking, and card usage statistics.
+-- Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
+
 CREATE DATABASE IF NOT EXISTS velocity_draft_db;
 USE velocity_draft_db;
 
@@ -8,7 +12,8 @@ CREATE TABLE IF NOT EXISTS USERS (
     username VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     age INT,
-    gender VARCHAR(50)
+    gender VARCHAR(50),
+    role varchar(20) DEFAULT 'player';
 );
 
 -- 2. Tabla: PLAYER
