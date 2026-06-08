@@ -33,6 +33,8 @@ const gameOverImage = new Image(); gameOverImage.src = './assets/Lose_Screen.png
 const winImage     = new Image();  winImage.src     = './assets/Win_Screen.png';
 const storyscreen = new Image(); storyscreen.src = './assets/storyscreen.png';
 const championshipWinImage = new Image(); championshipWinImage.src = './assets/ChampionshipWin.png';
+const creditsImage = new Image(); creditsImage.src = './assets/credits.png';
+const pauseImage = new Image(); pauseImage.src = './assets/PauseScreen.png';
 
 const racePracticeIntro = new Image(); racePracticeIntro.src = './assets/RacePracticeIntro.png';
 const raceIntroImage1 = new Image(); raceIntroImage1.src = './assets/Race1Intro.png';
@@ -43,11 +45,15 @@ const raceIntroImage5 = new Image(); raceIntroImage5.src = './assets/Race5Intro.
 const racechampionshipIntro = new Image();racechampionshipIntro.src = './assets/RaceChampionshipIntro.png';
 
 //  Game state 
-let gameState    = 'title'; // title → cardSelect → racing → gameOver → championship
+let gameState  = 'title'; // title → cardSelect → racing → gameOver → championship
+let previousState = 'title'
 let currentLevel = 1;
 let lastTime     = 0;
 let currentRace  = null;
 let selectedRaceCards = [];
+let musicVolume = 0.7;
+let sfxVolume = 0.7;
+let brightness = 1.0;
 
 //Story screen
 let storyPage = 0;
@@ -68,7 +74,7 @@ const storyText = [
     "TO PROVE THEM WRONG"
     ],
     [
-    "To become champion",
+    "To become the champion",
     "you must win 7 races",
     "",
     "Earn upgrades and power-ups",
@@ -84,9 +90,9 @@ const storyText = [
 ];
 
 //  Music
-const music = new Audio()
+    const music = new Audio()
     music.loop = true;
-    music.volume = 0.7;
+    music.volume = musicVolume;
 
 function setMusic(state) {
     const tracks = {
@@ -109,6 +115,7 @@ const SFX = {
 
 function playSFX(name) {
     const sfx = new Audio(SFX[name]);
+    sfx.volume = sfxVolume;
     sfx.play().catch(() => {});
 }
 
@@ -124,6 +131,7 @@ function handleClick(e) {
     const mouseY = e.clientY - rect.top;
 
     if (gameState === 'title') {
+        previousState = 'title'
         if (mouseX > 410 && mouseX < 630 && mouseY > 455 && mouseY < 500) {
             playSFX('select');
             if (currentLevel === 1) {
@@ -134,8 +142,13 @@ function handleClick(e) {
                 setMusic('cardSelect');
             }
         }
+        if (mouseX >= 400 && mouseX <= 625 && mouseY >= 505 && mouseY <= 540){
+            playSFX ('select');
+            gameState = 'pause';
+        }
     } 
     else if (gameState === 'storyScreen'){
+        previousState = 'storyScreen';
         playSFX('select');
         storyPage++;
         if (storyPage >= storyText.length){
@@ -144,23 +157,56 @@ function handleClick(e) {
         }
     }
     else if (gameState === 'raceIntro'){
+        previousState = 'raceIntro';
         playSFX('select');
         gameState = 'racing';
         setMusic('racing');
         startCurrentRace ();
     }
     else if (gameState === 'gameOver') {
+        previousState = 'gameOver';
         playSFX('select');
         currentLevel = 1;
         let cardSystem = new CardSystem();
         gameState = 'title';
         setMusic('title');
     } else if (gameState === 'championship') {
+        previousState = 'championship';
         playSFX('select');
         currentLevel = 1;
         let cardSystem = new CardSystem();
         gameState = 'title';
         setMusic('title');
+    }
+    else if (gameState === 'credits') {
+        previousState = 'credits';
+        if (mouseX > 778 && mouseX < 1001 && mouseY > 545  && mouseY <590) {
+        playSFX('select');
+        currentLevel = 1;
+        gameState = 'title';
+        setMusic ('title')
+    } }
+    else if (gameState === 'pause') {
+        if (mouseX >=310 && mouseX <= 560 && mouseY >= 400 && mouseY <= 420){
+            musicVolume = Math.max((mouseX-310)/250);
+            music.volume = musicVolume;
+        }
+        if (mouseX >=310 && mouseX <= 560 && mouseY >= 190 && mouseY <= 210){
+            sfxVolume = Math.max((mouseX-310)/250);
+        }
+        if (mouseX >=310 && mouseX <= 560 && mouseY >= 300 && mouseY <= 320){
+            brightness = Math.max((mouseX -310)/250);
+        }
+        if (mouseX > 567 && mouseX < 857 && mouseY > 156  && mouseY <336) {//here has to go the real save and exit (connected to the database)
+            currentLevel = 1;
+            gameState = 'title';
+            setMusic ('title');
+        }
+        else if (mouseX > 570 && mouseX < 860 && mouseY > 390  && mouseY <430) { //pause the race
+            playSFX('select');
+            gameState = previousState;
+         }
+
     }
 }
 
@@ -219,7 +265,6 @@ function gameLoop(timestamp) {
 
     if (gameState === 'title') {
         ctx.drawImage(titleImage, 0, 0, canvas.width, canvas.height);
-
     } 
     else if (gameState === 'racing') {
       return}
@@ -249,6 +294,10 @@ function gameLoop(timestamp) {
         else if (currentLevel === 6) introImage = raceIntroImage5;
         else if (currentLevel === 7) introImage = racechampionshipIntro;
         ctx.drawImage (introImage,0,0,canvas.width,canvas.height);
+
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 28px "Russo One"';
+        ctx.textAlign = 'center';
         ctx.fillText (
             'CLICK TO CONTINUE', canvas.width/2, 550
         );
@@ -276,7 +325,37 @@ function gameLoop(timestamp) {
         ctx.textAlign = 'center';
         ctx.fillText('CLICK ANYWHERE TO GO BACK TO TITLE SCREEN', canvas.width / 2, canvas.height - 28);
     }
+    else if (gameState === 'credits') {
+        ctx.drawImage (creditsImage,0,0,canvas.width,canvas.height);
+    }
+    else if (gameState === 'pause') {
+        ctx.drawImage (pauseImage,0,0,canvas.width, canvas.height);
 
+        //Music slider
+        ctx.fillStyle = '#ae6408';
+        ctx.fillRect(310, 400, musicVolume * 250, 20);
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(310, 400, 250, 20);
+
+        // sound slider
+        ctx.fillStyle = '#ae6408';
+        ctx.fillRect(310,190, sfxVolume * 250, 20);
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(310, 190, 250, 20);
+
+        // Brightness slider
+        ctx.fillStyle = '#ae6408';
+        ctx.fillRect(310, 300, brightness * 250, 20);
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(310, 300, 250, 20);
+    }
+    if (brightness < 1) {
+        ctx.fillStyle = `rgba(0,0,0, ${1 - brightness})`;
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
     requestAnimationFrame(gameLoop);
 }
 
