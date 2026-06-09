@@ -96,3 +96,26 @@ async function login(username, password) {
     return false;
   }
 }
+
+async function handleRegister(e) {
+    e.preventDefault();
+    const data = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        game_name: document.getElementById('game_name').value // El nombre que verán en el leaderboard
+    };
+
+    const response = await fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        alert("¡Bienvenido a Velocity Draft!");
+        window.location.href = "login.html";
+    } else {
+        alert("Error: " + result.error);
+    }
+}
