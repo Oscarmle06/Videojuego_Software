@@ -126,7 +126,7 @@ export class CPUCardSystem {
         }
 
         if (card.name === 'Sonic Wave') {
-            this.vfx.addShockwave(this.kart.x, this.kart.y);
+            this.vfx.addShockwave(this.kart.x, this.kart.y, 'sonic', this.kart);
             const targets = this._getInRadius(3.5);
             for (let i = 0; i < targets.length; i++) {
                 const t     = targets[i];
@@ -136,12 +136,12 @@ export class CPUCardSystem {
                 const perpY =  this.kart.dirX;
                 let side    = 1;
                 if ((dx * perpX + dy * perpY) < 0) side = -1;
-                t.applyEffect(new Knockback(perpX * side * 30, perpY * side * 30, 15));
+                t.applyEffect(new Knockback(perpX * side * 40, perpY * side * 40, 15));
             }
         }
 
         if (card.name === 'EMP') {
-            this.vfx.addShockwave(this.kart.x, this.kart.y, 'emp');
+            this.vfx.addShockwave(this.kart.x, this.kart.y, 'emp', this.kart);
             const targets = this._getInRadius(4);
             for (let i = 0; i < targets.length; i++) {
                 const t    = targets[i];
@@ -149,7 +149,7 @@ export class CPUCardSystem {
                 const dy   = t.y - this.kart.y;
                 let dist   = Math.sqrt(dx * dx + dy * dy);
                 if (dist === 0) dist = 1;
-                t.applyEffect(new Knockback((dx / dist) * 30, (dy / dist) * 30, 0));
+                t.applyEffect(new Knockback((dx / dist) * 40, (dy / dist) * 40, 0));
                 t.applyEffect(new CardDisable(2));
             }
         }
@@ -162,7 +162,7 @@ export class CPUCardSystem {
                 }
             }
             if (!yaEscudado) {
-                const shieldVFX = this.vfx.addShield(this.kart.x, this.kart.y);
+                const shieldVFX = this.vfx.addShield(this.kart.x, this.kart.y, this.kart);
                 this.kart.applyEffect(new Shield(20, shieldVFX));
             }
         }
