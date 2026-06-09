@@ -254,7 +254,7 @@ app.get('/api/admin/race-distribution', async (req, res) => {
     }
 });
 
-// 11. ENDPOINT: Registro de usuario y creación de perfil
+// 11. ENDPOINT: Register process - creates a new user and associated player profile in a transaction to ensure data integrity
 app.post('/api/register', async (req, res) => {
     const { email, username, password, game_name } = req.body;
     
@@ -283,6 +283,20 @@ app.post('/api/register', async (req, res) => {
         await pool.query('ROLLBACK');
         console.error("Error en registro:", error);
         res.status(500).json({ success: false, error: "Error al crear cuenta: " + error.message });
+    }
+});
+
+// 12. ENDPOINT: Save race statistics (used by the game to record player performance after each race)
+app.post('/api/save-race', async (req, res) => {
+    const { player_id, position, total_play_time, fastest_lap } = req.body;
+    try {
+        await pool.query(
+            'INSERT INTO PLAYER_GAME (player_id, position, total_play_time, fastest_lap) VALUES (?, ?, ?, ?)',
+            [player_id, position, total_play_time, fastest_lap]
+        );
+        res.json({ success: true, message: "Estadísticas guardadas con éxito" });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 

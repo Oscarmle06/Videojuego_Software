@@ -226,8 +226,10 @@ function startCurrentRace() {
     activeCards,
 );
 
-    currentRace.startRace((won) => {
+    currentRace.startRace((won, stats) => {
         if (!won) {
+            const userId = getPlayerId();
+            saveRaceResults(userId, stats.position, stats.totalTime, stats.fastestLap);
             gameState = 'gameOver';
             setMusic('lose');
         } else if (currentLevel >= 7) {
@@ -256,6 +258,27 @@ function startCurrentRace() {
       }
       gameState = 'raceIntro';
   });
+
+async function saveRaceResults(player_id, position, totalTime, fastestLap) {
+    const raceData = {
+        player_id: player_id,
+        position: position,
+        total_play_time: totalTime,
+        fastest_lap: fastestLap
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/api/save-race', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(raceData)
+        });
+        const result = await response.json();
+        console.log("Resultado guardado:", result);
+    } catch (error) {
+        console.error("Error al guardar resultados:", error);
+    }
+}
 
 //  Game loop 
 function gameLoop(timestamp) {
