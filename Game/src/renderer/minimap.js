@@ -79,7 +79,7 @@ export class Minimap {
     for (let i = 0; i < sprites.length; i++) {
       ctx.fillStyle = sprites[i].color ?? '#0000ff';
       ctx.beginPath();
-      ctx.arc(sprites[i].x * scale, sprites[i].y * scale, 6, 0, Math.PI * 2);
+      ctx.arc(sprites[i].x * scale, sprites[i].y * scale, 4, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -89,14 +89,14 @@ export class Minimap {
 
     ctx.fillStyle = '#FFD700';
     ctx.beginPath();
-    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.strokeStyle = '#FFD700';
     ctx.lineWidth   = 2;
     ctx.beginPath();
     ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + camera.dirX * 10, cy + camera.dirY * 10);
+    ctx.lineTo(cx + camera.dirX * 8, cy + camera.dirY * 8);
     ctx.stroke();
 
     this.drawCheckpoints(track, scale);
@@ -118,9 +118,9 @@ export class Minimap {
 
   renderRaceNumber(level) {
     this.ctx.fillStyle = '#ffffff';
-this.ctx.font      = 'bold 30px monospace';
+this.ctx.font      = 'bold 18px monospace';
 this.ctx.textAlign = 'center';
-this.ctx.fillText(`Race ${level}`, this.width-100, 30);
+this.ctx.fillText(`Race ${level}`, this.width-52, 22);
 this.ctx.textAlign = 'left';
 }
 }

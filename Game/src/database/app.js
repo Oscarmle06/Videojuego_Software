@@ -256,14 +256,13 @@ app.get('/api/admin/race-distribution', async (req, res) => {
 
 // 11. ENDPOINT: Register process - creates a new user and associated player profile in a transaction to ensure data integrity
 app.post('/api/register', async (req, res) => {
-    const { email, username, password, game_name } = req.body;
+    const { username, password, game_name } = req.body;
     
     try {
         // Iniciamos una transacción
         await pool.query('START TRANSACTION');
 
         // 1. Insertar usuario
-        // Asegúrate de que tu consulta incluya el email
         const [userResult] = await pool.query(
             'INSERT INTO USERS (email, username, password, role) VALUES (?, ?, ?, ?)',
             [email, username, password, 'player'] // <--- ¡Asegúrate de que 'email' esté aquí!
@@ -286,7 +285,40 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 12. ENDPOINT: Save race statistics (used by the game to record player performance after each race)
+// 12. ENDPOINT: Get a player's saved race progress (current level)
+app.get('/api/player/progress', async (req, res) => {
+    const player_id = req.query.player_id;
+    try {
+        const [rows] = await pool.query(
+            'SELECT current_level FROM PLAYER WHERE player_id = ?',
+            [player_id]
+        );
+        res.status(200).json({
+            success: true,
+            level: rows.length > 0 ? rows[0].current_level : 1
+        });
+    } catch (error) {
+        console.error("Error in MariaDB (GET /api/player/progress):", error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 13. ENDPOINT: Save a player's race progress (current level)
+app.post('/api/player/progress', async (req, res) => {
+    const { player_id, level } = req.body;
+    try {
+        await pool.query(
+            'UPDATE PLAYER SET current_level = ? WHERE player_id = ?',
+            [level, player_id]
+        );
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("Error in MariaDB (POST /api/player/progress):", error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 14. ENDPOINT: Save race statistics (used by the game to record player performance after each race)
 app.post('/api/save-race', async (req, res) => {
     const { player_id, position, total_play_time, fastest_lap } = req.body;
     try {

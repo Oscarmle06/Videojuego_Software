@@ -78,8 +78,8 @@ export class Knockback extends StatusEffect { // Applies an instantaneous force 
         const vx = kart.dirX * kart.speed + this.forceX;
         const vy = kart.dirY * kart.speed + this.forceY;
         const newSpeed = Math.sqrt(vx * vx + vy * vy);
-        if (newSpeed > 0.01) { // 
-            kart.speed = Math.min(newSpeed, kart.maxSpeed * 1.5);
+        if (newSpeed > 0.01) { //
+            kart.speed = Math.min(newSpeed, kart.maxSpeed * 2.5);
             kart.dirX = vx / newSpeed;
             kart.dirY = vy / newSpeed;
         }

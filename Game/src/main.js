@@ -10,11 +10,22 @@ import { Race, LEVEL_CONFIGS } from './game/race.js';
 import { ActiveCards } from './game/activeCards.js';
 import { VFX } from './game/VFX.js'
 
-//  Canvas setup 
+//  Canvas setup
 const canvas = document.getElementById('gameCanvas');
 const ctx    = canvas.getContext('2d');
 canvas.width  = 1020;
-canvas.height = 600;
+canvas.height = 600; // native 1.7 aspect — CSS scales it uniformly so the art is never stretched
+
+// Pause-screen sliders, expressed as fractions of the canvas so they stay aligned
+// with the full-screen PauseScreen image at any resolution.
+const PAUSE_SLIDER = {
+    x: 310 / 1020,   // left edge of the track
+    w: 250 / 1020,   // track width
+    h:  20 / 600,    // thickness
+    yMusic:      400 / 600,
+    ySfx:        190 / 600,
+    yBrightness: 300 / 600,
+};
 
 //  Core systems 
 const input      = new Input();
@@ -54,6 +65,49 @@ let selectedRaceCards = [];
 let musicVolume = 0.7;
 let sfxVolume = 0.7;
 let brightness = 1.0;
+
+//  Player progress persistence (DB)
+// The logged-in player_id is written to localStorage by the login page (auth.js).
+// Since the game runs in a same-origin iframe, we can read it here.
+function getPlayerId() {
+    try {
+        const session = JSON.parse(localStorage.getItem('vd_session'));
+        return session ? session.player_id : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+async function loadProgress() { // On startup, resume the player at their last saved race
+    const playerId = getPlayerId();
+    if (!playerId) return; // not logged in → stay on level 1 (in-memory only)
+    try {
+        const res  = await fetch(`http://localhost:3000/api/player/progress?player_id=${playerId}`);
+        const data = await res.json();
+        if (data.success && data.level) currentLevel = data.level;
+    } catch (e) {
+        console.error('No se pudo cargar el progreso:', e);
+    }
+}
+
+function saveProgress(level) { // Persist the current race level to the DB (fire-and-forget)
+    const playerId = getPlayerId();
+    if (!playerId) return;
+    fetch('http://localhost:3000/api/player/progress', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ player_id: playerId, level })
+    }).catch(e => console.error('No se pudo guardar el progreso:', e));
+}
+
+function resetRun() { // Full reset (permadeath): wipe level, kart upgrades and cards back to base
+    currentLevel = 1;
+    playerKart.reset();
+    cardSystem.reset();
+    activeCards.reset();
+    selectedRaceCards = [];
+    saveProgress(1);
+}
 
 //Story screen
 let storyPage = 0;
@@ -127,26 +181,29 @@ canvas.addEventListener('click', (e) => {
 
 function handleClick(e) {
     const rect   = canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    // Map CSS pixels to the canvas's internal coordinate system (the canvas is CSS-scaled)
+    const mouseX = (e.clientX - rect.left) * (canvas.width  / rect.width);
+    const mouseY = (e.clientY - rect.top)  * (canvas.height / rect.height);
+    const W = canvas.width;
+    const H = canvas.height;
 
     if (gameState === 'title') {
         previousState = 'title'
-        if (mouseX > 410 && mouseX < 630 && mouseY > 455 && mouseY < 500) {
+        if (mouseX > 0.4020*W && mouseX < 0.6176*W && mouseY > 0.7583*H && mouseY < 0.8333*H) {
             playSFX('select');
             if (currentLevel === 1) {
                 gameState = 'storyScreen';
-                
+
             } else {
                 gameState = 'cardSelect';
                 setMusic('cardSelect');
             }
         }
-        if (mouseX >= 400 && mouseX <= 625 && mouseY >= 505 && mouseY <= 540){
+        if (mouseX >= 0.3922*W && mouseX <= 0.6127*W && mouseY >= 0.8417*H && mouseY <= 0.9000*H){
             playSFX ('select');
             gameState = 'pause';
         }
-    } 
+    }
     else if (gameState === 'storyScreen'){
         previousState = 'storyScreen';
         playSFX('select');
@@ -164,47 +221,56 @@ function handleClick(e) {
         startCurrentRace ();
     }
     else if (gameState === 'gameOver') {
+        // Reach here only after an explosion; resetRun() already wiped progress
         previousState = 'gameOver';
         playSFX('select');
-        currentLevel = 1;
-        let cardSystem = new CardSystem();
         gameState = 'title';
         setMusic('title');
     } else if (gameState === 'championship') {
+        // resetRun() already ran when the championship was won
         previousState = 'championship';
         playSFX('select');
-        currentLevel = 1;
-        let cardSystem = new CardSystem();
         gameState = 'title';
         setMusic('title');
     }
     else if (gameState === 'credits') {
         previousState = 'credits';
-        if (mouseX > 778 && mouseX < 1001 && mouseY > 545  && mouseY <590) {
+        if (mouseX > 0.7627*W && mouseX < 0.9814*W && mouseY > 0.9083*H && mouseY < 0.9833*H) {
         playSFX('select');
         currentLevel = 1;
         gameState = 'title';
         setMusic ('title')
     } }
     else if (gameState === 'pause') {
-        if (mouseX >=310 && mouseX <= 560 && mouseY >= 400 && mouseY <= 420){
-            musicVolume = Math.max((mouseX-310)/250);
+        const sx0 = PAUSE_SLIDER.x * W;
+        const sx1 = (PAUSE_SLIDER.x + PAUSE_SLIDER.w) * W;
+        const sliderValue = () => Math.max(0, Math.min(1, (mouseX - sx0) / (PAUSE_SLIDER.w * W)));
+
+        if (mouseX >= sx0 && mouseX <= sx1 && mouseY >= PAUSE_SLIDER.yMusic*H && mouseY <= (PAUSE_SLIDER.yMusic+PAUSE_SLIDER.h)*H){
+            musicVolume = sliderValue();
             music.volume = musicVolume;
         }
-        if (mouseX >=310 && mouseX <= 560 && mouseY >= 190 && mouseY <= 210){
-            sfxVolume = Math.max((mouseX-310)/250);
+        if (mouseX >= sx0 && mouseX <= sx1 && mouseY >= PAUSE_SLIDER.ySfx*H && mouseY <= (PAUSE_SLIDER.ySfx+PAUSE_SLIDER.h)*H){
+            sfxVolume = sliderValue();
         }
-        if (mouseX >=310 && mouseX <= 560 && mouseY >= 300 && mouseY <= 320){
-            brightness = Math.max((mouseX -310)/250);
+        if (mouseX >= sx0 && mouseX <= sx1 && mouseY >= PAUSE_SLIDER.yBrightness*H && mouseY <= (PAUSE_SLIDER.yBrightness+PAUSE_SLIDER.h)*H){
+            brightness = sliderValue();
         }
-        if (mouseX > 567 && mouseX < 857 && mouseY > 156  && mouseY <336) {//here has to go the real save and exit (connected to the database)
-            currentLevel = 1;
+        if (mouseX > 0.5559*W && mouseX < 0.8402*W && mouseY > 0.2600*H && mouseY < 0.5600*H) {// Save & exit: persist progress, then leave to title
+            saveProgress(currentLevel);
+            if (currentRace) currentRace.stopAudio();
+            currentRace = null;
             gameState = 'title';
             setMusic ('title');
         }
-        else if (mouseX > 570 && mouseX < 860 && mouseY > 390  && mouseY <430) { //pause the race
+        else if (mouseX > 0.5588*W && mouseX < 0.8431*W && mouseY > 0.6500*H && mouseY < 0.7167*H) { //resume the race
             playSFX('select');
-            gameState = previousState;
+            if (previousState === 'racing' && currentRace) {
+                gameState = 'racing';
+                currentRace.resume();
+            } else {
+                gameState = previousState;
+            }
          }
 
     }
@@ -226,21 +292,45 @@ function startCurrentRace() {
     activeCards,
 );
 
-    currentRace.startRace((won, stats) => {
-        if (!won) {
-            const userId = getPlayerId();
-            saveRaceResults(userId, stats.position, stats.totalTime, stats.fastestLap);
+// Configuración del manejador de pausa
+    currentRace.onPause = () => {
+        previousState = 'racing';
+        gameState = 'pause';
+        requestAnimationFrame(gameLoop);
+    };
+
+    // Inicio de la carrera
+    currentRace.startRace((won, exploded, stats) => {
+        // 1. Siempre guardamos los resultados de la carrera en el backend
+        const userId = getPlayerId();
+        saveRaceResults(userId, stats.position, stats.totalTime, stats.fastestLap);
+
+        // 2. Lógica de flujo del juego
+        if (won) {
+            if (currentLevel >= 7) {
+                // Championship completado
+                resetRun();
+                gameState = 'championship';
+                setMusic('championship');
+            } else {
+                // Avanzar nivel
+                currentLevel++;
+                saveProgress(currentLevel);
+                gameState = 'cardSelect';
+                setMusic('cardSelect');
+            }
+        } else if (exploded) {
+            // Permadeath: reinicio total
+            resetRun();
             gameState = 'gameOver';
             setMusic('lose');
-        } else if (currentLevel >= 7) {
-            gameState = 'championship';
-            setMusic('championship')
         } else {
-            currentLevel++;
+            // Perdiste pero sobreviviste: reintentar mismo nivel
+            saveProgress(currentLevel);
             gameState = 'cardSelect';
-            setMusic('cardSelect')
-
+            setMusic('cardSelect');
         }
+        
         requestAnimationFrame(gameLoop);
     });
 }
@@ -303,7 +393,7 @@ function gameLoop(timestamp) {
             ctx.fillText (lines[i], canvas.width/2, 220+i*40);
         }
          ctx.fillText (
-            'CLICK TO CONTINUE', canvas.width/2, 550
+            'CLICK TO CONTINUE', canvas.width/2, canvas.height - 45
         );
     }
 
@@ -322,7 +412,7 @@ function gameLoop(timestamp) {
         ctx.font = 'bold 28px "Russo One"';
         ctx.textAlign = 'center';
         ctx.fillText (
-            'CLICK TO CONTINUE', canvas.width/2, 550
+            'CLICK TO CONTINUE', canvas.width/2, canvas.height - 45
         );
       }
 
@@ -354,26 +444,22 @@ function gameLoop(timestamp) {
     else if (gameState === 'pause') {
         ctx.drawImage (pauseImage,0,0,canvas.width, canvas.height);
 
-        //Music slider
-        ctx.fillStyle = '#ae6408';
-        ctx.fillRect(310, 400, musicVolume * 250, 20);
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(310, 400, 250, 20);
+        const W = canvas.width, H = canvas.height;
+        const sx = PAUSE_SLIDER.x * W;
+        const sw = PAUSE_SLIDER.w * W;
+        const sh = PAUSE_SLIDER.h * H;
+        const drawSlider = (yFrac, value) => {
+            const y = yFrac * H;
+            ctx.fillStyle = '#ae6408';
+            ctx.fillRect(sx, y, value * sw, sh);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(sx, y, sw, sh);
+        };
 
-        // sound slider
-        ctx.fillStyle = '#ae6408';
-        ctx.fillRect(310,190, sfxVolume * 250, 20);
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(310, 190, 250, 20);
-
-        // Brightness slider
-        ctx.fillStyle = '#ae6408';
-        ctx.fillRect(310, 300, brightness * 250, 20);
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(310, 300, 250, 20);
+        drawSlider(PAUSE_SLIDER.yMusic,      musicVolume); // Music slider
+        drawSlider(PAUSE_SLIDER.ySfx,        sfxVolume);   // Sound slider
+        drawSlider(PAUSE_SLIDER.yBrightness, brightness);  // Brightness slider
     }
     if (brightness < 1) {
         ctx.fillStyle = `rgba(0,0,0, ${1 - brightness})`;
@@ -382,4 +468,5 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
+loadProgress();          // resume the logged-in player at their last saved race
 requestAnimationFrame(gameLoop)

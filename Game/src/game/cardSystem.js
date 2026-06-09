@@ -8,6 +8,10 @@ export class CardSystem { //
         this.cards = [];
     }
 
+    reset() { // Clears all acquired passive cards. Used on permadeath (explosion).
+        this.cards = [];
+    }
+
     addCard(card, kart) { // When a new card is added, it checks if the kart already has that card. If it does, it increases the card's level and reapplies its passive effect. If not, it adds the new card to the kart's collection and applies its passive effect.
         for (let i = 0; i < this.cards.length; i++) {
             if (this.cards[i].name === card.name) {

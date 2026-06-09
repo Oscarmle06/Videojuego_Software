@@ -14,6 +14,11 @@ export class ActiveCards {
     this._eWasPressed = false;        
   }
 
+  reset() { // Empties all active-card slots. Used on permadeath (explosion).
+    this.slots        = [null, null, null];
+    this.selectedSlot = 0;
+  }
+
   equip(card) { // Tries to equip a card in the first available slot. Returns true if successful, false if no slots are available.
     for (let i = 0; i < this.slots.length; i++) {
         if (this.slots[i] === null) {
@@ -74,15 +79,16 @@ export class ActiveCards {
         const stolen = target.speed * fraction;
         target.applyEffect(new SpeedDrain(dbEffects));
         this.player.applyEffect(new SpeedBoost(dbEffects.SpeedBoost_Duration || 3, stolen));
+        this.vfx.addHookLine(this.player, target); // visual tether between player and victim
         break;
       }
 
       case 'Sonic Wave': { // Creates a shockwave effect and applies a knockback to all CPU karts within a radius, pushing them away from the player.
-        this.vfx.addShockwave(this.player.x, this.player.y);
+        this.vfx.addShockwave(this.player.x, this.player.y, 'sonic', this.player);
         const radius = dbEffects.Effect_Radius || 3.5;
         const targets = this._getInRadius(radius);
         
-        const force = dbEffects.Knockback_Force || 30;
+        const force = dbEffects.Knockback_Force || 40;
         const dmg = dbEffects.Knockback_Damage || 15;
 
         for (const t of targets) {
@@ -97,11 +103,11 @@ export class ActiveCards {
       }
 
       case 'EMP': { // Creates an EMP shockwave effect and applies a card disable effect to all CPU karts within a radius, preventing them from using their cards for a short time.
-        this.vfx.addShockwave(this.player.x, this.player.y, 'emp');
+        this.vfx.addShockwave(this.player.x, this.player.y, 'emp', this.player);
         const radius = dbEffects.Effect_Radius || 4;
         const targets = this._getInRadius(radius);
         
-        const force = dbEffects.Knockback_Force || 30;
+        const force = dbEffects.Knockback_Force || 40;
 
         for (const t of targets) {
           const dx   = t.x - this.player.x;
@@ -127,7 +133,7 @@ export class ActiveCards {
             }
         }
           if (!alreadyHasShield) { // Evita aplicar otro escudo si ya hay uno activo
-            const shieldVFX = this.vfx.addShield(this.player.x, this.player.y);
+            const shieldVFX = this.vfx.addShield(this.player.x, this.player.y, this.player);
             console.log('shieldVFX creado:', shieldVFX);
             
             const shieldEffect = new Shield(dbEffects, shieldVFX);

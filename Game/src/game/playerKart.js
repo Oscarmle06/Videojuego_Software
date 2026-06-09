@@ -29,7 +29,7 @@ export class PlayerKart {
     this.maxSpeed = 6; // 6
     this.acceleration = 1.5; // 1.5
     this.friction = 0.25;
-    this.baseRotationSpeed = 3.0;
+    this.baseRotationSpeed = 1.0;
     this.laps = 0;
     this.lapProgress = 0;
     this.nextCheckpoint = 0;
@@ -39,6 +39,23 @@ export class PlayerKart {
     this.cardsDisabled  = false;
     this.hasShield      = false;
     this.crashCooldown = 0;
+  }
+
+  reset() { // Restores all stats to their base values, wiping any passive-card upgrades. Used on permadeath (explosion).
+    this.maxHP            = 50;
+    this.hp               = this.maxHP;
+    this.speed            = 0;
+    this.maxSpeed         = 6;
+    this.acceleration     = 1.5;
+    this.friction         = 0.25;
+    this.baseRotationSpeed = 1.0;
+    this.laps             = 0;
+    this.lapProgress      = 0;
+    this.nextCheckpoint   = 0;
+    this.activeEffects    = [];
+    this.cardsDisabled    = false;
+    this.hasShield        = false;
+    this.crashCooldown    = 0;
   }
 
   update(decisions, track, deltaTime) { // The update method takes the decisions from the CPU personality (or player input) and applies them to update the kart's speed, direction, position, and effects. It also checks for checkpoint progress and lap completion.

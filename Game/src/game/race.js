@@ -123,6 +123,14 @@ export class Race {
         this.raceCards = raceCards;
         this.activeCards = activeCards;
 
+        // Pause state
+        this.paused           = false;
+        this._spaceWasPressed = false;
+        this._lastTime        = 0;
+        this._loop            = null;
+        this.onPause          = null;  // callback set by main.js to show the pause screen
+        this.engineAudioCtx   = null;
+
         if (config.weather === 'random') {
             this.weather = RANDOM_WEATHER[Math.floor(Math.random() * RANDOM_WEATHER.length)];
         } else {
@@ -294,6 +302,7 @@ export class Race {
 
         // Web Audio API Engine Loop
         const audioCtx = new AudioContext();
+        this.engineAudioCtx = audioCtx;
         fetch('./assets/audios/motor.mp3')
             .then(r => r.arrayBuffer())
             .then(buf => audioCtx.decodeAudioData(buf))
@@ -321,7 +330,6 @@ export class Race {
         let introElapsed     = 0;
         let settleElapsed    = 0;
         let countdownElapsed = 0;
-        let lastTime         = 0;
         let finalPosition    = null;
         let exploding        = false;
         let explosionFrame   = 0;
@@ -329,17 +337,28 @@ export class Race {
         let resolved         = false;
         let resultTimer      = null;
         let raceStartSoundPlayed = false;
+        let diedByExplosion  = false;
 
         const INTRO_DURATION  = 3.0;
         const SETTLE_DURATION = 0.8;
         const TARGET_LAPS     = this.config.laps;
 
         const loop = (timestamp) => {
-            let dt = 0;
-            if (lastTime !== 0) {
-                dt = (timestamp - lastTime) / 1000;
+            // Pause handling: pressing space during the race suspends this loop
+            // and hands control to main.js, which renders the pause screen.
+            const spacePressed = this.input.isPressed(' ');
+            if (spacePressed && !this._spaceWasPressed && raceState !== 'results' && !this.paused) {
+                this._spaceWasPressed = true;
+                this._pause();
+                return; // stop scheduling frames; resume() restarts the loop
             }
-            lastTime = timestamp;
+            this._spaceWasPressed = spacePressed;
+
+            let dt = 0;
+            if (this._lastTime !== 0) {
+                dt = (timestamp - this._lastTime) / 1000;
+            }
+            this._lastTime = timestamp;
 
             const kartSprites = [];
             for (let i = 0; i < this.cpus.length; i++) {
@@ -432,6 +451,7 @@ export class Race {
                 this.spriteRenderer.render(this.camera, allSprites);
                 this.minimap.render(this.camera, kartSprites, this.track, this.config.level);
                 this._renderOverlay();
+                this.vfx.renderLines(this.camera, this.ctx, this.canvas);
                 this._renderPosition();
                 this._renderLaps();
                 this._renderHP();
@@ -448,9 +468,10 @@ export class Race {
                 explosionFrame = expResult.frame;
                 explosionTimer = expResult.timer;
                 if (expResult.died && !resolved) {
-                    resolved      = true;
-                    finalPosition = this.allKarts.length;
-                    raceState     = 'results';
+                    resolved        = true;
+                    diedByExplosion = true;
+                    finalPosition   = this.allKarts.length;
+                    raceState       = 'results';
                 }
 
                 this.cardHUD.render(this.activeCards);
@@ -467,7 +488,6 @@ export class Race {
                     for (let i = 0; i < this.cpus.length; i++) {
                         if (this.cpus[i].engineSound) this.cpus[i].engineSound.stop();
                     }
-
                     const stats = {
                         won: finalPosition <= 3,
                         position: finalPosition,
@@ -482,7 +502,36 @@ export class Race {
             requestAnimationFrame(loop);
         };
 
+        this._loop = loop;
         requestAnimationFrame(loop);
+    }
+
+    _pause() { // Suspends the race loop and engine audio, then notifies main.js
+        if (this.paused) return;
+        this.paused = true;
+        try { if (this.audioCtx)       this.audioCtx.suspend();       } catch (e) {}
+        try { if (this.engineAudioCtx) this.engineAudioCtx.suspend(); } catch (e) {}
+        if (this.onPause) this.onPause();
+    }
+
+    resume() { // Resumes the race exactly where it was paused
+        if (!this.paused) return;
+        this.paused = false;
+        // Treat a still-held space as "already pressed" so it doesn't re-pause instantly
+        this._spaceWasPressed = this.input.isPressed(' ');
+        this._lastTime = 0; // avoids a huge dt jump on the first frame back
+        try { if (this.audioCtx)       this.audioCtx.resume();       } catch (e) {}
+        try { if (this.engineAudioCtx) this.engineAudioCtx.resume(); } catch (e) {}
+        requestAnimationFrame(this._loop);
+    }
+
+    stopAudio() { // Stops all engine sounds; used when leaving the race from the pause menu
+        try { if (this.playerKart.engineSound) this.playerKart.engineSound.stop(); } catch (e) {}
+        for (let i = 0; i < this.cpus.length; i++) {
+            try { if (this.cpus[i].engineSound) this.cpus[i].engineSound.stop(); } catch (e) {}
+        }
+        try { if (this.audioCtx)       this.audioCtx.close();       } catch (e) {}
+        try { if (this.engineAudioCtx) this.engineAudioCtx.close(); } catch (e) {}
     }
 
     _getRacePosition() {
@@ -536,7 +585,7 @@ export class Race {
         else if (pct > 0.40) this.ctx.fillStyle = '#cac141';
         else if (pct > 0.20) this.ctx.fillStyle = '#ca7341';
         else                 this.ctx.fillStyle = '#ca4141';
-        this.ctx.fillRect(20, 10, 230 * pct, 40);
+        this.ctx.fillRect(45, 10, 204 * pct, 40);
         this.ctx.drawImage(this.HPSprite, 5, -30, 250, 100);
     }
 
@@ -545,7 +594,7 @@ export class Race {
         let laps = this.playerKart.laps;
         if (laps > 2) laps = 2;
         const sx = laps * 411;
-        this.ctx.drawImage(this.lapSprite, sx, 0, 411, 864, 1, 380, 150, 315);
+        this.ctx.drawImage(this.lapSprite, sx, 0, 411, 864, 1, this.canvas.height - 200, 150, 315);
         this.ctx.fillStyle = '#2b2b2b';
         this.ctx.fillRect(20, 10, 230, 40);
     }
@@ -610,7 +659,7 @@ export class Race {
         this.ctx.restore();
     }
 
-    _renderCameraAlongSpline(t) { // Mantengo el helper por consistencia de código
+    _renderCameraAlongSpline(t) { 
          this._moveCameraAlongSpline(t);
     }
 

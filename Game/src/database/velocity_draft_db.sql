@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS PLAYER (
     user_id INT NOT NULL,
     game_name VARCHAR(100),
     car_level INT DEFAULT 1,
+    current_level INT NOT NULL DEFAULT 1,
     average_race_time DECIMAL(10, 3),
     CONSTRAINT fk_player_user FOREIGN KEY (user_id) REFERENCES USERS(user_id) ON DELETE CASCADE
 );

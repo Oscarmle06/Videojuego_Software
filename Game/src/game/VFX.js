@@ -18,20 +18,32 @@ export class VFX {
         this.TOTAL_FRAMES = 9;
     }
 
-    addShockwave(x, y, color = 'emp') { // The addShockwave method adds a shockwave effect at the specified (x, y) coordinates with an optional color parameter. The effect is stored in the effects array with its type, position, elapsed time, duration, and color.
+    addShockwave(x, y, color = 'emp', owner = null) { // The addShockwave method adds a shockwave effect at the specified (x, y) coordinates with an optional color parameter. `owner` is the kart that created the effect, so it renders on that kart (not always the player).
         this.effects.push({
         type:     'shockwave',
         x, y,
+        owner,
         elapsed:  0,
         duration: 0.6,
-        color:    color,   
+        color:    color,
         });
     }
 
-    addShield(x, y) { // The addShield method adds a shield effect at the specified (x, y) coordinates. The effect is stored in the effects array with its type, position, elapsed time, and active status.
+    addHookLine(from, to) { // Adds a Grappler Hook tether: a line linking the kart that used the hook (from) to its victim (to). Stores kart references so the line tracks them as they move.
+        this.effects.push({
+            type:     'hookLine',
+            from,     // kart that fired the hook
+            to,       // victim kart
+            elapsed:  0,
+            duration: 3.0,
+        });
+    }
+
+    addShield(x, y, owner = null) { // The addShield method adds a shield effect at the specified (x, y) coordinates. `owner` is the kart that created it, so the shield renders on that kart (not always the player).
         const effect = {
         type:    'shield',
         x, y,
+        owner,
         elapsed: 0,
         active:  true,
         };
@@ -44,10 +56,12 @@ export class VFX {
         const e = this.effects[i];
         e.elapsed += deltaTime;
 
-        // Effects should follow the player kart's position
+        // Effects follow the kart that created them (their owner), not always the player
         if (e.type === 'shield' || e.type === 'shockwave' || e.type === 'empShockwave') {
-            e.x = playerKart.x;
-            e.y = playerKart.y;
+            if (e.owner) {
+                e.x = e.owner.x;
+                e.y = e.owner.y;
+            }
         }
 
         if (e.type === 'shockwave' && e.elapsed >= e.duration) {
@@ -56,7 +70,65 @@ export class VFX {
         if (e.type === 'shield' && !e.active) {
             this.effects.splice(i, 1);
         }
+        if (e.type === 'hookLine' && e.elapsed >= e.duration) {
+            this.effects.splice(i, 1);
         }
+        }
+    }
+
+    renderLines(camera, ctx, canvas) { // Draws every active Grappler Hook tether in screen space, projecting each kart's live world position with the same camera matrix the sprite renderer uses.
+        for (const e of this.effects) {
+            if (e.type !== 'hookLine') continue;
+
+            const a = this._projectToScreen(camera, canvas, e.from.x, e.from.y);
+            const b = this._projectToScreen(camera, canvas, e.to.x,   e.to.y);
+            if (!a || !b) continue; // an endpoint is behind the camera
+
+            // Fade out over the final second
+            const remaining = e.duration - e.elapsed;
+            const alpha = Math.max(0, Math.min(1, remaining));
+
+            // Thicker when the closest endpoint is near the camera
+            const width = Math.max(2, Math.min(16, 14 / Math.min(a.depth, b.depth)));
+
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.lineCap     = 'round';
+
+            // Outer glow
+            ctx.strokeStyle = '#00e5ff';
+            ctx.lineWidth   = width;
+            ctx.shadowColor = '#00e5ff';
+            ctx.shadowBlur  = 12;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+
+            // Bright inner core
+            ctx.shadowBlur  = 0;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth   = Math.max(1, width * 0.4);
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+    }
+
+    _projectToScreen(camera, canvas, wx, wy) { // Projects a world (x, y) point to screen coordinates, anchored near the kart body. Returns null if the point is behind the camera.
+        const dx = wx - camera.posX;
+        const dy = wy - camera.posY;
+        const invDet = 1.0 / (camera.planeX * camera.dirY - camera.dirX * camera.planeY);
+        const transformX = invDet * ( camera.dirY * dx - camera.dirX * dy);
+        const transformY = invDet * (-camera.planeY * dx + camera.planeX * dy); // depth
+        if (transformY <= 0) return null;
+        const screenX = (canvas.width / 2) * (1 + transformX / transformY);
+        const groundY = (canvas.height / 2) + camera.posZ / transformY;
+        const bodyY   = groundY - (canvas.height / transformY) * 0.25; // raise to the kart body
+        return { x: screenX, y: bodyY, depth: transformY };
     }
 
     getSprites() { // The getSprites method generates an array of sprite objects for rendering the active effects. 
