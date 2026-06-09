@@ -242,6 +242,7 @@ export class Race {
         this.playerKart.laps           = 0;
         this.playerKart.nextCheckpoint = 0;
         this.playerKart.startPos       = playerSlot;
+        this.playerKart.fastestLapTime = 0;
 
         // Karts CPU
         this.cpus = [];
@@ -319,7 +320,7 @@ export class Race {
                 gainNode.connect(audioCtx.destination);                
                 source.start();
                 this.playerKart.engineSound = source;
-                this.playerKart.engineAudioCtx = this.audioCtx;
+                this.playerKart.engineAudioCtx = audioCtx;
             });
     }
 
@@ -343,6 +344,11 @@ export class Race {
         let resultTimer      = null;
         let raceStartSoundPlayed = false;
         let diedByExplosion  = false;
+        let raceTimerStarted = false;
+        let currentLapStart  = 0;
+        let observedLaps     = 0;
+        let fastestLapTime   = Infinity;
+        let raceFinishTime   = 0;
 
         const INTRO_DURATION  = 3.0;
         const SETTLE_DURATION = 0.8;
@@ -424,12 +430,18 @@ export class Race {
                 this._renderOverlay();
                 this._renderCountdownHUD(countdownElapsed);
                 this._renderPosition();
-                if (countdownElapsed >= this.COUNTDOWN_TOTAL) raceState = 'racing';
+                if (countdownElapsed >= this.COUNTDOWN_TOTAL) {
+                    raceState = 'racing';
+                    raceTimerStarted = true;
+                    currentLapStart = timestamp;
+                    this._startTime = timestamp;
+                }
 
             } else if (raceState === 'racing') {
                 if (this.playerKart.laps >= TARGET_LAPS && !resolved && !finishedCalled) {
                     resolved      = true;
                     finalPosition = this._getRacePosition();
+                    raceFinishTime = timestamp;
                     raceState     = 'results';
                 }
 
@@ -439,6 +451,16 @@ export class Race {
                     turnLeft:   this.input.isPressed('a'),
                     turnRight:  this.input.isPressed('d'),
                 }, this.track, dt);
+
+                if (raceTimerStarted && this.playerKart.laps > observedLaps) {
+                    const lapTime = (timestamp - currentLapStart) / 1000;
+                    if (lapTime > 0 && lapTime < fastestLapTime) {
+                        fastestLapTime = lapTime;
+                        this.playerKart.fastestLapTime = lapTime;
+                    }
+                    observedLaps = this.playerKart.laps;
+                    currentLapStart = timestamp;
+                }
 
                 for (let i = 0; i < this.cpus.length; i++) {
                     this.cpus[i].update(this.track, dt);
@@ -478,6 +500,7 @@ export class Race {
                     resolved        = true;
                     diedByExplosion = true;
                     finalPosition   = this.allKarts.length;
+                    raceFinishTime   = timestamp;
                     raceState       = 'results';
                 }
 
@@ -495,7 +518,7 @@ export class Race {
 
                     resolved = true;
 
-                    this.playerKart.engineSound.stop();
+                    if (this.playerKart.engineSound) this.playerKart.engineSound.stop();
                     for (let i = 0; i < this.cpus.length; i++) {
                         if (this.cpus[i].engineSound) this.cpus[i].engineSound.stop();
                     }
@@ -507,8 +530,8 @@ export class Race {
                     const stats = {
                         won: finalPosition <= 3,
                         position: finalPosition,
-                        totalTime: (timestamp - resultTimer) / 1000,
-                        fastestLap: this.playerKart.fastestLapTime || 0
+                        totalTime: ((raceFinishTime || timestamp) - this._startTime) / 1000,
+                        fastestLap: Number.isFinite(fastestLapTime) ? fastestLapTime : 0
                     };
                     console.log("RACE DEBUG: Trying to execute onFinish with stats:", stats);
                     if (typeof this.onFinish === 'function') {

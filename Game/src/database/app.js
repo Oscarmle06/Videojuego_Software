@@ -37,6 +37,16 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+async function ensurePlayerProgressColumn() {
+    await pool.query(
+        'ALTER TABLE PLAYER ADD COLUMN IF NOT EXISTS current_level INT NOT NULL DEFAULT 1'
+    );
+}
+
+ensurePlayerProgressColumn().catch(error => {
+    console.error("Error checking PLAYER.current_level column:", error.message);
+});
+
 // 1. ENDPOINT: Health Check
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -289,6 +299,7 @@ app.post('/api/register', async (req, res) => {
 app.get('/api/player/progress', async (req, res) => {
     const player_id = req.query.player_id;
     try {
+        await ensurePlayerProgressColumn();
         const [rows] = await pool.query(
             'SELECT current_level FROM PLAYER WHERE player_id = ?',
             [player_id]
@@ -306,10 +317,16 @@ app.get('/api/player/progress', async (req, res) => {
 // 13. ENDPOINT: Save a player's race progress (current level)
 app.post('/api/player/progress', async (req, res) => {
     const { player_id, level } = req.body;
+
+    if (!player_id || !Number.isInteger(Number(level))) {
+        return res.status(400).json({ success: false, error: "player_id and numeric level are required" });
+    }
+
     try {
+        await ensurePlayerProgressColumn();
         await pool.query(
             'UPDATE PLAYER SET current_level = ? WHERE player_id = ?',
-            [level, player_id]
+            [Number(level), player_id]
         );
         res.status(200).json({ success: true });
     } catch (error) {
@@ -321,14 +338,32 @@ app.post('/api/player/progress', async (req, res) => {
 // 14. ENDPOINT: Save race statistics (used by the game to record player performance after each race)
 app.post('/api/save-race', async (req, res) => {
     const { player_id, position, total_play_time, fastest_lap } = req.body;
+
+    if (!player_id) {
+        return res.status(400).json({ success: false, error: "player_id is required" });
+    }
+
+    const connection = await pool.getConnection();
     try {
-        await pool.query(
-            'INSERT INTO PLAYER_GAME (player_id, position, total_play_time, fastest_lap) VALUES (?, ?, ?, ?)',
-            [player_id, position, total_play_time, fastest_lap]
+        await connection.beginTransaction();
+
+        const [gameResult] = await connection.query(
+            'INSERT INTO GAMESESSION (login_date, time_in_race) VALUES (NOW(), ?)',
+            [total_play_time || 0]
         );
-        res.json({ success: true, message: "Estadísticas guardadas con éxito" });
+
+        await connection.query(
+            'INSERT INTO PLAYER_GAME (player_id, game_id, position, total_play_time, fastest_lap) VALUES (?, ?, ?, ?, ?)',
+            [player_id, gameResult.insertId, position, total_play_time || 0, fastest_lap || 0]
+        );
+
+        await connection.commit();
+        res.json({ success: true, game_id: gameResult.insertId, message: "Estadísticas guardadas con éxito" });
     } catch (error) {
+        await connection.rollback();
         res.status(500).json({ success: false, error: error.message });
+    } finally {
+        connection.release();
     }
 });
 
