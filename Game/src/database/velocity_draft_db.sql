@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS USERS (
     password VARCHAR(255) NOT NULL,
     age INT,
     gender VARCHAR(50),
-    role varchar(20) DEFAULT 'player';
+    role varchar(20) DEFAULT 'player'
 );
 
 -- 2. Tabla: PLAYER
@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS PLAYER (
     user_id INT NOT NULL,
     game_name VARCHAR(100),
     car_level INT DEFAULT 1,
+    current_level INT NOT NULL DEFAULT 1,
     average_race_time DECIMAL(10, 3),
     CONSTRAINT fk_player_user FOREIGN KEY (user_id) REFERENCES USERS(user_id) ON DELETE CASCADE
 );
