@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS USERS (
     password VARCHAR(255) NOT NULL,
     age INT,
     gender VARCHAR(50),
-    role varchar(20) DEFAULT 'player';
+    role varchar(20) DEFAULT 'player'
 );
 
 -- 2. Tabla: PLAYER

@@ -254,6 +254,38 @@ app.get('/api/admin/race-distribution', async (req, res) => {
     }
 });
 
+// 11. ENDPOINT: Registro de usuario y creación de perfil
+app.post('/api/register', async (req, res) => {
+    const { email, username, password, game_name } = req.body;
+    
+    try {
+        // Iniciamos una transacción
+        await pool.query('START TRANSACTION');
+
+        // 1. Insertar usuario
+        // Asegúrate de que tu consulta incluya el email
+        const [userResult] = await pool.query(
+            'INSERT INTO USERS (email, username, password, role) VALUES (?, ?, ?, ?)',
+            [email, username, password, 'player'] // <--- ¡Asegúrate de que 'email' esté aquí!
+        );
+        const userId = userResult.insertId;
+
+        // 2. Insertar perfil del jugador
+        await pool.query(
+            'INSERT INTO PLAYER (user_id, game_name) VALUES (?, ?)',
+            [userId, game_name]
+        );
+
+        await pool.query('COMMIT');
+        res.status(201).json({ success: true, message: "Cuenta creada exitosamente" });
+        
+    } catch (error) {
+        await pool.query('ROLLBACK');
+        console.error("Error en registro:", error);
+        res.status(500).json({ success: false, error: "Error al crear cuenta: " + error.message });
+    }
+});
+
 // Server listening on specified port
 app.listen(port, () => {
   console.log(`Backend server running at http://localhost:${port}`);
