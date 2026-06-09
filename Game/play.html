@@ -4,8 +4,25 @@
   <meta charset="UTF-8">
   <title>Velocity Draft — Juego</title>
   <style>
-    body { margin: 0; background: #000; display: flex; justify-content: center; }
-    canvas { display: block; }
+    html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+
+    /* Composite stage (game + side column), centered & scaled to fit.
+       Game keeps its native 1.7 aspect so the art is never stretched. */
+    #screen {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width:  min(100vw, 207.26vh);
+      height: min(48.25vw, 100vh);
+      display: flex;
+      flex-direction: row;
+    }
+
+    /* Game = left 82% (1020x600 → 1734x1020, uniform 1.7x), map+cards on the right */
+    #gameCanvas { width: 82.02%; height: 100%;   display: block; }
+    #sideColumn { width: 17.98%; height: 100%;   display: flex; flex-direction: column; }
+    #mapCanvas  { width: 100%;   height: 37.26%; display: block; }  /* square */
+    #cardCanvas { width: 100%;   height: 62.74%; display: block; }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
   <script type="module" src="src/main.js"></script>
@@ -36,10 +53,12 @@
       <link rel="preload" href="./assets/cards/pitstop.png" as="image">
 </head>
 <body>
-  <div id="screen" style="display:flex;flex-direction:row;align-items:flex-start;">
+  <div id="screen">
     <canvas id="gameCanvas"></canvas>
-    <canvas id="mapCanvas" width="640" height="640"></canvas>
-    <canvas id="cardCanvas" width="380" height="640"></canvas>
+    <div id="sideColumn">
+      <canvas id="mapCanvas"  width="380" height="380"></canvas>
+      <canvas id="cardCanvas" width="380" height="640"></canvas>
+    </div>
   </div>
 </body>
 </html>
