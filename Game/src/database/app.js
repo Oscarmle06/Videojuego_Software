@@ -37,6 +37,10 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+pool.query('ALTER TABLE PLAYER ADD COLUMN IF NOT EXISTS current_level INT NOT NULL DEFAULT 1')
+    .then(() => console.log("Database schema checked/updated."))
+    .catch(err => console.error("Critical error updating schema:", err));
+
 async function ensurePlayerProgressColumn() {
     await pool.query(
         'ALTER TABLE PLAYER ADD COLUMN IF NOT EXISTS current_level INT NOT NULL DEFAULT 1'
@@ -299,7 +303,6 @@ app.post('/api/register', async (req, res) => {
 app.get('/api/player/progress', async (req, res) => {
     const player_id = req.query.player_id;
     try {
-        await ensurePlayerProgressColumn();
         const [rows] = await pool.query(
             'SELECT current_level FROM PLAYER WHERE player_id = ?',
             [player_id]
@@ -323,7 +326,6 @@ app.post('/api/player/progress', async (req, res) => {
     }
 
     try {
-        await ensurePlayerProgressColumn();
         await pool.query(
             'UPDATE PLAYER SET current_level = ? WHERE player_id = ?',
             [Number(level), player_id]
@@ -338,32 +340,40 @@ app.post('/api/player/progress', async (req, res) => {
 // 14. ENDPOINT: Save race statistics (used by the game to record player performance after each race)
 app.post('/api/save-race', async (req, res) => {
     const { player_id, position, total_play_time, fastest_lap } = req.body;
+    
+    // Función de reintento integrada
+    const executeTransaction = async (retries = 3) => {
+        const connection = await pool.getConnection();
+        try {
+            await connection.beginTransaction();
+            const [gameResult] = await connection.query(
+                'INSERT INTO GAMESESSION (login_date, time_in_race) VALUES (NOW(), ?)',
+                [total_play_time || 0]
+            );
+            await connection.query(
+                'INSERT INTO PLAYER_GAME (player_id, game_id, position, total_play_time, fastest_lap) VALUES (?, ?, ?, ?, ?)',
+                [player_id, gameResult.insertId, position, total_play_time || 0, fastest_lap || 0]
+            );
+            await connection.commit();
+            return gameResult.insertId;
+        } catch (error) {
+            await connection.rollback();
+            // 1213 es el código de error para Deadlock en MariaDB
+            if (error.errno === 1213 && retries > 0) {
+                await new Promise(r => setTimeout(r, 100)); // Pequeña espera
+                return executeTransaction(retries - 1);
+            }
+            throw error;
+        } finally {
+            connection.release();
+        }
+    };
 
-    if (!player_id) {
-        return res.status(400).json({ success: false, error: "player_id is required" });
-    }
-
-    const connection = await pool.getConnection();
     try {
-        await connection.beginTransaction();
-
-        const [gameResult] = await connection.query(
-            'INSERT INTO GAMESESSION (login_date, time_in_race) VALUES (NOW(), ?)',
-            [total_play_time || 0]
-        );
-
-        await connection.query(
-            'INSERT INTO PLAYER_GAME (player_id, game_id, position, total_play_time, fastest_lap) VALUES (?, ?, ?, ?, ?)',
-            [player_id, gameResult.insertId, position, total_play_time || 0, fastest_lap || 0]
-        );
-
-        await connection.commit();
-        res.json({ success: true, game_id: gameResult.insertId, message: "Estadísticas guardadas con éxito" });
+        const gameId = await executeTransaction();
+        res.json({ success: true, game_id: gameId });
     } catch (error) {
-        await connection.rollback();
         res.status(500).json({ success: false, error: error.message });
-    } finally {
-        connection.release();
     }
 });
 
