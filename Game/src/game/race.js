@@ -488,7 +488,13 @@ export class Race {
                     for (let i = 0; i < this.cpus.length; i++) {
                         if (this.cpus[i].engineSound) this.cpus[i].engineSound.stop();
                     }
-                    onFinish(finalPosition <= 3, diedByExplosion);
+                    const stats = {
+                        won: finalPosition <= 3,
+                        position: finalPosition,
+                        totalTime: (timestamp - resultTimer) / 1000,
+                        fastestLap: this.playerKart.fastestLapTime,
+                    };
+                    onFinish(stats);
                     return;
                 }
             }

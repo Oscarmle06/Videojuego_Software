@@ -292,38 +292,45 @@ function startCurrentRace() {
     activeCards,
 );
 
-    // When the player presses space, the race suspends itself and asks us to
-    // show the pause screen (main's gameLoop drives that state).
+// Configuración del manejador de pausa
     currentRace.onPause = () => {
         previousState = 'racing';
         gameState = 'pause';
         requestAnimationFrame(gameLoop);
     };
 
-    currentRace.startRace((won, exploded) => {
+    // Inicio de la carrera
+    currentRace.startRace((won, exploded, stats) => {
+        // 1. Siempre guardamos los resultados de la carrera en el backend
+        const userId = getPlayerId();
+        saveRaceResults(userId, stats.position, stats.totalTime, stats.fastestLap);
+
+        // 2. Lógica de flujo del juego
         if (won) {
             if (currentLevel >= 7) {
-                // Championship completed → the whole run resets
+                // Championship completado
                 resetRun();
                 gameState = 'championship';
                 setMusic('championship');
             } else {
+                // Avanzar nivel
                 currentLevel++;
                 saveProgress(currentLevel);
                 gameState = 'cardSelect';
                 setMusic('cardSelect');
             }
         } else if (exploded) {
-            // Permadeath: ONLY an explosion wipes your progress
+            // Permadeath: reinicio total
             resetRun();
             gameState = 'gameOver';
             setMusic('lose');
         } else {
-            // Lost on position but survived → retry the SAME race, keep progress
+            // Perdiste pero sobreviviste: reintentar mismo nivel
             saveProgress(currentLevel);
             gameState = 'cardSelect';
             setMusic('cardSelect');
         }
+        
         requestAnimationFrame(gameLoop);
     });
 }
@@ -341,6 +348,27 @@ function startCurrentRace() {
       }
       gameState = 'raceIntro';
   });
+
+async function saveRaceResults(player_id, position, totalTime, fastestLap) {
+    const raceData = {
+        player_id: player_id,
+        position: position,
+        total_play_time: totalTime,
+        fastest_lap: fastestLap
+    };
+
+    try {
+        const response = await fetch('http://localhost:3000/api/save-race', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(raceData)
+        });
+        const result = await response.json();
+        console.log("Resultado guardado:", result);
+    } catch (error) {
+        console.error("Error al guardar resultados:", error);
+    }
+}
 
 //  Game loop 
 function gameLoop(timestamp) {
