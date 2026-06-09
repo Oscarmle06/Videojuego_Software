@@ -62,8 +62,9 @@ export class CardSelectScreen {
   _handleClick(e) {
     if (!this.active) return;
     const rect   = this.canvas.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
+    // Map CSS pixels to the canvas's internal coordinate system (the canvas is CSS-scaled)
+    const mouseX = (e.clientX - rect.left) * (this.canvas.width  / rect.width);
+    const mouseY = (e.clientY - rect.top)  * (this.canvas.height / rect.height);
 
     for (let i = 0; i < this.cardRects.length; i++) {
       if (this._hitTest(mouseX, mouseY, this.cardRects[i])) {
