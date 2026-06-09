@@ -254,6 +254,39 @@ app.get('/api/admin/race-distribution', async (req, res) => {
     }
 });
 
+// 11. ENDPOINT: Get a player's saved race progress (current level)
+app.get('/api/player/progress', async (req, res) => {
+    const player_id = req.query.player_id;
+    try {
+        const [rows] = await pool.query(
+            'SELECT current_level FROM PLAYER WHERE player_id = ?',
+            [player_id]
+        );
+        res.status(200).json({
+            success: true,
+            level: rows.length > 0 ? rows[0].current_level : 1
+        });
+    } catch (error) {
+        console.error("Error in MariaDB (GET /api/player/progress):", error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 12. ENDPOINT: Save a player's race progress (current level)
+app.post('/api/player/progress', async (req, res) => {
+    const { player_id, level } = req.body;
+    try {
+        await pool.query(
+            'UPDATE PLAYER SET current_level = ? WHERE player_id = ?',
+            [level, player_id]
+        );
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error("Error in MariaDB (POST /api/player/progress):", error.message);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
 // Server listening on specified port
 app.listen(port, () => {
   console.log(`Backend server running at http://localhost:${port}`);
