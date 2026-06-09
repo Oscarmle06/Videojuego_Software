@@ -128,6 +128,7 @@ export class Race {
         this._spaceWasPressed = false;
         this._lastTime        = 0;
         this._loop            = null;
+        this._loopId          = null;
         this.onPause          = null;  // callback set by main.js to show the pause screen
         this.engineAudioCtx   = null;
 
@@ -323,8 +324,12 @@ export class Race {
     }
 
     async startRace(onFinish) {
+        let finishedCalled = false
+        this.onFinish = onFinish;
         await sincronizarBalanceDesdeMariaDB();
         this._init();
+        this._lastTime = 0;
+        this._startTime = performance.now();
 
         let raceState        = 'intro';
         let introElapsed     = 0;
@@ -344,6 +349,8 @@ export class Race {
         const TARGET_LAPS     = this.config.laps;
 
         const loop = (timestamp) => {
+            if (finishedCalled) return;
+            try {
             // Pause handling: pressing space during the race suspends this loop
             // and hands control to main.js, which renders the pause screen.
             const spacePressed = this.input.isPressed(' ');
@@ -420,7 +427,7 @@ export class Race {
                 if (countdownElapsed >= this.COUNTDOWN_TOTAL) raceState = 'racing';
 
             } else if (raceState === 'racing') {
-                if (this.playerKart.laps >= TARGET_LAPS && !resolved) {
+                if (this.playerKart.laps >= TARGET_LAPS && !resolved && !finishedCalled) {
                     resolved      = true;
                     finalPosition = this._getRacePosition();
                     raceState     = 'results';
@@ -467,7 +474,7 @@ export class Race {
                 exploding      = expResult.exploding;
                 explosionFrame = expResult.frame;
                 explosionTimer = expResult.timer;
-                if (expResult.died && !resolved) {
+                if (expResult.died && !resolved && !finishedCalled) {
                     resolved        = true;
                     diedByExplosion = true;
                     finalPosition   = this.allKarts.length;
@@ -483,27 +490,45 @@ export class Race {
                     this.ctx.drawImage(this.loseImage, 0, 0, this.canvas.width, this.canvas.height);
                 }
                 if (resultTimer === null) resultTimer = timestamp;
-                if (timestamp - resultTimer >= 3000) {
+                if (timestamp - resultTimer >= 3000 && !finishedCalled) {
+                    finishedCalled = true;
+
+                    resolved = true;
+
                     this.playerKart.engineSound.stop();
                     for (let i = 0; i < this.cpus.length; i++) {
                         if (this.cpus[i].engineSound) this.cpus[i].engineSound.stop();
                     }
+
+                    if (this._loopId){
+                        cancelAnimationFrame(this._loopId);
+                    }
+
                     const stats = {
                         won: finalPosition <= 3,
                         position: finalPosition,
                         totalTime: (timestamp - resultTimer) / 1000,
-                        fastestLap: this.playerKart.fastestLapTime,
+                        fastestLap: this.playerKart.fastestLapTime || 0
                     };
-                    onFinish(stats);
+                    console.log("RACE DEBUG: Trying to execute onFinish with stats:", stats);
+                    if (typeof this.onFinish === 'function') {
+                        this.onFinish(stats);
+                    }
+                    else {
+                        console.error("RACE ERROR: onFinish callback is not a function:", this.onFinish);
+                    }
                     return;
                 }
             }
 
-            requestAnimationFrame(loop);
-        };
+            this._loopId = requestAnimationFrame(loop);
+        } catch (e) {
+            console.error("Error in race loop:", e);
+        }
+    };
 
         this._loop = loop;
-        requestAnimationFrame(loop);
+        this._loopId = requestAnimationFrame(loop);
     }
 
     _pause() { // Suspends the race loop and engine audio, then notifies main.js

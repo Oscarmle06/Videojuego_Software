@@ -300,39 +300,43 @@ function startCurrentRace() {
     };
 
     // Inicio de la carrera
-    currentRace.startRace((won, exploded, stats) => {
-        // 1. Siempre guardamos los resultados de la carrera en el backend
-        const userId = getPlayerId();
-        saveRaceResults(userId, stats.position, stats.totalTime, stats.fastestLap);
+   currentRace.startRace((result) => {
+    console.log("DEBUG: Callback recibido:", result);
 
-        // 2. Lógica de flujo del juego
-        if (won) {
-            if (currentLevel >= 7) {
-                // Championship completado
-                resetRun();
-                gameState = 'championship';
-                setMusic('championship');
-            } else {
-                // Avanzar nivel
-                currentLevel++;
-                saveProgress(currentLevel);
-                gameState = 'cardSelect';
-                setMusic('cardSelect');
-            }
-        } else if (exploded) {
-            // Permadeath: reinicio total
+    const { won, exploded, position, totalTime, fastestLap } = result;
+
+    const validStats = {
+        position: position ?? 0,
+        totalTime: totalTime ?? 0,
+        fastestLap: fastestLap ?? 0
+    };
+
+    const userId = getPlayerId();
+    saveRaceResults(userId, validStats.position, validStats.totalTime, validStats.fastestLap);
+
+    if (won) {
+        if (currentLevel >= 7) {
             resetRun();
-            gameState = 'gameOver';
-            setMusic('lose');
+            gameState = 'championship';
+            setMusic('championship');
         } else {
-            // Perdiste pero sobreviviste: reintentar mismo nivel
+            currentLevel++;
             saveProgress(currentLevel);
             gameState = 'cardSelect';
             setMusic('cardSelect');
         }
-        
-        requestAnimationFrame(gameLoop);
-    });
+    } else if (exploded) {
+        resetRun();
+        gameState = 'gameOver';
+        setMusic('lose');
+    } else {
+        saveProgress(currentLevel);
+        gameState = 'cardSelect';
+        setMusic('cardSelect');
+    }
+
+    requestAnimationFrame(gameLoop);
+});
 }
 
 //  Card select screen 
@@ -349,25 +353,22 @@ function startCurrentRace() {
       gameState = 'raceIntro';
   });
 
-async function saveRaceResults(player_id, position, totalTime, fastestLap) {
-    const raceData = {
-        player_id: player_id,
-        position: position,
-        total_play_time: totalTime,
-        fastest_lap: fastestLap
-    };
-
-    try {
-        const response = await fetch('http://localhost:3000/api/save-race', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(raceData)
-        });
-        const result = await response.json();
-        console.log("Resultado guardado:", result);
-    } catch (error) {
-        console.error("Error al guardar resultados:", error);
-    }
+function saveRaceResults(userId, position, totalTime, fastestLap) {
+    fetch('http://localhost:3000/api/save-race', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            player_id: userId,
+            position: position,
+            total_play_time: totalTime,
+            fastest_lap: fastestLap
+        })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Guardado:", data))
+    .catch(err => console.error("Error:", err));
 }
 
 //  Game loop 
@@ -380,7 +381,8 @@ function gameLoop(timestamp) {
         ctx.drawImage(titleImage, 0, 0, canvas.width, canvas.height);
     } 
     else if (gameState === 'racing') {
-      return}
+      return;
+    }
     
     else if (gameState === 'storyScreen') {
         ctx.drawImage (storyscreen, 0, 0, canvas.width, canvas.height);

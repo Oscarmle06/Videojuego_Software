@@ -256,7 +256,7 @@ app.get('/api/admin/race-distribution', async (req, res) => {
 
 // 11. ENDPOINT: Register process - creates a new user and associated player profile in a transaction to ensure data integrity
 app.post('/api/register', async (req, res) => {
-    const { username, password, game_name } = req.body;
+    const { email, username, password, game_name } = req.body;
     
     try {
         // Iniciamos una transacción
@@ -265,7 +265,7 @@ app.post('/api/register', async (req, res) => {
         // 1. Insertar usuario
         const [userResult] = await pool.query(
             'INSERT INTO USERS (email, username, password, role) VALUES (?, ?, ?, ?)',
-            [email, username, password, 'player'] // <--- ¡Asegúrate de que 'email' esté aquí!
+            [email, username, password, 'player'] 
         );
         const userId = userResult.insertId;
 
