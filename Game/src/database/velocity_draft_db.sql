@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS PLAYER_GAME (
     position INT,
     total_play_time DECIMAL(10, 3),
     fastest_lap DECIMAL(10, 3),
+    race_level INT NOT NULL DEFAULT 1,
     PRIMARY KEY (player_id, game_id),
     CONSTRAINT fk_pg_player FOREIGN KEY (player_id) REFERENCES PLAYER(player_id) ON DELETE CASCADE,
     CONSTRAINT fk_pg_game FOREIGN KEY (game_id) REFERENCES GAMESESSION(game_id) ON DELETE CASCADE
@@ -99,4 +100,17 @@ CREATE TABLE IF NOT EXISTS CARD_Stats (
     usage_count INT DEFAULT 1,
     CONSTRAINT fk_stats_user FOREIGN KEY (user_id) REFERENCES USERS(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_stats_card FOREIGN KEY (card_id) REFERENCES CARD(card_id) ON DELETE CASCADE
+);
+
+-- 11. Tabla: CARD_RACE_USAGE
+-- Real per-race card telemetry used by admin analytics.
+CREATE TABLE IF NOT EXISTS CARD_RACE_USAGE (
+    player_id INT NOT NULL,
+    game_id INT NOT NULL,
+    card_id INT NOT NULL,
+    selected_count INT NOT NULL DEFAULT 1,
+    activated_count INT NOT NULL DEFAULT 0,
+    PRIMARY KEY (player_id, game_id, card_id),
+    CONSTRAINT fk_cru_player_game FOREIGN KEY (player_id, game_id) REFERENCES PLAYER_GAME(player_id, game_id) ON DELETE CASCADE,
+    CONSTRAINT fk_cru_card FOREIGN KEY (card_id) REFERENCES CARD(card_id) ON DELETE CASCADE
 );

@@ -310,3 +310,44 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   background: rgba(20, 10, 10, 0.6);
   border: 1px solid #ff5555;
 }
+
+.admin-dashboard {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.admin-chart-card {
+  background: linear-gradient(180deg, rgba(18, 18, 42, .95), rgba(8, 8, 18, .95));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.1rem;
+  min-height: 390px;
+}
+
+.admin-chart-card canvas {
+  width: 100% !important;
+  height: 320px !important;
+}
+
+.admin-chart-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: .8rem;
+}
+
+.admin-chart-heading span {
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--primary);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.admin-chart-heading small {
+  color: var(--muted);
+  font-size: .78rem;
+  text-align: right;
+}
