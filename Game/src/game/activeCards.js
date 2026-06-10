@@ -12,6 +12,7 @@ export class ActiveCards {
     this.selectedSlot = 0;
     this._qWasPressed = false;        
     this._eWasPressed = false;        
+    this.onCardActivated = null;
   }
 
   reset() { // Empties all active-card slots. Used on permadeath (explosion).
@@ -146,6 +147,9 @@ export class ActiveCards {
         }
     }
     // Consumir la carta después de usarla
+    if (typeof this.onCardActivated === 'function') {
+      this.onCardActivated(slot.name);
+    }
     this.slots[this.selectedSlot] = null;
   }
 

@@ -4,6 +4,15 @@
 
 const API_STATS_URL = 'http://localhost:3000/api/stats';
 const API_LEADERBOARD_URL = 'http://localhost:3000/api/leaderboard'; 
+const chartTextColor = '#f0f0ff';
+const chartGridColor = 'rgba(136, 136, 170, 0.22)';
+const chartPalette = {
+  cyan: '#00d4ff',
+  green: '#00cc77',
+  red: '#ff4060',
+  yellow: '#ffd166',
+  purple: '#7c3aed'
+};
 
 /**
  * Conecta con el backend para jalar las estadísticas del jugador logueado
@@ -120,100 +129,225 @@ async function renderArcadeLeaderboard() {
 }
 
 async function renderAdminAnalytics() {
-    const section = document.getElementById('admin-analytics-section');
-    if (!section) return;
-    
-    section.classList.remove('d-none');
+  const section = document.getElementById('admin-analytics-section');
+  if (!section) return;
 
-    try {
-        // 1. Gráfica de Cartas (Barras)
-        const resCards = await fetch('http://localhost:3000/api/admin/top-cards');
-        const { data: cardsData } = await resCards.json();
+  section.classList.remove('d-none');
 
-        const ctx1 = document.getElementById('adminCardsChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: cardsData.map(c => c.name),
-                datasets: [{
-                    label: 'Total Uses',
-                    data: cardsData.map(c => c.total_uses),
-                    backgroundColor: '#ff5555'
-                }]
-            },
-            options: { 
-                responsive: true,
-                plugins: {
-                    title: { display: true, text: 'TOP 10 MOST USED CARDS (GLOBAL)', color: '#fff', font: { size: 18 } },
-                    legend: { labels: { color: '#fff' } }
-                },
-                scales: {
-                    x: { ticks: { color: '#fff' } },
-                    y: { ticks: { color: '#fff' } }
-                }
-            }
-        });
+  try {
+    Chart.defaults.color = chartTextColor;
+    Chart.defaults.borderColor = chartGridColor;
 
-        // 2. Gráfica de Tendencia (Líneas)
-        const resTrends = await fetch('http://localhost:3000/api/admin/time-trends');
-        const { data: trendsData } = await resTrends.json();
+    const resCards = await fetch('http://localhost:3000/api/admin/card-impact');
+    const { data: cardsData = [] } = await resCards.json();
 
-        const ctx2 = document.getElementById('adminTimeTrendsChart').getContext('2d');
-        new Chart(ctx2, {
+    const ctx1 = document.getElementById('adminCardsChart').getContext('2d');
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: cardsData.map(c => c.name),
+        datasets: [
+          {
+            label: 'Selected',
+            data: cardsData.map(c => Number(c.selected_count) || 0),
+            backgroundColor: chartPalette.cyan,
+            borderRadius: 6,
+            yAxisID: 'count'
+          },
+          {
+            label: 'Activated',
+            data: cardsData.map(c => Number(c.activated_count) || 0),
+            backgroundColor: chartPalette.purple,
+            borderRadius: 6,
+            yAxisID: 'count'
+          },
+          {
             type: 'line',
-            data: {
-                labels: trendsData.map(d => new Date(d.day).toLocaleDateString()), // Formateamos la fecha
-                datasets: [{
-                    label: 'Avg Play Time (s)',
-                    data: trendsData.map(d => d.avg_time),
-                    borderColor: '#ff5555',
-                    backgroundColor: 'rgba(255, 85, 85, 0.5)',
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: { 
-                responsive: true,
-                plugins: {
-                    title: { display: true, text: 'TIME TRENDS (LAST WEEK)', color: '#fff', font: { size: 18 } },
-                    legend: { labels: { color: '#fff' } }
-                },
-                scales: {
-                    x: { ticks: { color: '#fff' } },
-                    y: { ticks: { color: '#fff' } }
-                }
+            label: 'Podium rate (%)',
+            data: cardsData.map(c => Number(c.podium_rate) || 0),
+            borderColor: chartPalette.yellow,
+            backgroundColor: chartPalette.yellow,
+            pointRadius: 4,
+            tension: 0.35,
+            yAxisID: 'rate'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              afterBody(items) {
+                const card = cardsData[items[0].dataIndex];
+                return [`Avg finish: ${card.avg_position || 'N/A'}`, `Best lap: ${card.best_lap || 'N/A'}s`];
+              }
             }
-        });
+          },
+          legend: { labels: { usePointStyle: true } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          count: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Count' } },
+          rate: {
+            beginAtZero: true,
+            max: 100,
+            position: 'right',
+            ticks: { color: chartPalette.yellow, callback: value => `${value}%` },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
 
-        // 3. Gráfica de Distribución de Carreras (Pastel)
-        const resDistribution = await fetch('http://localhost:3000/api/admin/race-distribution');
-        const { data: distributionData } = await resDistribution.json();
+    const resTrends = await fetch('http://localhost:3000/api/admin/daily-quality');
+    const { data: trendsData = [] } = await resTrends.json();
 
-        const ctx3 = document.getElementById('adminRaceDistributionChart').getContext('2d');
-        new Chart(ctx3, {
-            type: 'doughnut',
-            data: {
-                labels: distributionData.map(d => d.category),
-                datasets: [{
-                    label: 'Number of Races',
-                    data: distributionData.map(d => d.count),
-                    backgroundColor: [
-                        '#ff5555',
-                        '#55ff55',
-                        '#5555ff'
-                    ]
-                }]
-            },
-            options: { 
-                responsive: true,
-                plugins: {
-                    title: { display: true, text: 'RACE DISTRIBUTION', color: '#fff', font: { size: 18 } },
-                    legend: { labels: { color: '#fff' } }
-                }
+    const ctx2 = document.getElementById('adminTimeTrendsChart').getContext('2d');
+    new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: trendsData.map(d => new Date(d.day).toLocaleDateString()),
+        datasets: [
+          {
+            label: 'Races',
+            data: trendsData.map(d => Number(d.races) || 0),
+            backgroundColor: 'rgba(0, 212, 255, 0.25)',
+            borderColor: chartPalette.cyan,
+            borderWidth: 1,
+            borderRadius: 6,
+            yAxisID: 'count'
+          },
+          {
+            type: 'line',
+            label: 'Avg time (s)',
+            data: trendsData.map(d => Number(d.avg_time) || 0),
+            borderColor: chartPalette.red,
+            backgroundColor: chartPalette.red,
+            pointRadius: 4,
+            tension: 0.35,
+            yAxisID: 'seconds'
+          },
+          {
+            type: 'line',
+            label: 'Best lap (s)',
+            data: trendsData.map(d => Number(d.best_lap) || 0),
+            borderColor: chartPalette.green,
+            backgroundColor: chartPalette.green,
+            pointRadius: 4,
+            tension: 0.35,
+            yAxisID: 'seconds'
+          },
+          {
+            type: 'line',
+            label: 'Podium rate (%)',
+            data: trendsData.map(d => Number(d.podium_rate) || 0),
+            borderColor: chartPalette.yellow,
+            backgroundColor: chartPalette.yellow,
+            borderDash: [6, 4],
+            pointRadius: 3,
+            tension: 0.35,
+            yAxisID: 'rate'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              afterBody(items) {
+                const day = trendsData[items[0].dataIndex];
+                return `Unique players: ${day.players || 0}`;
+              }
             }
-        });
+          },
+          legend: { labels: { usePointStyle: true } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          count: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Races' } },
+          seconds: { beginAtZero: true, position: 'right', title: { display: true, text: 'Seconds' }, grid: { drawOnChartArea: false } },
+          rate: { beginAtZero: true, max: 100, display: false }
+        }
+      }
+    });
 
-    } catch (error) {
-        console.error("Error loading admin analytics:", error);
-    }
+    const resDistribution = await fetch('http://localhost:3000/api/admin/race-performance');
+    const { data: performanceData = [] } = await resDistribution.json();
+
+    const ctx3 = document.getElementById('adminRaceDistributionChart').getContext('2d');
+    new Chart(ctx3, {
+      type: 'bar',
+      data: {
+        labels: performanceData.map(d => `Race ${d.race_level}`),
+        datasets: [
+          {
+            label: 'Starts',
+            data: performanceData.map(d => Number(d.starts) || 0),
+            backgroundColor: chartPalette.cyan,
+            borderRadius: 6,
+            yAxisID: 'count'
+          },
+          {
+            label: 'Wins',
+            data: performanceData.map(d => Number(d.wins) || 0),
+            backgroundColor: chartPalette.green,
+            borderRadius: 6,
+            yAxisID: 'count'
+          },
+          {
+            type: 'line',
+            label: 'Podium rate (%)',
+            data: performanceData.map(d => Number(d.podium_rate) || 0),
+            borderColor: chartPalette.yellow,
+            backgroundColor: chartPalette.yellow,
+            pointRadius: 4,
+            tension: 0.35,
+            yAxisID: 'rate'
+          },
+          {
+            type: 'line',
+            label: 'Win rate (%)',
+            data: performanceData.map(d => Number(d.win_rate) || 0),
+            borderColor: chartPalette.red,
+            backgroundColor: chartPalette.red,
+            pointRadius: 4,
+            tension: 0.35,
+            yAxisID: 'rate'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              afterBody(items) {
+                const race = performanceData[items[0].dataIndex];
+                return [`Avg time: ${race.avg_time || 'N/A'}s`, `Avg best lap: ${race.avg_fastest_lap || 'N/A'}s`];
+              }
+            }
+          },
+          legend: { labels: { usePointStyle: true } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          count: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Races' } },
+          rate: {
+            beginAtZero: true,
+            max: 100,
+            position: 'right',
+            ticks: { color: chartPalette.yellow, callback: value => `${value}%` },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Error loading admin analytics:", error);
+  }
 }

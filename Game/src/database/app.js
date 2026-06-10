@@ -37,18 +37,31 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-pool.query('ALTER TABLE PLAYER ADD COLUMN IF NOT EXISTS current_level INT NOT NULL DEFAULT 1')
-    .then(() => console.log("Database schema checked/updated."))
-    .catch(err => console.error("Critical error updating schema:", err));
-
-async function ensurePlayerProgressColumn() {
+async function ensureRuntimeSchema() {
     await pool.query(
         'ALTER TABLE PLAYER ADD COLUMN IF NOT EXISTS current_level INT NOT NULL DEFAULT 1'
     );
+    await pool.query(
+        'ALTER TABLE PLAYER_GAME ADD COLUMN IF NOT EXISTS race_level INT NOT NULL DEFAULT 1'
+    );
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS CARD_RACE_USAGE (
+            player_id INT NOT NULL,
+            game_id INT NOT NULL,
+            card_id INT NOT NULL,
+            selected_count INT NOT NULL DEFAULT 1,
+            activated_count INT NOT NULL DEFAULT 0,
+            PRIMARY KEY (player_id, game_id, card_id),
+            CONSTRAINT fk_cru_player_game FOREIGN KEY (player_id, game_id) REFERENCES PLAYER_GAME(player_id, game_id) ON DELETE CASCADE,
+            CONSTRAINT fk_cru_card FOREIGN KEY (card_id) REFERENCES CARD(card_id) ON DELETE CASCADE
+        )
+    `);
 }
 
-ensurePlayerProgressColumn().catch(error => {
-    console.error("Error checking PLAYER.current_level column:", error.message);
+ensureRuntimeSchema().then(() => {
+    console.log("Database schema checked/updated.");
+}).catch(error => {
+    console.error("Critical error updating schema:", error.message);
 });
 
 // 1. ENDPOINT: Health Check
@@ -210,13 +223,41 @@ app.get('/api/leaderboard', async (req, res) => {
     }
 });
 
-// 8. ENDPOINT: Admin analytics (top cards, time trends, race distribution) 
+// 8. ENDPOINT: Admin analytics - card impact with real selections/activations and podium conversion
+app.get('/api/admin/card-impact', async (req, res) => {
+    try {
+        const query = `
+            SELECT
+                c.name,
+                c.category,
+                SUM(cru.selected_count) AS selected_count,
+                SUM(cru.activated_count) AS activated_count,
+                SUM(CASE WHEN pg.position <= 3 THEN 1 ELSE 0 END) AS podiums,
+                ROUND(100 * SUM(CASE WHEN pg.position <= 3 THEN 1 ELSE 0 END) / NULLIF(SUM(cru.selected_count), 0), 1) AS podium_rate,
+                ROUND(AVG(pg.position), 2) AS avg_position,
+                ROUND(AVG(pg.total_play_time), 2) AS avg_time,
+                ROUND(MIN(NULLIF(pg.fastest_lap, 0)), 2) AS best_lap
+            FROM CARD_RACE_USAGE cru
+            JOIN CARD c ON cru.card_id = c.card_id
+            JOIN PLAYER_GAME pg ON cru.player_id = pg.player_id AND cru.game_id = pg.game_id
+            GROUP BY c.name, c.category
+            ORDER BY selected_count DESC, podium_rate DESC
+            LIMIT 10;
+        `;
+        const [rows] = await pool.query(query);
+        res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Backwards-compatible summary of selected cards.
 app.get('/api/admin/top-cards', async (req, res) => {
     try {
         const query = `
-            SELECT c.name, SUM(cs.usage_count) as total_uses
-            FROM CARD_Stats cs
-            JOIN CARD c ON cs.card_id = c.card_id
+            SELECT c.name, SUM(cru.selected_count) as total_uses
+            FROM CARD_RACE_USAGE cru
+            JOIN CARD c ON cru.card_id = c.card_id
             GROUP BY c.name
             ORDER BY total_uses DESC
             LIMIT 10;
@@ -228,17 +269,22 @@ app.get('/api/admin/top-cards', async (req, res) => {
     }
 });
 
-// 9. ENDPOINT: Time trends for the last week (average play time per day)
-app.get('/api/admin/time-trends', async (req, res) => {
+// 9. ENDPOINT: Daily race quality trend
+app.get('/api/admin/daily-quality', async (req, res) => {
     try {
         const query = `
-            SELECT DATE(g.login_date) as day, 
-                   AVG(pg.total_play_time) as avg_time
+            SELECT
+                DATE(g.login_date) AS day,
+                COUNT(*) AS races,
+                COUNT(DISTINCT pg.player_id) AS players,
+                ROUND(AVG(pg.total_play_time), 2) AS avg_time,
+                ROUND(MIN(NULLIF(pg.fastest_lap, 0)), 2) AS best_lap,
+                ROUND(100 * SUM(CASE WHEN pg.position <= 3 THEN 1 ELSE 0 END) / COUNT(*), 1) AS podium_rate
             FROM PLAYER_GAME pg
             JOIN GAMESESSION g ON pg.game_id = g.game_id
             GROUP BY DATE(g.login_date)
             ORDER BY day ASC
-            LIMIT 7;
+            LIMIT 14;
         `;
         const [rows] = await pool.query(query);
         res.status(200).json({ success: true, data: rows });
@@ -247,12 +293,53 @@ app.get('/api/admin/time-trends', async (req, res) => {
     }
 });
 
-// 10. ENDPOINT: Race distribution (percentage of players in top 3, middle 3, and bottom 3 positions)
-app.get('/api/admin/race-distribution', async (req, res) => {
+// Backwards-compatible average play time trend.
+app.get('/api/admin/time-trends', async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT DATE(g.login_date) as day, AVG(pg.total_play_time) as avg_time
+            FROM PLAYER_GAME pg
+            JOIN GAMESESSION g ON pg.game_id = g.game_id
+            GROUP BY DATE(g.login_date)
+            ORDER BY day ASC
+            LIMIT 7;
+        `);
+        res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// 10. ENDPOINT: Race level performance distribution
+app.get('/api/admin/race-performance', async (req, res) => {
     try {
         const query = `
-            SELECT 
-                CASE 
+            SELECT
+                race_level,
+                COUNT(*) AS starts,
+                SUM(CASE WHEN position = 1 THEN 1 ELSE 0 END) AS wins,
+                SUM(CASE WHEN position <= 3 THEN 1 ELSE 0 END) AS podiums,
+                ROUND(100 * SUM(CASE WHEN position = 1 THEN 1 ELSE 0 END) / COUNT(*), 1) AS win_rate,
+                ROUND(100 * SUM(CASE WHEN position <= 3 THEN 1 ELSE 0 END) / COUNT(*), 1) AS podium_rate,
+                ROUND(AVG(total_play_time), 2) AS avg_time,
+                ROUND(AVG(NULLIF(fastest_lap, 0)), 2) AS avg_fastest_lap
+            FROM PLAYER_GAME
+            GROUP BY race_level
+            ORDER BY race_level ASC;
+        `;
+        const [rows] = await pool.query(query);
+        res.status(200).json({ success: true, data: rows });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Backwards-compatible race distribution.
+app.get('/api/admin/race-distribution', async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT
+                CASE
                     WHEN position <= 3 THEN 'Podio (1-3)'
                     WHEN position <= 6 THEN 'Media (4-6)'
                     ELSE 'Baja (7+)'
@@ -260,8 +347,7 @@ app.get('/api/admin/race-distribution', async (req, res) => {
                 COUNT(*) as count
             FROM PLAYER_GAME
             GROUP BY category;
-        `;
-        const [rows] = await pool.query(query);
+        `);
         res.status(200).json({ success: true, data: rows });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
@@ -339,7 +425,7 @@ app.post('/api/player/progress', async (req, res) => {
 
 // 14. ENDPOINT: Save race statistics (used by the game to record player performance after each race)
 app.post('/api/save-race', async (req, res) => {
-    const { player_id, position, total_play_time, fastest_lap } = req.body;
+    const { player_id, position, total_play_time, fastest_lap, race_level, cards = [] } = req.body;
     
     // Función de reintento integrada
     const executeTransaction = async (retries = 3) => {
@@ -351,9 +437,39 @@ app.post('/api/save-race', async (req, res) => {
                 [total_play_time || 0]
             );
             await connection.query(
-                'INSERT INTO PLAYER_GAME (player_id, game_id, position, total_play_time, fastest_lap) VALUES (?, ?, ?, ?, ?)',
-                [player_id, gameResult.insertId, position, total_play_time || 0, fastest_lap || 0]
+                'INSERT INTO PLAYER_GAME (player_id, game_id, position, total_play_time, fastest_lap, race_level) VALUES (?, ?, ?, ?, ?, ?)',
+                [player_id, gameResult.insertId, position, total_play_time || 0, fastest_lap || 0, race_level || 1]
             );
+            const [[playerUser]] = await connection.query(
+                'SELECT user_id FROM PLAYER WHERE player_id = ?',
+                [player_id]
+            );
+            for (const card of cards) {
+                if (!card || !card.name) continue;
+                const [[dbCard]] = await connection.query(
+                    'SELECT card_id FROM CARD WHERE name = ?',
+                    [card.name]
+                );
+                if (!dbCard) continue;
+                const selectedCount = Math.max(0, Number(card.selected_count) || 0);
+                const activatedCount = Math.max(0, Number(card.activated_count) || 0);
+                await connection.query(
+                    `INSERT INTO CARD_RACE_USAGE (player_id, game_id, card_id, selected_count, activated_count)
+                     VALUES (?, ?, ?, ?, ?)
+                     ON DUPLICATE KEY UPDATE
+                        selected_count = selected_count + VALUES(selected_count),
+                        activated_count = activated_count + VALUES(activated_count)`,
+                    [player_id, gameResult.insertId, dbCard.card_id, selectedCount, activatedCount]
+                );
+                if (playerUser && selectedCount > 0) {
+                    await connection.query(
+                        `INSERT INTO CARD_Stats (user_id, card_id, usage_count)
+                         VALUES (?, ?, ?)
+                         ON DUPLICATE KEY UPDATE usage_count = usage_count + VALUES(usage_count)`,
+                        [playerUser.user_id, dbCard.card_id, selectedCount]
+                    );
+                }
+            }
             await connection.commit();
             return gameResult.insertId;
         } catch (error) {

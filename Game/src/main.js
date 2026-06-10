@@ -65,6 +65,8 @@ let selectedRaceCards = [];
 let musicVolume = 0.7;
 let sfxVolume = 0.7;
 let brightness = 1.0;
+let selectedCardForRace = null;
+let raceCardActivations = {};
 
 //  Player progress persistence (DB)
 // The logged-in player_id is written to localStorage by the login page (auth.js).
@@ -106,6 +108,8 @@ function resetRun() { // Full reset (permadeath): wipe level, kart upgrades and 
     cardSystem.reset();
     activeCards.reset();
     selectedRaceCards = [];
+    selectedCardForRace = null;
+    raceCardActivations = {};
     saveProgress(1);
 }
 
@@ -278,6 +282,10 @@ function handleClick(e) {
 
 //  Race management 
 function startCurrentRace() {
+    raceCardActivations = {};
+    activeCards.onCardActivated = (cardName) => {
+        raceCardActivations[cardName] = (raceCardActivations[cardName] || 0) + 1;
+    };
 
     currentRace = new Race(
     {...LEVEL_CONFIGS[currentLevel], level: currentLevel},
@@ -312,7 +320,7 @@ function startCurrentRace() {
     };
 
     const userId = getPlayerId();
-    saveRaceResults(userId, validStats.position, validStats.totalTime, validStats.fastestLap);
+    saveRaceResults(userId, validStats.position, validStats.totalTime, validStats.fastestLap, currentLevel);
 
     if (won) {
         if (currentLevel >= 7) {
@@ -345,6 +353,7 @@ function startCurrentRace() {
         playSFX('select');
       cardSelectScreen.active = false;
       selectedRaceCards = []; // limpiar siempre
+      selectedCardForRace = card.name;
       if (card.type === 'passive') {
           cardSystem.addCard({ name: card.name, level: 1, type: 'passive' }, playerKart);
       } else {
@@ -353,7 +362,16 @@ function startCurrentRace() {
       gameState = 'raceIntro';
   });
 
-function saveRaceResults(userId, position, totalTime, fastestLap) {
+function buildRaceCardPayload() {
+    if (!selectedCardForRace) return [];
+    return [{
+        name: selectedCardForRace,
+        selected_count: 1,
+        activated_count: raceCardActivations[selectedCardForRace] || 0
+    }];
+}
+
+function saveRaceResults(userId, position, totalTime, fastestLap, raceLevel) {
     fetch('http://localhost:3000/api/save-race', {
         method: 'POST',
         headers: {
@@ -363,7 +381,9 @@ function saveRaceResults(userId, position, totalTime, fastestLap) {
             player_id: userId,
             position: position,
             total_play_time: totalTime,
-            fastest_lap: fastestLap
+            fastest_lap: fastestLap,
+            race_level: raceLevel,
+            cards: buildRaceCardPayload()
         })
     })
     .then(res => res.json())
