@@ -351,3 +351,133 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
   font-size: .78rem;
   text-align: right;
 }
+
+
+/* ── NEW THEME: F1 RACING ── */
+.theme-f1 {
+  --primary:   #00e5ff;   /* brighter cyan          */
+  --secondary: #ff2d75;   /* racing magenta (NEW)   */
+  --accent:    #ffe600;   /* telemetry amber        */
+  --border:    #2f2f55;
+}
+
+/* Reusable checkered-flag strip */
+.theme-f1 .navbar::after,
+.theme-f1 .footer::before {
+  background-image:
+    linear-gradient(45deg, #e8e8f0 25%, transparent 25%, transparent 75%, #e8e8f0 75%),
+    linear-gradient(45deg, #e8e8f0 25%, transparent 25%, transparent 75%, #e8e8f0 75%);
+  background-size: 14px 14px;
+  background-position: 0 0, 7px 7px;
+  background-color: #0a0a14;
+}
+
+/* Checkered flag under the navbar */
+.theme-f1 .navbar { position: relative; border-bottom: none; }
+.theme-f1 .navbar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -7px;
+  height: 7px; opacity: .9;
+}
+
+/* Checkered flag on top of the footer */
+.theme-f1 .footer { position: relative; border-top: none; }
+.theme-f1 .footer::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 0;
+  height: 7px;
+}
+
+/* Vivid hero title: white → cyan → magenta → amber */
+.theme-f1 .hero-title {
+  background: linear-gradient(110deg, #ffffff 0%, var(--primary) 32%, var(--secondary) 66%, var(--accent) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Brighten the hero ambience with all three accents */
+.theme-f1 .hero-section {
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(0,229,255,.10) 0%, transparent 56%),
+    radial-gradient(ellipse at 18% 82%, rgba(255,45,117,.07) 0%, transparent 52%),
+    radial-gradient(ellipse at 85% 25%, rgba(255,230,0,.05) 0%, transparent 50%);
+}
+.theme-f1 .hero-grid {
+  background-image:
+    linear-gradient(rgba(0,229,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,.04) 1px, transparent 1px);
+}
+
+/* Subtle carbon-fibre weave on cards */
+.theme-f1 .card {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(135deg, rgba(255,255,255,.022) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(255,255,255,.022) 25%, transparent 25%);
+  background-size: 6px 6px;
+}
+.theme-f1 .card-hover { position: relative; overflow: hidden; }
+.theme-f1 .card-hover:hover {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 1px rgba(255,45,117,.25), 0 10px 30px rgba(0,0,0,.4);
+}
+
+/* Car-number dorsal in the corner of each feature card */
+.theme-f1 .car-number {
+  position: absolute; top: 8px; right: 14px; z-index: 2;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900; font-size: 1.9rem; line-height: 1;
+  letter-spacing: 1px; color: transparent;
+  -webkit-text-stroke: 1.5px var(--primary);
+  opacity: .35; pointer-events: none;
+  transition: opacity .25s, -webkit-text-stroke-color .25s;
+}
+.theme-f1 .car-number::before {
+  content: "#"; font-size: 1rem; vertical-align: super;
+  -webkit-text-stroke: 1px var(--secondary);
+}
+.theme-f1 .card-hover:hover .car-number {
+  opacity: .8; -webkit-text-stroke-color: var(--secondary);
+}
+
+/* Glow on the primary CTA buttons */
+.theme-f1 .btn-primary { box-shadow: 0 0 18px rgba(0,229,255,.25); }
+.theme-f1 .btn-primary:hover { box-shadow: 0 0 26px rgba(0,229,255,.45); }
+
+/* Section titles get a cyan→magenta underline tick */
+.theme-f1 .section-title { position: relative; display: inline-block; }
+.theme-f1 .section-title::after {
+  content: ""; position: absolute; left: 0; bottom: -8px;
+  width: 46px; height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+/* Checkered finish-line strip under page headers (Stats, Tutorial) */
+.theme-f1 .page-header { position: relative; border-bottom: none; }
+.theme-f1 .page-header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 8px;
+  background-image:
+    linear-gradient(45deg, #e8e8f0 25%, transparent 25%, transparent 75%, #e8e8f0 75%),
+    linear-gradient(45deg, #e8e8f0 25%, transparent 25%, transparent 75%, #e8e8f0 75%);
+  background-size: 16px 16px; background-position: 0 0, 8px 8px;
+  background-color: #0a0a14; opacity: .9;
+}
+
+/* Tutorial sub-headings: short checkered tick instead of the flat grey line */
+.theme-f1 .tut-heading { position: relative; border-bottom: 1px solid var(--border); }
+.theme-f1 .tut-heading::after {
+  content: ""; position: absolute; left: 0; bottom: -1px; width: 64px; height: 4px;
+  background-image:
+    linear-gradient(45deg, #e8e8f0 25%, transparent 25%, transparent 75%, #e8e8f0 75%),
+    linear-gradient(45deg, #e8e8f0 25%, transparent 25%, transparent 75%, #e8e8f0 75%);
+  background-size: 8px 8px; background-position: 0 0, 4px 4px;
+  background-color: var(--secondary);
+}
+
+/* Car-number dorsals sit a touch smaller on the compact tutorial card tiles */
+.theme-f1 .card-tile .car-number { font-size: 1.25rem; top: 6px; right: 10px; }
+.theme-f1 .card-tile.active .car-number { -webkit-text-stroke-color: var(--secondary); }
+.theme-f1 .card-tile.active .car-number::before { -webkit-text-stroke-color: var(--primary); }
+
+/* Leaderboard + stat accents follow the brighter palette */
+.theme-f1 .arcade-table th { color: var(--primary); border-bottom-color: var(--secondary); }
+.theme-f1 .arcade-table tr:hover { background: rgba(255,45,117,.10) !important; }
+.theme-f1 .rank-me { background: rgba(0,229,255,.12) !important; border-left-color: var(--primary); }

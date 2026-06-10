@@ -5,13 +5,14 @@
 const API_STATS_URL = 'http://localhost:3000/api/stats';
 const API_LEADERBOARD_URL = 'http://localhost:3000/api/leaderboard'; 
 const chartTextColor = '#f0f0ff';
-const chartGridColor = 'rgba(136, 136, 170, 0.22)';
+const chartGridColor = 'rgba(136, 136, 170, 0.18)';
+// F1 Telemetry palette — matches the site theme (.theme-f1)
 const chartPalette = {
-  cyan: '#00d4ff',
-  green: '#00cc77',
-  red: '#ff4060',
-  yellow: '#ffd166',
-  purple: '#7c3aed'
+  cyan:   '#00e5ff',
+  green:  '#00cc77',
+  red:    '#ff4060',
+  yellow: '#ffe600',  // telemetry amber
+  purple: '#ff2d75'   // racing magenta (theme secondary)
 };
 
 /**
