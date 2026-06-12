@@ -48,14 +48,14 @@ function logout() {
 }
 
 function setupNav() {
-  const navRight = d3.select("#navRight"); 
+  const navRight = d3.select("#navRight");
   if (!navRight.node()) return;
 
   const username = getUsername();
   const role = getUserRole();
 
-  const roleBadge = role === 'admin' 
-    ? `<span class="badge bg-danger text-uppercase" style="font-size:0.7rem;">Admin</span>` 
+  const roleBadge = role === 'admin'
+    ? `<span class="badge bg-danger text-uppercase" style="font-size:0.7rem;">Admin</span>`
     : `<span class="badge bg-secondary text-uppercase" style="font-size:0.7rem;">Player</span>`;
 
   navRight.html(`
@@ -64,10 +64,63 @@ function setupNav() {
         ${roleBadge}
         <span class="text-white" style="font-size:.85rem; font-weight: 500;">${username}</span>
       </div>
+      <div class="cb-toggle" title="Colorblind mode: N=Normal P=Protanopia D=Deuteranopia T=Tritanopia A=Achromatopsia">
+        <button class="cb-btn" data-mode=""             onclick="setColorblindMode('')">N</button>
+        <button class="cb-btn" data-mode="protanopia"   onclick="setColorblindMode('protanopia')">P</button>
+        <button class="cb-btn" data-mode="deuteranopia" onclick="setColorblindMode('deuteranopia')">D</button>
+        <button class="cb-btn" data-mode="tritanopia"   onclick="setColorblindMode('tritanopia')">T</button>
+        <button class="cb-btn" data-mode="achromatopsia" onclick="setColorblindMode('achromatopsia')">A</button>
+      </div>
       <button class="btn btn-outline-secondary btn-sm" style="font-size:.75rem;" onclick="logout()">Sign out</button>
     </div>
   `);
+
+  // sync active button to current saved mode
+  const current = getCbMode();
+  document.querySelectorAll('.cb-btn').forEach(btn =>
+    btn.classList.toggle('cb-active', btn.dataset.mode === current));
 }
+
+// ── COLORBLIND FILTER SUPPORT ──
+
+function injectColorblindFilters() {
+  if (document.getElementById('cb-svg-defs')) return;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.id = 'cb-svg-defs';
+  svg.style.display = 'none';
+  // Vienot et al. 1999 color matrices for the three main dichromacy types
+  svg.innerHTML = `<defs>
+    <filter id="cb-protanopia" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="cb-deuteranopia" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="cb-tritanopia" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/>
+    </filter>
+  </defs>`;
+  document.body.appendChild(svg);
+}
+
+function getCbMode() {
+  return localStorage.getItem('vd_cb_mode') || '';
+}
+
+function setColorblindMode(mode) {
+  document.body.classList.remove('cb-protanopia', 'cb-deuteranopia', 'cb-tritanopia', 'cb-achromatopsia');
+  if (mode) document.body.classList.add('cb-' + mode);
+  localStorage.setItem('vd_cb_mode', mode);
+  document.querySelectorAll('.cb-btn').forEach(btn =>
+    btn.classList.toggle('cb-active', btn.dataset.mode === mode));
+}
+
+// Apply saved colorblind mode on every page that loads auth.js
+document.addEventListener('DOMContentLoaded', function () {
+  injectColorblindFilters();
+  const saved = getCbMode();
+  if (saved) document.body.classList.add('cb-' + saved);
+});
 
 async function login(username, password) {
   try {

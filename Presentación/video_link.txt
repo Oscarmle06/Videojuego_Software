@@ -1,0 +1,8 @@
+Velocity Draft — Video Demo
+===========================
+
+YouTube link: [PEGAR AQUI EL LINK DE YOUTUBE]
+
+El video muestra la funcionalidad completa del sistema:
+- Página web: registro, login, estadísticas, leaderboard, panel de administrador
+- Videojuego: selección de cartas, carreras, sistema de cartas activas/pasivas, CPU con personalidades

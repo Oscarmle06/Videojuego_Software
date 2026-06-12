@@ -1,4 +1,3 @@
-Game/node_modules
+**/node_modules
 .DS_Store
 **/.DS_Store
-CatCafé/node_modules

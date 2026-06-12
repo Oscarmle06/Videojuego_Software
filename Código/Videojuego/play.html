@@ -2,12 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Velocity Draft — Juego</title>
+  <title>Velocity Draft — Game</title>
   <style>
     html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
 
-    /* Composite stage (game + side column), centered & scaled to fit.
-       Game keeps its native 1.7 aspect so the art is never stretched. */
+    /* This HTML represents the main game container, with the right proportions */
     #screen {
       position: absolute;
       top: 50%; left: 50%;
@@ -18,12 +17,12 @@
       flex-direction: row;
     }
 
-    /* Game = left 82% (1020x600 → 1734x1020, uniform 1.7x), map+cards on the right */
     #gameCanvas { width: 82.02%; height: 100%;   display: block; }
     #sideColumn { width: 17.98%; height: 100%;   display: flex; flex-direction: column; }
-    #mapCanvas  { width: 100%;   height: 37.26%; display: block; }  /* square */
+    #mapCanvas  { width: 100%;   height: 37.26%; display: block; }
     #cardCanvas { width: 100%;   height: 62.74%; display: block; }
   </style>
+  /* Preload all assets to ensure all assets render properly during gameplay */
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
   <script type="module" src="src/main.js"></script>
       <link rel="preload" href="./assets/sunnyday.png" as="image">

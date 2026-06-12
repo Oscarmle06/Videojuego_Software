@@ -76,7 +76,7 @@ app.get('/', (req, res) => {
 // 2. ENDPOINT: Get all cards with their effects
 app.get('/api/cards', async (req, res) => {
     try {
-        // Aseguramos que los nombres de las columnas coincidan con lo que race.js espera mapear
+        // We make sure the names on the columns match the ones that appear in race.js
         const query = `
             SELECT 
                 card_name, 
@@ -474,9 +474,9 @@ app.post('/api/save-race', async (req, res) => {
             return gameResult.insertId;
         } catch (error) {
             await connection.rollback();
-            // 1213 es el código de error para Deadlock en MariaDB
+            // 1213 is mariaDB's error code for deadlock
             if (error.errno === 1213 && retries > 0) {
-                await new Promise(r => setTimeout(r, 100)); // Pequeña espera
+                await new Promise(r => setTimeout(r, 100));
                 return executeTransaction(retries - 1);
             }
             throw error;
