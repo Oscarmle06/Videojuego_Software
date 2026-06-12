@@ -1,26 +1,24 @@
 // CPUCardSystem.js
-// Maneja las cartas de los karts CPU. Las pasivas se aplican al equipar,
-// las activas se usan automáticamente según la situación de la carrera,
-// con un cooldown de 10 segundos entre usos.
+// Manages card logic for CPU karts. Passive cards are applied immediately on equip;
+// active cards are used automatically when situational conditions are met,
+// with a shared cooldown of 10 seconds between uses.
 // Oscar Lara, Emilio Lara, Aixa Mendoza, May 2026
 
 import { SpeedDebuff, SpeedDrain, SpeedBoost, Knockback, CardDisable, Shield } from './cardEffects.js';
 
-const USE_COOLDOWN = 10;
+const USE_COOLDOWN = 10; // seconds between any two active card uses for a CPU kart
 
-export class CPUCardSystem {
-
+export class CPUCardSystem { // Handles card equipping, passive stat bonuses, and autonomous active-card decisions for CPU karts
     constructor(kart, player, allKarts, vfx) {
         this.kart      = kart;
         this.player    = player;
         this.allKarts  = allKarts;
         this.vfx       = vfx;
-        this.slots     = [null, null, null];
+        this.slots     = [null, null, null]; // three card slots, mirroring the player's card system
         this._cooldown = 0;
     }
 
-    // Agrega una carta al primer slot libre y aplica el efecto pasivo si aplica
-    equip(card) {
+    equip(card) { // Adds a card to the first available slot and immediately applies its stat bonus if it is a passive card
         for (let i = 0; i < this.slots.length; i++) {
             if (this.slots[i] === null) {
                 this.slots[i] = { ...card };
@@ -30,11 +28,10 @@ export class CPUCardSystem {
                 return true;
             }
         }
-        return false;
+        return false; // all slots are full
     }
 
-    // Se llama cada frame desde CPUKart.update()
-    update(deltaTime) {
+    update(deltaTime) { // Called every frame from CPUKart.update(); ticks down the cooldown and attempts to use an active card when ready
         if (this._cooldown > 0) {
             this._cooldown -= deltaTime;
             return;
@@ -44,15 +41,14 @@ export class CPUCardSystem {
         this._tryUseActiveCard();
     }
 
-    // Aplica el efecto de una carta pasiva al kart
-    _applyPassive(card) {
+    _applyPassive(card) { // Directly modifies kart stats to reflect the passive card's permanent bonus
         if (card.name === 'Aerodynamic Spoiler') {
             this.kart.maxSpeed     += 1;
             this.kart.acceleration += 0.1;
         }
         if (card.name === 'Heavy Chassis') {
             this.kart.maxHP *= 1.2;
-            this.kart.hp     = this.kart.maxHP;
+            this.kart.hp     = this.kart.maxHP; // refill HP to the new maximum
         }
         if (card.name === 'Sport Tires') {
             this.kart.baseRotationSpeed += 1;
@@ -62,8 +58,7 @@ export class CPUCardSystem {
         }
     }
 
-    // Revisa todos los slots y usa la primera carta activa cuya condición se cumpla
-    _tryUseActiveCard() {
+    _tryUseActiveCard() { // Scans all slots and activates the first active card whose situational condition is satisfied
         for (let i = 0; i < this.slots.length; i++) {
             const card = this.slots[i];
             if (card === null) continue;
@@ -76,39 +71,32 @@ export class CPUCardSystem {
         }
     }
 
-    // Devuelve true si la situación de la carrera es la correcta para usar esa carta
-    _conditionMet(name) {
+    _conditionMet(name) { // Returns true when the current race situation is the right moment to use the given card
         const playerDist    = this._distTo(this.player);
         const playerInFront = this._isInFront(this.player);
         const playerBehind  = this._isBehind(this.player);
         const myPosition    = this._getPosition();
 
         if (name === 'Tire Shredder') {
-            // Solo si no vamos en 1er lugar y el jugador está adelante
-            return myPosition > 1 && playerInFront && playerDist < 20;
+            return myPosition > 1 && playerInFront && playerDist < 20; // only fire when behind and the player is ahead in range
         }
         if (name === 'Grappler Hook') {
-            // Solo si no vamos en 1er lugar y el jugador está adelante
-            return myPosition > 1 && playerInFront && playerDist < 20;
+            return myPosition > 1 && playerInFront && playerDist < 20; // same trigger as Tire Shredder — steal speed from a kart ahead
         }
         if (name === 'Sonic Wave') {
-            // Solo si el jugador está muy cerca
-            return playerBehind && playerDist < 4;
+            return playerBehind && playerDist < 4; // push away a kart that is right behind and about to overtake
         }
         if (name === 'EMP') {
-            // Solo si el jugador está atrás y cerca (nunca adelante, se desperdiciaría)
-            return playerBehind && playerDist < 5;
+            return playerBehind && playerDist < 5; // disable cards of a close trailing kart; useless if they are already ahead
         }
         if (name === 'Temporary Armor') {
-            // Solo si tenemos menos del 40% de HP
-            return (this.kart.hp / this.kart.maxHP) < 0.4;
+            return (this.kart.hp / this.kart.maxHP) < 0.4; // shield up when critically low on health
         }
 
         return false;
     }
 
-    // Ejecuta el efecto de la carta, la consume y arranca el cooldown
-    _activate(card, slotIndex) {
+    _activate(card, slotIndex) { // Executes the card's effect, removes it from the slot, and starts the cooldown
         if (card.name === 'Tire Shredder') {
             const target = this._getNearestInFront();
             if (target !== null) {
@@ -135,7 +123,7 @@ export class CPUCardSystem {
                 const perpX = -this.kart.dirY;
                 const perpY =  this.kart.dirX;
                 let side    = 1;
-                if ((dx * perpX + dy * perpY) < 0) side = -1;
+                if ((dx * perpX + dy * perpY) < 0) side = -1; // determine which side of the kart the target is on
                 t.applyEffect(new Knockback(perpX * side * 40, perpY * side * 40, 15));
             }
         }
@@ -148,38 +136,36 @@ export class CPUCardSystem {
                 const dx   = t.x - this.kart.x;
                 const dy   = t.y - this.kart.y;
                 let dist   = Math.sqrt(dx * dx + dy * dy);
-                if (dist === 0) dist = 1;
+                if (dist === 0) dist = 1; // avoid division by zero for overlapping karts
                 t.applyEffect(new Knockback((dx / dist) * 40, (dy / dist) * 40, 0));
                 t.applyEffect(new CardDisable(2));
             }
         }
 
         if (card.name === 'Temporary Armor') {
-            let yaEscudado = false;
+            let alreadyShielded = false;
             for (let i = 0; i < this.kart.activeEffects.length; i++) {
                 if (this.kart.activeEffects[i].constructor.name === 'Shield') {
-                    yaEscudado = true;
+                    alreadyShielded = true;
                 }
             }
-            if (!yaEscudado) {
+            if (!alreadyShielded) { // prevent stacking multiple shield effects
                 const shieldVFX = this.vfx.addShield(this.kart.x, this.kart.y, this.kart);
                 this.kart.applyEffect(new Shield(20, shieldVFX));
             }
         }
 
-        this.slots[slotIndex] = null;
+        this.slots[slotIndex] = null; // consume the card
         this._cooldown = USE_COOLDOWN;
     }
 
-    // Distancia entre este kart y un objetivo
-    _distTo(target) {
+    _distTo(target) { // Returns the Euclidean distance between this kart and the target
         const dx = target.x - this.kart.x;
         const dy = target.y - this.kart.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    // True si el objetivo está generalmente enfrente de este kart
-    _isInFront(target) {
+    _isInFront(target) { // Returns true if the target is roughly ahead of this kart; dot > 0.2 gives a ~78° forward cone
         const dx   = target.x - this.kart.x;
         const dy   = target.y - this.kart.y;
         let dist   = Math.sqrt(dx * dx + dy * dy);
@@ -188,8 +174,7 @@ export class CPUCardSystem {
         return dot > 0.2;
     }
 
-    // True si el objetivo está generalmente detrás de este kart
-    _isBehind(target) {
+    _isBehind(target) { // Returns true if the target is roughly behind this kart; dot < -0.2 gives a ~78° rear cone
         const dx   = target.x - this.kart.x;
         const dy   = target.y - this.kart.y;
         let dist   = Math.sqrt(dx * dx + dy * dy);
@@ -198,8 +183,7 @@ export class CPUCardSystem {
         return dot < -0.2;
     }
 
-    // Devuelve el kart más cercano que está enfrente
-    _getNearestInFront() {
+    _getNearestInFront() { // Returns the closest kart that is in the forward half-space; uses squared distance to avoid a square-root per candidate
         let nearest = null;
         let minDist = Infinity;
         for (let i = 0; i < this.allKarts.length; i++) {
@@ -208,7 +192,7 @@ export class CPUCardSystem {
             const dx  = t.x - this.kart.x;
             const dy  = t.y - this.kart.y;
             const dot = dx * this.kart.dirX + dy * this.kart.dirY;
-            if (dot <= 0) continue;
+            if (dot <= 0) continue; // skip karts that are behind
             const dist = dx * dx + dy * dy;
             if (dist < minDist) {
                 minDist = dist;
@@ -218,8 +202,7 @@ export class CPUCardSystem {
         return nearest;
     }
 
-    // Devuelve todos los karts dentro de un radio dado
-    _getInRadius(radius) {
+    _getInRadius(radius) { // Returns all karts (excluding self) within the given world-unit radius; uses squared comparison for efficiency
         const result = [];
         const r2     = radius * radius;
         for (let i = 0; i < this.allKarts.length; i++) {
@@ -234,8 +217,7 @@ export class CPUCardSystem {
         return result;
     }
 
-    // Devuelve la posición actual de este kart en la carrera (1 = primero)
-    _getPosition() {
+    _getPosition() { // Returns this kart's current race position (1 = first) based on laps × total checkpoints + next checkpoint
         let totalCheckpoints = 1;
         if (this.allKarts.length > 0 && this.allKarts[0].nextCheckpoint !== undefined) {
             for (let i = 0; i < this.allKarts.length; i++) {
@@ -263,6 +245,6 @@ export class CPUCardSystem {
             if (score > myScore) ahead++;
         }
 
-        return ahead + 1;
+        return ahead + 1; // 1-based position
     }
 }

@@ -1,106 +1,90 @@
-// stats.js - File responsible for fetching and displaying stats.
-// This file contains functions to connect with the backend API to retrieve player statistics and render them in the Fighter Hub dashboard. It also includes logic to toggle between player and admin views, and to render admin analytics using Chart.js.
-// Oscar Lara, Emilio Lara, Aixa Mendoza, Junio 2026
+// stats.js
+// Fetches player statistics from the backend API and renders them in the Fighter Hub dashboard.
+// Handles role-based view switching (player vs. admin) and builds Chart.js / D3.js visualizations.
+// Oscar Lara, Emilio Lara, Aixa Mendoza, June 2026
 
-const API_STATS_URL = 'http://localhost:3000/api/stats';
-const API_LEADERBOARD_URL = 'http://localhost:3000/api/leaderboard'; 
+const API_STATS_URL       = 'http://localhost:3000/api/stats';
+const API_LEADERBOARD_URL = 'http://localhost:3000/api/leaderboard';
 const chartTextColor = '#f0f0ff';
 const chartGridColor = 'rgba(136, 136, 170, 0.18)';
-// F1 Telemetry palette — matches the site theme (.theme-f1)
+// F1 telemetry palette — matches the site's .theme-f1 CSS variables
 const chartPalette = {
   cyan:   '#00e5ff',
   green:  '#00cc77',
   red:    '#ff4060',
-  yellow: '#ffe600',  // telemetry amber
-  purple: '#ff2d75'   // racing magenta (theme secondary)
+  yellow: '#ffe600', // telemetry amber
+  purple: '#ff2d75'  // racing magenta (theme secondary)
 };
 
-/**
- * Conecta con el backend para jalar las estadísticas del jugador logueado
- */
-async function getPlayerStatsFromDB() {
-  // Ahora usamos la función que acabas de crear en auth.js
-  const pid = getPlayerId(); 
-  
+async function getPlayerStatsFromDB() { // Fetches aggregate stats for the logged-in player from the API; returns null if not logged in or the request fails
+  const pid = getPlayerId(); // player_id is written to localStorage by auth.js on login
+
   if (!pid) {
-      console.warn("No se encontró player_id. Asegúrate de estar logueado.");
-      return null;
+    console.warn("No player_id found — make sure the user is logged in.");
+    return null;
   }
 
   try {
     const response = await fetch(`http://localhost:3000/api/stats?player_id=${pid}`);
-    const result = await response.json();
-    
+    const result   = await response.json();
     if (result.success) return result.data;
     return null;
   } catch (error) {
-    console.error("Error al conectar con la API de stats:", error);
+    console.error("Error connecting to the stats API:", error);
     return null;
   }
 }
 
-/**
- * Inicializa y alterna las vistas del Fighter Hub dependiendo del rol detectado
- */
-async function initViews(role) {
-  const playerView = document.getElementById('view-player');
+async function initViews(role) { // Shows the correct Fighter Hub view for the detected role — admins see analytics, players see their dashboard and the leaderboard
+  const playerView   = document.getElementById('view-player');
   const adminSection = document.getElementById('admin-analytics-section');
 
   if (role === 'admin') {
-    // Si eres admin, ocultamos el tablero de jugador y mostramos el de admin
-    if (playerView) playerView.classList.add('d-none');
+    if (playerView)   playerView.classList.add('d-none');    // hide player board for admins
     if (adminSection) {
-        adminSection.classList.remove('d-none');
-        await renderAdminAnalytics();
+      adminSection.classList.remove('d-none');
+      await renderAdminAnalytics();
     }
   } else {
-    // Si eres player, mostramos el tablero y ocultamos el de admin
-    if (playerView) playerView.classList.remove('d-none');
-    if (adminSection) adminSection.classList.add('d-none');
-    
+    if (playerView)   playerView.classList.remove('d-none'); // show player board
+    if (adminSection) adminSection.classList.add('d-none');  // hide admin section for regular players
+
     await renderPlayerDashboard();
     await renderArcadeLeaderboard();
   }
 }
 
-/**
- * Pinta los récords numéricos en las tarjetas de Bootstrap superiores
- */
-async function renderPlayerDashboard() {
+async function renderPlayerDashboard() { // Populates the four Bootstrap stat cards at the top of the player view with live data from the API
   const sessionEl = document.getElementById('statSessions');
   const winsEl    = document.getElementById('statWins');
   const bestLapEl = document.getElementById('statBestLap');
   const avgTimeEl = document.getElementById('statAvgTime');
 
-  // Solo procedemos si tenemos los elementos Y los datos
   const stats = await getPlayerStatsFromDB();
-  
+
+  // Guard each write against both a missing DOM element and a failed API response
   if (sessionEl && stats) sessionEl.textContent = stats.totalGames || 0;
-  if (winsEl && stats)    winsEl.textContent    = stats.wins || 0;
-  if (bestLapEl && stats) bestLapEl.textContent  = `${stats.bestLap || '0.00'}s`;
-  if (avgTimeEl && stats) avgTimeEl.textContent  = `${stats.avgTime || '0.00'}s`;
+  if (winsEl    && stats) winsEl.textContent    = stats.wins       || 0;
+  if (bestLapEl && stats) bestLapEl.textContent = `${stats.bestLap || '0.00'}s`;
+  if (avgTimeEl && stats) avgTimeEl.textContent = `${stats.avgTime || '0.00'}s`;
 }
 
-// Función para renderizar el leaderboard usando D3.js
-async function renderArcadeLeaderboard() {
+async function renderArcadeLeaderboard() { // Builds the D3.js leaderboard table; highlights the current player's row and adds medal emojis for the top 3
   const tbody = d3.select("#leaderboard-body");
-  tbody.html("");
+  tbody.html(""); // clear previous render before re-populating
 
   try {
     const response = await fetch(API_LEADERBOARD_URL);
-    const result = await response.json();
-    
+    const result   = await response.json();
     if (!result.success || !result.data) return;
 
-    // AHORA USAMOS player_id PARA SABER QUIÉN ERES
-    const myPlayerId = parseInt(getPlayerId()); 
+    const myPlayerId = parseInt(getPlayerId()); // compare as integers to avoid "1" !== 1 mismatches
 
     const rows = tbody.selectAll("tr")
-      .data(result.data.map((d, i) => ({ 
-        ...d, 
-        rank: i + 1, 
-        // Comparamos el ID del jugador en la fila vs tu ID actual
-        isMe: parseInt(d.player_id) === parseInt(myPlayerId)
+      .data(result.data.map((d, i) => ({
+        ...d,
+        rank: i + 1,
+        isMe: parseInt(d.player_id) === myPlayerId // flag used to apply the .rank-me highlight class
       })))
       .enter()
       .append("tr")
@@ -109,10 +93,10 @@ async function renderArcadeLeaderboard() {
     rows.append("td")
       .attr("class", d => d.rank <= 3 ? "rank-top" : "")
       .text(d => d.rank === 1 ? `🥇 ${d.rank}` : d.rank === 2 ? `🥈 ${d.rank}` : d.rank === 3 ? `🥉 ${d.rank}` : d.rank);
-      
+
     rows.append("td")
       .style("text-align", "left")
-      .html(d => {
+      .html(d => { // bold cyan name + "YOU" badge for the current player
         const nameText = d.isMe ? `<strong class="text-cyan">${d.name}</strong>` : d.name;
         const youBadge = d.isMe ? `<span class="badge bg-info text-dark ms-2" style="font-size:0.6rem; vertical-align: middle;">YOU</span>` : "";
         return `${nameText} ${youBadge}`;
@@ -129,16 +113,18 @@ async function renderArcadeLeaderboard() {
   }
 }
 
-async function renderAdminAnalytics() {
+async function renderAdminAnalytics() { // Fetches three admin endpoints and renders a Chart.js visualization for each: card impact, daily quality trends, and per-race performance
   const section = document.getElementById('admin-analytics-section');
   if (!section) return;
 
   section.classList.remove('d-none');
 
   try {
-    Chart.defaults.color = chartTextColor;
+    // Apply theme colors globally so all three charts inherit them without per-chart config
+    Chart.defaults.color       = chartTextColor;
     Chart.defaults.borderColor = chartGridColor;
 
+    // --- Chart 1: Card Impact (bars = selected/activated counts, line = podium rate) ---
     const resCards = await fetch('http://localhost:3000/api/admin/card-impact');
     const { data: cardsData = [] } = await resCards.json();
 
@@ -163,7 +149,7 @@ async function renderAdminAnalytics() {
             yAxisID: 'count'
           },
           {
-            type: 'line',
+            type: 'line', // overlay on the same chart via a secondary y-axis
             label: 'Podium rate (%)',
             data: cardsData.map(c => Number(c.podium_rate) || 0),
             borderColor: chartPalette.yellow,
@@ -180,7 +166,7 @@ async function renderAdminAnalytics() {
         plugins: {
           tooltip: {
             callbacks: {
-              afterBody(items) {
+              afterBody(items) { // append extra stats below the default tooltip lines
                 const card = cardsData[items[0].dataIndex];
                 return [`Avg finish: ${card.avg_position || 'N/A'}`, `Best lap: ${card.best_lap || 'N/A'}s`];
               }
@@ -196,12 +182,13 @@ async function renderAdminAnalytics() {
             max: 100,
             position: 'right',
             ticks: { color: chartPalette.yellow, callback: value => `${value}%` },
-            grid: { drawOnChartArea: false }
+            grid: { drawOnChartArea: false } // avoid double grid lines from both y-axes
           }
         }
       }
     });
 
+    // --- Chart 2: Daily Quality Trends (bars = race count per day, lines = avg time / best lap / podium rate) ---
     const resTrends = await fetch('http://localhost:3000/api/admin/daily-quality');
     const { data: trendsData = [] } = await resTrends.json();
 
@@ -214,7 +201,7 @@ async function renderAdminAnalytics() {
           {
             label: 'Races',
             data: trendsData.map(d => Number(d.races) || 0),
-            backgroundColor: 'rgba(0, 212, 255, 0.25)',
+            backgroundColor: 'rgba(0, 212, 255, 0.25)', // translucent fill so time-series lines remain visible
             borderColor: chartPalette.cyan,
             borderWidth: 1,
             borderRadius: 6,
@@ -246,7 +233,7 @@ async function renderAdminAnalytics() {
             data: trendsData.map(d => Number(d.podium_rate) || 0),
             borderColor: chartPalette.yellow,
             backgroundColor: chartPalette.yellow,
-            borderDash: [6, 4],
+            borderDash: [6, 4], // dashed to visually distinguish it from the solid time lines
             pointRadius: 3,
             tension: 0.35,
             yAxisID: 'rate'
@@ -269,13 +256,14 @@ async function renderAdminAnalytics() {
         },
         scales: {
           x: { grid: { display: false } },
-          count: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Races' } },
+          count:   { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: 'Races' } },
           seconds: { beginAtZero: true, position: 'right', title: { display: true, text: 'Seconds' }, grid: { drawOnChartArea: false } },
-          rate: { beginAtZero: true, max: 100, display: false }
+          rate:    { beginAtZero: true, max: 100, display: false } // hidden; podium rate shares the chart but doesn't need its own axis label
         }
       }
     });
 
+    // --- Chart 3: Per-Race Performance (starts/wins bars, podium/win-rate lines per race level) ---
     const resDistribution = await fetch('http://localhost:3000/api/admin/race-performance');
     const { data: performanceData = [] } = await resDistribution.json();
 
@@ -348,6 +336,7 @@ async function renderAdminAnalytics() {
         }
       }
     });
+
   } catch (error) {
     console.error("Error loading admin analytics:", error);
   }
