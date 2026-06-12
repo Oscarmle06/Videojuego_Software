@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-  "dev:frontend": "vite --root Videojuego",
+  "dev:frontend": "vite --root VideoGame",
   "dev:backend": "node Web/backend/app.js",
   "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
 },

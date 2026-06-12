@@ -17,14 +17,14 @@ Players race through 7 levels, picking one card between each race to upgrade the
 
 ```bash
 git clone <REPOSITORY_URL>
-cd Videojuego_Software/Game
+cd Videojuego_Software/Code
 ```
 
 ---
 
 ## 2. Set up the database
 
-All SQL scripts are in `src/database/`. Run them **in this exact order** — each script depends on the previous one.
+All SQL scripts are in `DataBase/`. The easiest option is to run the single combined script:
 
 ### 2a. Create the DB user and grant privileges
 
@@ -36,30 +36,27 @@ GRANT ALL PRIVILEGES ON velocity_draft_db.* TO 'velocity_admin'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-### 2b. Run the SQL scripts in order
+### 2b. Run the combined script (recommended)
 
 ```bash
-# 1. Schema (tables + foreign keys)
-mariadb -u velocity_admin -p < src/database/velocity_draft_db.sql
+mariadb -u velocity_admin -p < DataBase/velocity_draft_complete.sql
+```
 
-# 2. Seed data (cards, sample players, test sessions)
-mariadb -u velocity_admin -p < src/database/velocity_draft_data.sql
+Or run each file individually **in this exact order**:
 
-# 3. Views (admin analytics queries)
-mariadb -u velocity_admin -p < src/database/vd_views.sql
-
-# 4. Stored procedures
-mariadb -u velocity_admin -p < src/database/vd_sp.sql
-
-# 5. Triggers
-mariadb -u velocity_admin -p < src/database/vd_triggers.sql
+```bash
+mariadb -u velocity_admin -p < DataBase/velocity_draft_db.sql      # 1. Schema
+mariadb -u velocity_admin -p < DataBase/velocity_draft_data.sql    # 2. Seed data
+mariadb -u velocity_admin -p < DataBase/vd_views.sql               # 3. Views
+mariadb -u velocity_admin -p < DataBase/vd_sp.sql                  # 4. Stored procedures
+mariadb -u velocity_admin -p < DataBase/vd_triggers.sql            # 5. Triggers
 ```
 
 ---
 
 ## 3. Configure the environment
 
-The backend reads credentials from `src/database/.env`. The file already exists in the repo with the default values shown below 
+The backend reads credentials from `Web/backend/.env`. The file already exists in the repo with the default values shown below:
 
 ```env
 DB_HOST=localhost
@@ -81,7 +78,7 @@ npm install
 
 ## 5. Start the project
 
-`npm run dev` launches **both** the backend API (Express on port 3000) and the frontend dev server (Vite on port 5173) in a single terminal using `concurrently`.
+`npm run dev` launches **both** the backend API (Express on port 3000) and the game dev server (Vite on port 5173) in a single terminal using `concurrently`.
 
 ```bash
 npm run dev
@@ -96,11 +93,11 @@ npm run dev:frontend   # Vite dev server → http://localhost:5173
 
 ---
 
-## 6. Open the game
+## 6. Open the web dashboard
 
-Navigate to **http://localhost:5173** in your browser.
+Open `Web/frontend/index.html` in your browser, or navigate to **http://localhost:5173** which redirects there automatically.
 
-> The backend must be running before the game starts — it fetches card balance values and saves race results on every race finish.
+> The backend must be running before opening the dashboard — it handles login, card balance, and race result persistence.
 
 ---
 
