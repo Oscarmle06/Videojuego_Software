@@ -45,17 +45,19 @@
 
 ### **Summary**
 
-Velocity Draft is a 2.5D car-combat roguelike that merges retro arcade racing with modern deck-building strategy. Every run, players build a card deck to evolve their vehicle, race against AI rivals on procedurally generated tracks, and fight to survive with a persistent health bar — permadeath looming at every corner.
+Velocity Draft is a 2.5D roguelike racing game where strategy matters as much as speed. After your manager and pit crew abandoned you before the season began, you're left with a struggling car and something to prove. Build a deck to upgrade your car and obtain power-up cards, outsmart rival racers, and survive one demo race and 6 high-stakes races to become champion. With permadeath, randomized upgrades, and tough decisions every race, no championship run is ever the same.
 
 ### **Gameplay**
 
-The goal is to complete a series of races in a continuous "run" format, finishing each race in the **top 3** while keeping the health bar alive. Players do not choose a class — instead, they build their driving style through a deck-building system, selecting one card from three offered after each victorious race. Cards range from permanent performance upgrades (Passives) to limited-use weapons (Offensive) and healing tools (Repair).
+The goal is to complete a series of races in a continuous "run" format, finishing each race in the **top 3** while keeping the health bar from reaching 0 or empty. Players do not choose a class — instead, they build their driving style through a deck-building system, selecting one card from four randomized options offered after each race. Cards range from permanent performance upgrades (Passives) to limited-use weapons (Offensive) and healing tools (Repair).
 
-As the player progresses through tracks, the difficulty scales: more complex track layouts, more CPU rivals, and weather modifiers that alter handling. Finishing outside the top 3 or reaching 0 HP ends the entire run.
+As the player progresses through the races/levels, the difficulty scales: more complex layouts and more agressive/competitive CPU rivals. 
+
+Finishing outside the 3 first places triggers a re-run of the race, giving the player an oportunity to retry the same race instead of triggering perma death. If the player loses their life they are sent to the start of the game, simulating what would happen if the car of a pilot broke and they had to wait for next season to compete. The player's life decreases with collisions and certain cards triggering permadeath.
 
 ### **Mindset**
 
-The goal is to provoke a constant state of*risk vs. reward tension. Unlike a casual racing game, every decision — which card to pick, when to use an offensive item, whether to push for position or play defensively — carries real consequences thanks to permadeath. Players should feel the adrenaline of survival combined with the satisfaction of a well-executed strategic play.
+The goal is to provoke a constant state of risk vs. reward tension. Unlike a casual racing game, every decision — which card to pick, when to use an offensive item, whether to push for position or play defensively — carries real consequences thanks to permadeath. Players should feel the adrenaline of survival combined with the satisfaction of a well-executed strategic play.
 
 ### **LOGO**
 
@@ -70,72 +72,73 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 ### **Screens**
 
 1. **Title Screen**
-   - START → Level Selection or new run
-   - OPTIONS → brightness, sound, music sliders
-   - EXIT → closes the game
+   - START → New run
+   - OPTIONS → connects to the options/pause menu
 
-![Alt text](assets/imgs_used/titlescreen.png)
+    ![Alt text](assets/imgs_used/titlescreen.png)
 
-2. **Level Selection**
-   - Level buttons 1–7 + Trophy (final race), unlocked sequentially
-   - Locked levels are non-interactive
-   - BACK → Title Screen
-
-   ![Alt text](assets/imgs_used/levelselection.png)
-
-3. **Options / Pause Menu** *(doubles as pause screen)*
+2. **Options / Pause Menu** *(doubles as pause screen)*
    - Sliders: Sound (SFX volume), Music, Brightness
-   - SAVE & EXIT → returns to Level Selection
+   - SAVE & EXIT → returns to start screen
    - BACK → returns to game
-
+  
    ![Alt text](assets/imgs_used/option.png)
 
-4. **Gameplay Screen**
-   - Main 2.5D race view (Mode 7 floor + sprite karts)
-   - HUD: health bar, race position, active cards (up to 3 offensive slots), minimap
-   - ESC → Pause Menu
-
-   ![Alt text](assets/imgs_used/gameplay.png)
-
-5. **Results Screen**
-   - WIN variant: trophy + flag, level number, finish time
-   - TRY AGAIN variant: same layout, different header
-   - Triggers Card Selection on WIN
-
-   ![Alt text](assets/imgs_used/win.png)
-
-6. **Card Selection Screen**
-   - Shown after each win (Level 1 onward)
-   - Displays 3 randomly drawn cards from the 12-card pool
+3. **Card Selection Screen**
+   - Shown after each win or re-run or loss (Level 1 onward)
+   - Displays 4 randomly drawn cards from the card pool
    - Player selects 1 with mouse/Enter
 
    ![Alt text](assets/imgs_used/card_selection.png)
 
-7. **Car Statistics Screen**
-   - Shows cumulative passive upgrades: Tires, Spoiler Aero, Chassis, Transmission
-   - Progress bars per stat — persists across runs (not lost on death)
-   - BACK → returns to game
-
-   ![Alt text](assets/imgs_used/statistics.png)
-
-8. **Storytelling / Cutscenes**
-   - Intro cutscene (reserve driver backstory)
-   - Win cutscene (championship victory)
-   - Permadeath cutscene
-   - Simplistic pixel art style, text-driven, advanced with SPACE
+4. **Storytelling / Cutscenes**
+   - Intro cutscene explaining the driver's backstory
+   - Simplistic pixel art style, text-driven, advanced with click
 
    ![Alt text](assets/imgs_used/story.png)
 
-9. **Credits Screen**
-   - Team names, music credits, sprites credits, legal notices
+5. **Gameplay Screen**
+   - Main 2.5D race view (Mode 7 floor + sprite karts)
+   - Question mark -> instructions and card descriptions display
+   - space key → Pause Menu
+   - HUD: health bar, race position, active cards/race cards (up to 3 offensive slots),
+     passive cards/upgrades (up to 4 passive slots), minimap with the location in the
+     racemap of the player (dot followed by yellow mark) and rival location (other dots. 
+  
+   ![Alt text](assets/imgs_used/gameplay.png)
+
+6. **Level transitioning screens**
+    - Simplistic pixel art style, text-driven, advanced with click
+    - Variations include different screens for each race announcing the number
+      or title of said race. For the mock/practice race it also includes instructions on
+      how to play
+      
+   ![Alt text](assets/imgs_used/RaceIntro.png)
+
+7. **Results Screen Positive**
+   - WIN variant: trophy + flag
+   - Triggers Card Selection and next race
+
+   ![Alt text](assets/imgs_used/win.png)
+
+8. **Results Screen Positive Championship**
+   - WIN variant: trophy + flag + "CHAMPIONSHIP" title
+   - Triggers credit screen
+     
+   ![Alt text](assets/imgs_used/ChampionshipWin.png)
+   
+9. **Results Screen Negative**
+   - LOSS variant: trophy + sad player icon
+   - Triggers Card Selection and re-run of the race
+
+   ![Alt text](assets/imgs_used/Lose.png)
+
+10. **Credits Screen**
+   - Team names
    - Background music playing
    - BACK TO MAIN MENU button
 
    ![Alt text](assets/imgs_used/credit_scene.png)
-
-10. **Game Over Screen**
-    - Triggered by health = 0 or finish outside top 3
-    - Shows: highest level reached, death cause, cards collected during run
 
 ---
 
@@ -149,8 +152,8 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 | D / →     | Turn right                                  |
 | O         | Select offensive/repair card                |
 | P         | Use selected offensive/repair card          |
-| ESC       | Pause game *(not implemented yet)*          |
-| SPACE     | Advance cutscene *(not implemented yet)*    |
+| SPACE     | Pause game                                  |
+|  Click    | Advance cutscene                            |
 | Mouse     | Navigate menus, select cards in menu        |
 | Enter     | Confirm card selection in menu              |
 
@@ -159,25 +162,25 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 ### **Mechanics**
 
 #### Health Bar
-A single persistent health bar replaces the traditional lives system. Damage is received from crashes, off-road contact with road cracks, enemy collisions, and projectile hits. At 0 HP the car explodes and the entire run ends (permadeath).
+A single persistent health bar replaces the traditional lives system. Damage is received from crashes, enemy collisions, and effect hits. At 0 HP the car explodes and the entire run ends (permadeath).
 
 #### Race Classification
-Finish in the **top 3** to advance. Finishing 4th or lower ends the run immediately, regardless of HP remaining.
+Finish in the **top 3** to advance. Finishing 4th or lower ends the run immediately, regardless of HP remaining, and forces the player to re-run the race.
 
 #### Card System
-At run start, the full 12-card pool is available. After each victorious race, 3 random cards are drawn and the player picks 1. Every race the rivals recieve a random card.
+At run start, the full card pool is available. After each race, 4 random cards are drawn and the player picks 1. Every race the rivals recieve a random card.
 Card categories:
 
 **Passives (Permanent upgrades — no button slot)**
 Passive cards work as upgrades for the car. They appear at the bottom of the screen and can only be selected by the player before the race. 
 - **Racing Transmission** — increases base acceleration
 - **Heavy Chassis** — reduces damage and impulse from kart collisions; multiplies opponent's impulse
-- **Sport Tires** — increases grip (rotation speed at high velocities, tighter turns)
+- **Sport Tires** — increases aceleration.
 - **Aerodynamic Spoiler** — increases base top speed
 
 **Offensive (Active, key-triggered, limited durability 1–2 races, max 3 in deck)**
 Offensive cards work as powers/powerup's during gameplay. They appear untop of the passive cards, the player chooses when (during the race) to implement them.
-- **Tire Shredder** — projectile that causes rival to lose control and drop top speed for 3–5 sec
+- **Tire Shredder** — causes rival to lose control and drop top speed for 3–5 sec
 - **EMP** — shockwave that disables nearby enemies' attacks and pushes them outward
 - **Grappler Hook** — latches onto the car ahead; steals 15% of their current speed
 - **Sonic Wave** — forward/backward sound blast that damages and pushes enemies sideways
@@ -185,44 +188,16 @@ Offensive cards work as powers/powerup's during gameplay. They appear untop of t
 **Repair (Active, between or during races)**
 The repair cards form the normal deck with the offensive.
 - **Repair Bot** — recover 30% HP immediately
-- **Pit Stop** — recover 60% HP, but only usable between races
-- **Temporary Armor** — adds a shield bar that absorbs the next hit without damaging base HP
-- **Takedown Recovery** — recover 5–10% HP each time an enemy crashes or goes off-track via your cards
-
-#### Card Drop Probabilities
-| Card                 | Category  | Drop Rate |
-|----------------------|-----------|------------|
-| Racing Transmission  | Passive   | 13%        |
-| Heavy Chassis        | Passive   | 13%        |
-| Sport Tires          | Passive   | 13%        |
-| Aerodynamic Spoiler  | Passive   | 13%        |
-| Tire Shredder        | Offensive | 8%         |
-| EMP                  | Offensive | 8%         |
-| Grappler Hook        | Offensive | 8%         |
-| Sonic Wave           | Offensive | 8%         |
-| Repair Bot           | Repair    | 5%         |
-| Pit Stop             | Repair    | 4%         |
-| Temporary Armor      | Repair    | 4%         |
-| Takedown Recovery    | Repair    | 3%         |
-
-> Passives 52% total · Offensive 32% total · Repair 16% total
+- **Temporary Armor** — adds a shield that absorbs the next hit without damaging base HP
 
 #### AI Rival Behaviors
 - **The Fast (Leader)** — prioritizes position, avoids fights, dangerous when approached
 - **The Aggressive** — targets the player with collisions and traps; forces repair card usage
-- **The Strategic** — uses long-range projectiles from behind; forces dodging
-- **The Evasive** — mirrors player movement to block position advances
+- **The Strategic** — forces dodging by blocking the player from any position.
+- **The Provocative** — focuses on advancing to first position but when detecting the player prioritizes blocking from the front to slow down the player or cause health damage.
 
 #### Obstacles & Environment
-- **Off-road terrain** — reduces speed, disables offensive cards
-- **Road cracks** — direct 5–10% HP damage + camera shake on contact
-
-**Weather Modifiers (Global)**
-| Condition | Effect |
-|-----------|---------|
-| Clear | Standard visibility and handling conditions|
-| Rain | Reduces traction, widens turns, and adds rain visual. |
-| Wind | Pushes vehicles sideways during races, forcing players to counter-steer. |
+- **Off-road terrain** — reduces speed gradually until it reaches 0, disables offensive cards
 
 ---
 
