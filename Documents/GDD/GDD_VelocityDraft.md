@@ -211,61 +211,105 @@ The visual theme is retro arcade racing: vivid green grass, blue sky, trees and 
 
 | Time | Atmosphere | Sky |
 |----------|-------------------------------|-------------------------|
-| Sunrise | Quiet, soft, fresh start | Orange/golden horizon |
-| Midday | Bright, warm, non-threatening | Blue sky with clouds |
-| Sunset | Warm, reflective, melancholic | Orange/purple gradient |
+|1.Sunrise| Quiet, soft, fresh start | Orange/golden horizon |
+| 2.Midday| Bright, warm, non-threatening | Blue sky with clouds, slight orange gradient|
+| 3.Sunset| Warm, reflective, melancholic | Orange/dark blue gradient |
+1.
+![Alt text](assets/imgs_used/sunrise.png)
+2.
+![Alt text](assets/imgs_used/sunnyday.png)
+3.
+![Alt text](assets/imgs_used/sunset.png)
 
-![Alt text](/assets/imgs/sunnyday.png)
-![Alt text](/assets/imgs/sunrise.png)
-![Alt text](/assets/imgs/sunset.png)
 
-Weather overlays (Clear, Rain, Wind) apply on top of the time-of-day backgrounds starting from Level 4.
-
-Track complexity increases with each level: more waypoints (turns), additional laps, and tighter layouts. Lap count maxes out at Level 5.
+Track complexity increases with each level: more waypoints (turns), additional laps, and tighter layouts.
 
 ---
 
 ### **Game Flow**
 
-1. **Title Screen** → Story Cutscene (reserve driver backstory, team quit, fight for championship alone)
-2. **Level Selection** → Only Level 1 available initially
+**Title Screen** → Story Cutscene (driver backstory, team quit, fight for championship alone)
 
-**Level 1 — Time Trial (tutorial)**
-- Solo run, no CPUs, beat a forgiving target time
+**Race Introduction screen** → Specific screen for pactice race that shows basic instructions.
+
+**Practice race**
+- 1 CPU
 - Teaches: acceleration, braking, turning
 - Unlocks the full card pool on completion
 
-**Card Selection** → First exposure; game explains card types, HP mechanic, offensive cards
+**Results screen**
+-Variation for winning or losing
+
+**Card Selection** → First exposure; shows 4 randomized cards for the player to choose from.
+
+**Race Introduction screen** → Only includes the title of the level
 
 **Level 2 — First Real Race**
-- 3 CPUs, neutral/sunny/midday conditions
+-Initial number of laps
+- 4 CPUs, sunrise/midday/sunset conditions
+- CPUs receive hidden upgrades (offensive, passive, or repair)
 - Must finish top 3 to continue
-- Permadeath active from here on (run restarts as "another season", some upgrades retained)
+- Permadeath active from here on (run restarts as "another season") if 0 health reached
+- Re-run triggered if not three first places reached (retains passive/car upgrades)
+
+**Results screen**
 
 **Card Selection**
 
-**Level 3** — Similar to L2, CPUs receive hidden upgrades (offensive, passive, or repair)
+**Race Introduction screen** 
+
+**Level 3** 
+— Similar to L2
+-number of laps increases
+
+**Results screen**
 
 **Card Selection**
 
-**Level 4** — Afternoon, rainy weather introduced
-- Teaches weather impact on handling
-- Introduces weather randomization for all future races (sunny / rainy / windy)
+**Race Introduction screen** 
+
+**Level 4** 
+— Similar to L3, same number of laps as L3
+- parameters for CPUs are modified/upgraded
+
+**Results screen**
 
 **Card Selection**
 
-**Level 5** — 4 CPUs, weather randomized
-- New rival introduced: former teammate on a well-funded team (story beat)
+**Race Introduction screen** 
+
+**Level 5** 
+— 4 CPUs
+— Similar to L3, same number of laps as L3
+-parameters for CPUs are modified/upgraded
+
+**Results screen**
 
 **Card Selection**
 
-**Level 6** — Similar to L5, pre-championship race
+**Race Introduction screen** 
+
+**Level 6** 
+— 4 CPUs
+— Similar to L3, same number of laps as L3
+-parameters for CPUs are modified/upgraded
+-pre-championship race
+
+**Results screen**
 
 **Card Selection**
+
+**Race Introduction screen** → Specific variation for championship race
 
 **Level 7 — Championship Race**
+— Similar to L3, same number of laps as L3
 - All mechanics active, highest CPU difficulty
-- Winning triggers the victory cutscene and credits
+  
+**Results screen**
+  -In case of winning specific variation for championship
+  
+**Credit screen**
+-Includes the name of the team members
 
 ---
 
@@ -282,7 +326,7 @@ Track complexity increases with each level: more waypoints (turns), additional l
 | **Camera** | Player's POV. Stores `posX`, `posY`, `dirX`, `dirY`, `planeX`, `planeY`, `posZ`. Follows PlayerKart. |
 | **Track** | Procedurally generated circuit. Handles waypoint generation, Catmull-Rom spline, edge normals, grid rasterization, spawn position, and checkpoint generation. |
 | **Kart** | Base entity for all vehicles. Shared state: position, direction vector, speed, topSpeed, acceleration, grip, health. |
-| **Projectile** | Base entity for offensive items. Shared state: position, direction, speed, damage, duration, owner reference. |
+
 
 ---
 
@@ -321,7 +365,7 @@ Tracks are procedurally generated using curved waypoint paths to create smooth r
 4.Off-road terrain areas.
 If the player drives off to these areas it will lose all speed.
 
-Track complexity increases throughout the game by introducing tighter turns, additional laps and weather modifiers. 
+Track complexity increases throughout the game by introducing tighter turns, additional laps. 
 
 ---
 
@@ -355,7 +399,7 @@ On collision: both receive impulse away from each other. The Aggressive CPU uses
 |------|--------|
 | Racing Transmission | Improves vehicle acceleration. |
 | Heavy Chassis |Reduces collision damage and increases resistance to impacts |
-| Sport Tires | Improves grip and allows tighter turns at high speed. |
+| Sport Tires | Improves acceleration. |
 | Aerodynamic Spoiler | Increases maximum speed |
 
 ---
