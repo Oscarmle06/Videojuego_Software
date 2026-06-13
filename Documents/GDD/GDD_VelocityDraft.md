@@ -526,16 +526,15 @@ All tracks original, composed and recorded by the team.
 2. Midnight Pit Stop
 3. Race
 4. Velvet Tide.
-5. 
 
 | Track | Context |
 |-------|---------|
-| Main Menu | Title screen |
-| Card Selection | Between-race card screen |
-| Storyline | Cutscenes |
+| Gold Medal Run| Result screen positive (Win) |
+| Midnight Pit Stop | Between-race card select screen |
+| One final turn | Result screen negative (loss) |
 | Race | During races |
-| Winning Race | Post-race win |
-| Ending Race | Credits / run end |
+| Velvet tide | Intro screens |
+| Velvet tide | Credits |
 
 Style: city pop / Japanese racing game aesthetic. Upbeat, melodic, loop-friendly.
 
