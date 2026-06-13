@@ -451,28 +451,37 @@ Player kart: The car uses red as it's main color with grey and white details.
 **Karts (Player + 4 CPU variants)**
 
 For each kart: back view with their respective palletes
-![alt text](/assets/imgs/kart.png)
-![alt text](/assets/imgs/colorpal.png)
 
-**Cards (12 total)**
+<img src="assets/imgs_used/redkart.png" alt="Alt text" width="200">
+
+CPU variants:
+
+<img src="assets/imgs_used/bluekart.png" alt="Alt text" width="200">
+<img src="assets/imgs_used/greenkart.png" alt="Alt text" width="200">
+<img src="assets/imgs_used/greykart.png" alt="Alt text" width="200">
+<img src="assets/imgs_used/yellowkart.png" alt="Alt text" width="200">
+
+**Cards (10 total)**
 - Front face: unique illustration + category letter (P / O / R) + ability identifier
-- Back face: shared design for all cards (same deck implied)
-
+Concept art:
 ![alt text](/assets/imgs/cards.png)
+
+Implemented design:
 
 **UI Elements**
 - Health bar
 - Race position indicator
-- Card HUD slots (3 offensive)
+- Card HUD slots (4 offensive)
 - Minimap overlay frame
 
 **Backgrounds / Skyboxes**
 - Sunrise, Midday, Sunset pixel art backgrounds
-- Rain streak overlay
-- Level Select top-down track map
+
 
 **Cutscene Art**
-- Intro (helmet on table)
+- Intro (helmet on table for background)
+- Race introduction nd variants
+- Credits and Title screens
 - Win / Permadeath variants
 
 ---
