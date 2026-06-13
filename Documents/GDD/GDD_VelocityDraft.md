@@ -207,7 +207,7 @@ The repair cards form the normal deck with the offensive.
 
 ### **Themes**
 
-The visual theme is retro arcade racing: vivid green grass, blue sky, palm trees and classic track-side elements. Each race uses a different time-of-day background (skybox) with its own atmosphere:
+The visual theme is retro arcade racing: vivid green grass, blue sky, trees and classic track-side elements. Each race uses a different time-of-day background (sky panorama) with its own atmosphere:
 
 | Time | Atmosphere | Sky |
 |----------|-------------------------------|-------------------------|
