@@ -49,9 +49,11 @@ Velocity Draft is a 2.5D roguelike racing game where strategy matters as much as
 
 ### **Gameplay**
 
-The goal is to complete a series of races in a continuous "run" format, finishing each race in the **top 3** while keeping the health bar alive. Players do not choose a class — instead, they build their driving style through a deck-building system, selecting one card from three offered after each victorious race. Cards range from permanent performance upgrades (Passives) to limited-use weapons (Offensive) and healing tools (Repair).
+The goal is to complete a series of races in a continuous "run" format, finishing each race in the **top 3** while keeping the health bar from reaching 0 or empty. Players do not choose a class — instead, they build their driving style through a deck-building system, selecting one card from three offered after each victorious race. Cards range from permanent performance upgrades (Passives) to limited-use weapons (Offensive) and healing tools (Repair).
 
-As the player progresses through tracks, the difficulty scales: more complex track layouts, more CPU rivals, and weather modifiers that alter handling. Finishing outside the top 3 or reaching 0 HP ends the entire run.
+As the player progresses through the races/levels, the difficulty scales: more complex layouts and more agressive CPU rivals. 
+
+Finishing outside the 3 first places triggers a re-run of the race, giving the player an oportunity to retry the same race instead of triggering perma death. If the player loses their life they are sent to the start of the game, simulating what would happen if the car of a pilot broke and they had to wait for next season to compete. 
 
 ### **Mindset**
 
