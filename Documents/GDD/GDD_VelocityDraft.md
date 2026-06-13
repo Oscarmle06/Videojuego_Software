@@ -405,7 +405,23 @@ On collision: both receive impulse away from each other. The Aggressive CPU uses
 
 ### **Database Structure**
 
-Purpose: player progression persistence, session analytics for difficulty tuning, card balance data (selection frequency → drop rate / power adjustments).
+Purpose: The database system will be focused on maintaining player progression persistence and the creation of statistics for the balancing of the game and player experience enhancement.
+For the players a leader board will be able. The places in this board will be determined based on the fastest time they obtain in a race.
+For the admins the statistics will be more "balancing the dynamics" focused. 
+These include:
+
+-Card impact
+Ilustartes the relation between activated and chosen cards with the podium rate.
+
+-Daily race quality
+Which ilustrates how many races took place in a day and how many players reached podium in such races.
+
+-Race level difficulty
+Which measures how many wins occur in a race and provides a comparison with how many players started those races.
+
+These statistics give admins an idea of how the player are executing their strategies (for example if cards really make a difference in the races and by consequence the players do activate them (card impact)). 
+
+The database stores most information of the game including the player's information (account), the cards information, the rivals information and the game's.
 
 ---
 
