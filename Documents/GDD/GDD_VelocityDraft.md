@@ -45,17 +45,19 @@
 
 ### **Summary**
 
-Velocity Draft is a 2.5D car-combat roguelike that merges retro arcade racing with modern deck-building strategy. Every run, players build a card deck to evolve their vehicle, race against AI rivals on procedurally generated tracks, and fight to survive with a persistent health bar — permadeath looming at every corner.
+Velocity Draft is a 2.5D roguelike racing game where strategy matters as much as speed. After your manager and pit crew abandoned you before the season began, you're left with a struggling car and something to prove. Build a deck to upgrade your car and obtain power-up cards, outsmart rival racers, and survive one demo race and 6 high-stakes races to become champion. With permadeath, randomized upgrades, and tough decisions every race, no championship run is ever the same.
 
 ### **Gameplay**
 
-The goal is to complete a series of races in a continuous "run" format, finishing each race in the **top 3** while keeping the health bar alive. Players do not choose a class — instead, they build their driving style through a deck-building system, selecting one card from three offered after each victorious race. Cards range from permanent performance upgrades (Passives) to limited-use weapons (Offensive) and healing tools (Repair).
+The goal is to complete a series of races in a continuous "run" format, finishing each race in the **top 3** while keeping the health bar from reaching 0 or empty. Players do not choose a class — instead, they build their driving style through a deck-building system, selecting one card from three offered after each victorious race. Cards range from permanent performance upgrades (Passives) to limited-use weapons (Offensive) and healing tools (Repair).
 
-As the player progresses through tracks, the difficulty scales: more complex track layouts, more CPU rivals, and weather modifiers that alter handling. Finishing outside the top 3 or reaching 0 HP ends the entire run.
+As the player progresses through the races/levels, the difficulty scales: more complex layouts and more agressive CPU rivals. 
+
+Finishing outside the 3 first places triggers a re-run of the race, giving the player an oportunity to retry the same race instead of triggering perma death. If the player loses their life they are sent to the start of the game, simulating what would happen if the car of a pilot broke and they had to wait for next season to compete. The player's life decreases with collisions and certain cards.
 
 ### **Mindset**
 
-The goal is to provoke a constant state of*risk vs. reward tension. Unlike a casual racing game, every decision — which card to pick, when to use an offensive item, whether to push for position or play defensively — carries real consequences thanks to permadeath. Players should feel the adrenaline of survival combined with the satisfaction of a well-executed strategic play.
+The goal is to provoke a constant state of risk vs. reward tension. Unlike a casual racing game, every decision — which card to pick, when to use an offensive item, whether to push for position or play defensively — carries real consequences thanks to permadeath. Players should feel the adrenaline of survival combined with the satisfaction of a well-executed strategic play.
 
 ### **LOGO**
 
@@ -72,70 +74,65 @@ The goal is to provoke a constant state of*risk vs. reward tension. Unlike a cas
 1. **Title Screen**
    - START → Level Selection or new run
    - OPTIONS → brightness, sound, music sliders
-   - EXIT → closes the game
 
 ![Alt text](assets/imgs_used/titlescreen.png)
 
-2. **Level Selection**
-   - Level buttons 1–7 + Trophy (final race), unlocked sequentially
-   - Locked levels are non-interactive
-   - BACK → Title Screen
-
-   ![Alt text](assets/imgs_used/levelselection.png)
-
-3. **Options / Pause Menu** *(doubles as pause screen)*
+2. **Options / Pause Menu** *(doubles as pause screen)*
    - Sliders: Sound (SFX volume), Music, Brightness
-   - SAVE & EXIT → returns to Level Selection
+   - SAVE & EXIT → returns to start screen
    - BACK → returns to game
-
+  
    ![Alt text](assets/imgs_used/option.png)
 
-4. **Gameplay Screen**
+3. **Card Selection Screen**
+   - Shown after each win (Level 1 onward)
+   - Displays 4 randomly drawn cards from the card pool
+   - Player selects 1 with mouse/Enter
+
+   ![Alt text](assets/imgs_used/card_selection.png)
+
+4. **Storytelling / Cutscenes**
+   - Intro cutscene explaining the driver's backstory
+   - Simplistic pixel art style, text-driven, advanced with SPACE
+
+   ![Alt text](assets/imgs_used/story.png)
+
+5. **Gameplay Screen**
    - Main 2.5D race view (Mode 7 floor + sprite karts)
    - HUD: health bar, race position, active cards (up to 3 offensive slots), minimap
-   - ESC → Pause Menu
+   - space key → Pause Menu
 
    ![Alt text](assets/imgs_used/gameplay.png)
 
-5. **Results Screen**
+6. **Credits Screen**
+   - Team names
+   - Background music playing
+   - BACK TO MAIN MENU button
+
+   ![Alt text](assets/imgs_used/credit_scene.png)
+
+7. **Level transitioning screens**
+
+8. **Results Screen Positive**
    - WIN variant: trophy + flag, level number, finish time
    - TRY AGAIN variant: same layout, different header
    - Triggers Card Selection on WIN
 
    ![Alt text](assets/imgs_used/win.png)
 
-6. **Card Selection Screen**
-   - Shown after each win (Level 1 onward)
-   - Displays 3 randomly drawn cards from the 12-card pool
-   - Player selects 1 with mouse/Enter
+9. **Results Screen Positive Championship**
+   - WIN variant: trophy + flag, level number, finish time
+   - TRY AGAIN variant: same layout, different header
+   - Triggers Card Selection on WIN
 
-   ![Alt text](assets/imgs_used/card_selection.png)
+   ![Alt text](assets/imgs_used/win.png)
+   
+10. **Results Screen Negative**
+   - WIN variant: trophy + flag, level number, finish time
+   - TRY AGAIN variant: same layout, different header
+   - Triggers Card Selection on WIN
 
-7. **Car Statistics Screen**
-   - Shows cumulative passive upgrades: Tires, Spoiler Aero, Chassis, Transmission
-   - Progress bars per stat — persists across runs (not lost on death)
-   - BACK → returns to game
-
-   ![Alt text](assets/imgs_used/statistics.png)
-
-8. **Storytelling / Cutscenes**
-   - Intro cutscene (reserve driver backstory)
-   - Win cutscene (championship victory)
-   - Permadeath cutscene
-   - Simplistic pixel art style, text-driven, advanced with SPACE
-
-   ![Alt text](assets/imgs_used/story.png)
-
-9. **Credits Screen**
-   - Team names, music credits, sprites credits, legal notices
-   - Background music playing
-   - BACK TO MAIN MENU button
-
-   ![Alt text](assets/imgs_used/credit_scene.png)
-
-10. **Game Over Screen**
-    - Triggered by health = 0 or finish outside top 3
-    - Shows: highest level reached, death cause, cards collected during run
+   ![Alt text](assets/imgs_used/win.png)
 
 ---
 
