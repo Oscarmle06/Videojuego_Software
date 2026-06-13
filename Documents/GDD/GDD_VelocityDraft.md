@@ -45,7 +45,7 @@
 
 ### **Summary**
 
-Velocity Draft is a 2.5D car-combat roguelike that merges retro arcade racing with modern deck-building strategy. Every run, players build a card deck to evolve their vehicle, race against AI rivals on procedurally generated tracks, and fight to survive with a persistent health bar — permadeath looming at every corner.
+Velocity Draft is a 2.5D roguelike racing game where strategy matters as much as speed. After your manager and pit crew abandoned you before the season began, you're left with a struggling car and something to prove. Build a deck to upgrade your car and obtain power-up cards, outsmart rival racers, and survive one demo race and 6 high-stakes races to become champion. With permadeath, randomized upgrades, and tough decisions every race, no championship run is ever the same.
 
 ### **Gameplay**
 
