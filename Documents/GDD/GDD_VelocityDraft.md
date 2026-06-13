@@ -517,13 +517,16 @@ Sound effects should be punchy and arcade-style — enough to confirm actions wi
 | Explosion | [YouTube](https://www.youtube.com/watch?v=HTXiJpCDiH4) |
 | Car Crash | [YouTube](https://www.youtube.com/watch?v=uakY1LYZ3Vo) |
 | UI Selection | [YouTube](https://www.youtube.com/watch?v=d9sQvn0pYts) |
-| Rain | [YouTube](https://www.youtube.com/watch?v=C-hzP3mOBGY) |
-| Wind | [YouTube](https://www.youtube.com/watch?v=5jlUVr6gkos) |
 | Race Start | [YouTube](https://www.youtube.com/watch?v=KOoCEIwswYg) |
 
 ### **Music Needed**
 
 All tracks original, composed and recorded by the team.
+1. Gold Medal Run
+2. Midnight Pit Stop
+3. Race
+4. Velvet Tide.
+5. 
 
 | Track | Context |
 |-------|---------|
