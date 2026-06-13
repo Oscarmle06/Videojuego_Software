@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-  "dev:frontend": "vite --root VideoGame",
-  "dev:backend": "node Web/backend/app.js",
-  "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
-},
+    "dev:frontend": "vite --root VideoGame",
+    "dev:backend": "node Web/backend/app.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\""
+  },
   "devDependencies": {
     "concurrently": "^10.0.3",
     "vite": "^6.0.0"
@@ -16,6 +16,9 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mysql2": "^3.22.5"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "fsevents@2.3.3": true
   }
-  
 }

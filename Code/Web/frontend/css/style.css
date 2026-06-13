@@ -486,10 +486,14 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 to ensure it meets our quality standards and fits our vision for the game's design. */
 
 /* ── COLORBLIND FILTERS ── */
-body.cb-protanopia    { filter: url(#cb-protanopia);   }
-body.cb-deuteranopia  { filter: url(#cb-deuteranopia); }
-body.cb-tritanopia    { filter: url(#cb-tritanopia);   }
-body.cb-achromatopsia { filter: grayscale(100%);        }
+/* Fixed overlay — backdrop-filter composites at the GPU layer after all content
+   (images, canvas, iframes) has been painted, so it affects everything on screen */
+#cb-filter-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483647;
+}
 
 .cb-toggle {
   display: flex;
