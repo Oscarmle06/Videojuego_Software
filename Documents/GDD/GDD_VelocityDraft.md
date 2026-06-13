@@ -469,9 +469,15 @@ Concept art:
 
 Implemented design:
 
+1.Passive cards (aerodynamic spoiler, heavy chasis, racing transmition, sport tires)
+
 <img src="assets/imgs_used/cards/aerodynamic_spoiler.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/heavychasis.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/racing-transmition.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/sporttires.png" alt="Alt text" width="200">
 
+2. Offensive cards (EMP, grapplerhook, sonicwave, tire shredder)
+   
 <img src="assets/imgs_used/cards/EMP.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/grapplerhook.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/sonicwave.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/tireshredder.png" alt="Alt text" width="200">
+
+3. Repair cards (repair bot, temporary armour)
 
 <img src="assets/imgs_used/cards/repairbot.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/temporaryArmour.png" alt="Alt text" width="200">
 
