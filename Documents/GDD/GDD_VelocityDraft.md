@@ -112,27 +112,28 @@ The goal is to provoke a constant state of risk vs. reward tension. Unlike a cas
    ![Alt text](assets/imgs_used/credit_scene.png)
 
 7. **Level transitioning screens**
+   ![Alt text](assets/imgs_used/RaceIntro.png)
 
-8. **Results Screen Positive**
+9. **Results Screen Positive**
    - WIN variant: trophy + flag, level number, finish time
    - TRY AGAIN variant: same layout, different header
    - Triggers Card Selection on WIN
 
    ![Alt text](assets/imgs_used/win.png)
 
-9. **Results Screen Positive Championship**
+10. **Results Screen Positive Championship**
    - WIN variant: trophy + flag, level number, finish time
    - TRY AGAIN variant: same layout, different header
    - Triggers Card Selection on WIN
 
    ![Alt text](assets/imgs_used/win.png)
    
-10. **Results Screen Negative**
+11. **Results Screen Negative**
    - WIN variant: trophy + flag, level number, finish time
    - TRY AGAIN variant: same layout, different header
    - Triggers Card Selection on WIN
 
-   ![Alt text](assets/imgs_used/win.png)
+   ![Alt text](assets/imgs_used/Lose.png)
 
 ---
 
