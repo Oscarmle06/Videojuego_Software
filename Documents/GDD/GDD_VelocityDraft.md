@@ -75,7 +75,7 @@ The goal is to provoke a constant state of risk vs. reward tension. Unlike a cas
    - START → New run
    - OPTIONS → connects to the options/pause menu
 
-![Alt text](assets/imgs_used/titlescreen.png)
+    ![Alt text](assets/imgs_used/titlescreen.png)
 
 2. **Options / Pause Menu** *(doubles as pause screen)*
    - Sliders: Sound (SFX volume), Music, Brightness
@@ -99,14 +99,19 @@ The goal is to provoke a constant state of risk vs. reward tension. Unlike a cas
 
 5. **Gameplay Screen**
    - Main 2.5D race view (Mode 7 floor + sprite karts)
-   - HUD: health bar, race position, active cards (up to 3 offensive slots), minimap
+   - Question mark -> instructions and card descriptions display
    - space key → Pause Menu
+   - HUD: health bar, race position, active cards/race cards (up to 3 offensive slots),
+     passive cards/upgrades (up to 4 passive slots), minimap with the location in the
+     racemap of the player (dot followed by yellow mark) and rival location (other dots. 
   
    ![Alt text](assets/imgs_used/gameplay.png)
 
 6. **Level transitioning screens**
     - Simplistic pixel art style, text-driven, advanced with click
-    - Variations include different screens for each race announcing the number     or title of said race. For the mock/practice race it also includes             instructions on how to play
+    - Variations include different screens for each race announcing the number
+      or title of said race. For the mock/practice race it also includes instructions on
+      how to play
       
    ![Alt text](assets/imgs_used/RaceIntro.png)
 
@@ -188,8 +193,8 @@ The repair cards form the normal deck with the offensive.
 #### AI Rival Behaviors
 - **The Fast (Leader)** — prioritizes position, avoids fights, dangerous when approached
 - **The Aggressive** — targets the player with collisions and traps; forces repair card usage
-- **The Strategic** — forces dodging by blocking the player from any position
-- **The Provocative** — focuses on advancing to first position but when detecting the player prioritizes blocking from the front
+- **The Strategic** — forces dodging by blocking the player from any position.
+- **The Provocative** — focuses on advancing to first position but when detecting the player prioritizes blocking from the front to slow down the player or cause health damage.
 
 #### Obstacles & Environment
 - **Off-road terrain** — reduces speed gradually until it reaches 0, disables offensive cards
