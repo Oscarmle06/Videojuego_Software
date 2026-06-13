@@ -126,7 +126,7 @@ The goal is to provoke a constant state of risk vs. reward tension. Unlike a cas
    - TRY AGAIN variant: same layout, different header
    - Triggers Card Selection on WIN
 
-   ![Alt text](assets/imgs_used/win.png)
+   ![Alt text](assets/imgs_used/ChampionshipWin.png)
    
 11. **Results Screen Negative**
    - WIN variant: trophy + flag, level number, finish time
