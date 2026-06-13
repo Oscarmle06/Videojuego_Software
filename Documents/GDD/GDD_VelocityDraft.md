@@ -336,17 +336,16 @@ Track complexity increases with each level: more waypoints (turns), additional l
 |-------|-------------|
 | **FloorCaster** | Receives Camera + Track each frame. Mode 7-style floor projection per scanline, samples Track grid for asphalt/grass color. Writes to Canvas pixel buffer. |
 | **SpriteRenderer** | Receives Camera + list of Kart/Projectile objects. Computes screen position and scale per sprite (billboard). Painter's Algorithm sort. |
-| **Minimap** | Renders top-down overview on secondary canvas. Draws track edges, kart positions as colored dots, camera direction indicator. |
+| **Minimap** | Renders top-down overview on secondary canvas. Draws track edges, kart positions as colored dots. |
 | **HUDRenderer** | Reads PlayerKart + CardSystem state. Renders health bar, lap, race position, active offensive slots on main canvas. |
 | **PlayerKart** | Extends Kart. Reads Input each frame for acceleration/braking/steering. Terrain modifiers applied from Track grid. Stats modified by CardSystem passives. |
 | **CPUKart** | Extends Kart. Controlled by AIController (no Input). Follows spline waypoints. Behavior type assigned at race start. |
 | **AIController** | Manages all CPUKart instances. Computes steering/acceleration per behavior type each frame. Uses spline for pathfinding, PlayerKart position for offensive decisions. |
-| **CardSystem** | Manages deck across races. Stores card pool, active passives applied to PlayerKart, 3-slot offensive inventory. Presents 3 random cards between races. |
+| **CardSystem** | Manages deck across races. Stores card pool, active passives applied to PlayerKart, 4-slot offensive inventory. Presents 4 random cards between races. |
 | **RaceManager** | Tracks lap counts, race positions, finish conditions. Determines podium result. Triggers CardSystem post-race. Manages roguelike run-end conditions (outside top 3 or HP = 0). |
 | **CardSelectionScreen** | Rendered between races. Displays 3 available cards, handles selection input, returns control to GameLoop. |
-| **MainMenu** | Entry point. Handles deck building at run start (up to 12 cards) before first race. |
-| **GameOverScreen** | Displayed on run end. Shows highest level reached, cards collected during run. |
-| **TireShredder / EMP / GrapplerHook / SonicWave** | Extend Projectile. Implement specific offensive behaviors per card. |
+| **PauseMenuScreen** | Hadles the modification of settings. |
+| **TireShredder / EMP / GrapplerHook / SonicWave** | Implement specific offensive behaviors per card. |
 
 ---
 
@@ -355,7 +354,7 @@ Track complexity increases with each level: more waypoints (turns), additional l
 #### 2.5D Visual Style
 The game uses a retro-inspired pseudo-3d visual style similar to classic arcade racing games. Tracks are rendered using perspective-based floor projection techniques to create the illusion of depth, while karts and projectiles are displayed as scaled sprites that grow or shrink depending on distance from the camera. 
 
-The uppse hald of the screen displays the sky and environmental backgrounds, which change according to the current level theme and in-game time of day.
+The upper half of the screen displays the sky backgrounds, which change according to the current level theme and in-game time of day.
 
 #### Track Generation
 Tracks are procedurally generated using curved waypoint paths to create smooth racing circuits. Each track includes:
@@ -387,7 +386,7 @@ Camera plane rotates identically to keep FOV consistent.
 #### Kart vs Track Collision
 
 - Off-grid boundary → velocity = 0, kart pushed back
-- Off-track (grass) → terrain penalties apply, offensive cards disabled
+- Off-track (grass) → terrain penalties apply
 
 #### Kart vs Kart Collision (Circle Collision)
 
