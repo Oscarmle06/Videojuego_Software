@@ -544,32 +544,47 @@ Style: city pop / Japanese racing game aesthetic. Upbeat, melodic, loop-friendly
 
 ---
 
-### Sprint 1 — Documentation & Conceptualization ✅
-- Finalization of GDD
-- Initial UML / Entity-Relationship diagram sketch
-- Creation of user stories (game + database)
+### Sprint 1 — Project Plannung & Conceptualization & Foundations ✅
+- Finalization of Game Design Document GDD
+- Create initial UML / Entity-Relationship diagram 
+- Define user stories for both gameplay and database requirements
+- Creation and organize initial git repository issues
+- Develop intial visual asset prototypes and sprites
+- Implementation of player vehicle movement controls
 
-### Sprint 2 — Core Engine ✅
-- Base classes: `Kart`, `Track`, `Camera`
-- Input system (keyboard/mouse)
+### Sprint 2 — Core System Development ✅
+- Develop core classes: `Kart`, `Track`, `Camera`
+- Implement Input system (keyboard/mouse)
+- Design and Implement `CardSystem` (passive upgrades + active abilities)
+- Develop the racing gameplay screen and health system
+
+
+### Sprint 3 — Gameplay Systems & AI ✅
+- Design race tracks with progressive complexity (waypoints and lap structure)
+- Implement kart physics and collision detection
+- Develop HUD: health bar, race position, active card slots
+- Implement core screen navigation and game flow
+- Implement card effects over attributes
+- Develop AI behavior for all four CPU driver archetypes (`AIController`)
+- Finilized sprites assets
+
+### Sprint 4 — Content Development & Progression Systems ✅
 - MySQL database setup and table creation
+- Add dummy data to test the database
+- Design Statistics of gameplay
+- Finish game screen flow and navigation
+- Add visual feeback and gameplay effects
+- Implement level reset and restart mechanisms
+- Create additional visual assets
 
-### Sprint 3 — Roguelite System & AI ← *Current*
-- Implement `CardSystem` (passive upgrades + active abilities)
-- Implement kart physics and track/kart collision
-- Develop AI behavior for all 4 CPU types (`AIController`)
-
-### Sprint 4 — Level Design & Content
-- Race tracks with increasing complexity (more waypoints, laps)
-- Weather system integration (rain/wind modifiers)
-- HUD: health bar, race position, active card slots
-
-### Sprint 5 — Assets, Sounds & Web Integration
+### Sprint 5 — Assets, Sounds & Web Platform Development and Integration ✅
 - Music and SFX integration
 - Finalize all 2.5D sprites and environment backgrounds
 - HTML/JS/CSS web page development
+-  Connect the database with the web and gameplay.
+-  Fix bugs in the connection between the web, database and gameplay
 
-### Sprint 6 — Testing, Bug Fixing & Delivery
-- Intensive QA (errors, glitches, memory leaks, logic errors)
-- AI difficulty + card power balancing
-- Final documentation review and stable build delivery
+### Sprint 6 — Quality Assurance & Project Delivery  ✅
+- Perform Testing and final bux fixing
+- Conduct final documentation review
+- Organize and clean project repository for delivery
