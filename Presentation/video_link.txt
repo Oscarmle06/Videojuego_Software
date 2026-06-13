@@ -1,7 +1,7 @@
 Velocity Draft — Video Demo
 ===========================
 
-YouTube link: 
+YouTube link: https://youtu.be/6Y2j-LiFkv4
 
 El video muestra la funcionalidad completa del sistema:
 - Página web: registro, login, estadísticas, leaderboard, panel de administrador
