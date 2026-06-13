@@ -433,25 +433,24 @@ The database stores most information of the game including the player's informat
 
 Pixel art, retro arcade racing aesthetic. Vivid but limited palette to avoid visual overload. All characters and enemies are outlined in black for contrast against the background.
 
-Sprite resolution: **64×64 pixels** per kart and card. Health bar visible at all times — flashes red when HP hits 0 before the cutscene triggers.
+Sprite resolution: **64×64 pixels** per kart and card. Health bar visible at all times during races — flashes red when HP hits 0 before the explosion effect triggers.
 
-**Color palettes (proposed):**
+**Color palettes :**
 
-| Option | Primary | Shadow | Highlight |
-|--------|---------|---------|-----------|
-| 1 (Red) | #E63946 | #E63946 | #E63946 |
-| 2 (Blue) | #2D9CDB | #1C2A44 | #56CCF2 |
-| 3 (Green) | #27AE60 | #145A32 | #6FCF97 |
-| 4 (Yellow) | #F2C94C | #B7950B | #FFF176 |
+The color for the CPU rivals is determined by their personality. Each has a distinct main color:
+1. The blue rival is the leader (fast) personality.
+2. The green is the agressive personality.
+3. The grey rival has the strategic personality. 
+4. The yellow rival is the provocative personality.
+They all have as accent colors white, and grey. With the grey rival having light purple details. And the yellow rival having orange shadows to add contrast.
 
-Player kart: vivid blue (Option 2). Each CPU has a distinct palette tied to their personality type.
+Player kart: The car uses red as it's main color with grey and white details.
 
 ### **Graphics Needed**
 
 **Karts (Player + 4 CPU variants)**
 
-For each kart: side profile (L), side profile (R), front view, back view, angled back-left, angled back-right, angled front-left, angled front-right *(used for drift/turn animation)*
-
+For each kart: back view with their respective palletes
 ![alt text](/assets/imgs/kart.png)
 ![alt text](/assets/imgs/colorpal.png)
 
