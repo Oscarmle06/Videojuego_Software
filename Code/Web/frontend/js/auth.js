@@ -83,24 +83,22 @@ function setupNav() {
 
 // ── COLORBLIND FILTER SUPPORT ──
 
+// ── COLORBLIND FILTER SUPPORT ──
+// CSS filter-function approximations for each dichromacy type.
+// These work in backdrop-filter (unlike SVG url() references) so they
+// composite at the GPU layer and affect images, canvas, and iframes.
+const CB_FILTERS = {
+  protanopia:    'sepia(0.2) hue-rotate(-20deg) saturate(0.7)',
+  deuteranopia:  'sepia(0.2) hue-rotate(20deg)  saturate(0.7)',
+  tritanopia:    'sepia(0.2) hue-rotate(180deg) saturate(0.7)',
+  achromatopsia: 'grayscale(100%)'
+};
+
 function injectColorblindFilters() {
-  if (document.getElementById('cb-svg-defs')) return;
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.id = 'cb-svg-defs';
-  svg.style.display = 'none';
-  // Vienot et al. 1999 color matrices for the three main dichromacy types
-  svg.innerHTML = `<defs>
-    <filter id="cb-protanopia" color-interpolation-filters="linearRGB">
-      <feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"/>
-    </filter>
-    <filter id="cb-deuteranopia" color-interpolation-filters="linearRGB">
-      <feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"/>
-    </filter>
-    <filter id="cb-tritanopia" color-interpolation-filters="linearRGB">
-      <feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"/>
-    </filter>
-  </defs>`;
-  document.body.appendChild(svg);
+  if (document.getElementById('cb-filter-overlay')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'cb-filter-overlay';
+  document.body.appendChild(overlay);
 }
 
 function getCbMode() {
@@ -108,18 +106,21 @@ function getCbMode() {
 }
 
 function setColorblindMode(mode) {
-  document.body.classList.remove('cb-protanopia', 'cb-deuteranopia', 'cb-tritanopia', 'cb-achromatopsia');
-  if (mode) document.body.classList.add('cb-' + mode);
+  const overlay = document.getElementById('cb-filter-overlay');
+  if (overlay) {
+    const f = CB_FILTERS[mode] || 'none';
+    overlay.style.backdropFilter       = f;
+    overlay.style.webkitBackdropFilter = f;
+  }
   localStorage.setItem('vd_cb_mode', mode);
   document.querySelectorAll('.cb-btn').forEach(btn =>
     btn.classList.toggle('cb-active', btn.dataset.mode === mode));
 }
 
-// Apply saved colorblind mode on every page that loads auth.js
 document.addEventListener('DOMContentLoaded', function () {
   injectColorblindFilters();
   const saved = getCbMode();
-  if (saved) document.body.classList.add('cb-' + saved);
+  if (saved) setColorblindMode(saved);
 });
 
 async function login(username, password) {
