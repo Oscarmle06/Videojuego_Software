@@ -456,17 +456,24 @@ For each kart: back view with their respective palletes
 
 CPU variants:
 
-<img src="assets/imgs_used/bluekart.png" alt="Alt text" width="200">
-<img src="assets/imgs_used/greenkart.png" alt="Alt text" width="200">
-<img src="assets/imgs_used/greykart.png" alt="Alt text" width="200">
-<img src="assets/imgs_used/yellowkart.png" alt="Alt text" width="200">
+<img src="assets/imgs_used/bluekart.png" alt="Alt text" width="200"><img src="assets/imgs_used/greenkart.png" alt="Alt text" width="200"><img src="assets/imgs_used/greykart.png" alt="Alt text" width="200"><img src="assets/imgs_used/yellowkart.png" alt="Alt text" width="200">
+
+(The low resolution is because of the sprites size)
 
 **Cards (10 total)**
 - Front face: unique illustration + category letter (P / O / R) + ability identifier
+  
 Concept art:
-![alt text](/assets/imgs/cards.png)
+
+ ![Alt text](assets/imgs_used/cards.png)
 
 Implemented design:
+
+<img src="assets/imgs_used/cards/aerodynamic_spoiler.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/heavychasis.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/racing-transmition.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/sporttires.png" alt="Alt text" width="200">
+
+<img src="assets/imgs_used/cards/EMP.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/grapplerhook.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/sonicwave.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/tireshredder.png" alt="Alt text" width="200">
+
+<img src="assets/imgs_used/cards/repairbot.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/temporaryArmour.png" alt="Alt text" width="200">
 
 **UI Elements**
 - Health bar
