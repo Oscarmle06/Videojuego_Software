@@ -153,10 +153,10 @@ User stories:
 | User Story \#15 — Pause Menu |  |
 | :---- | :---- |
 | As | a player |
-| I want | to press “ESC” during a race to adjust settings such as volume and brightness |
+| I want | to press “SPACE” during a race to adjust settings such as volume and brightness |
 | So that | I can modify parameters without losing my current progress. |
 | Acceptance criteria |  |
-| Pause menu opens with “ESC.” Settings can be modified Race resumes correctly |  |
+| Pause menu opens with “SPACE.” Settings can be modified Race resumes correctly |  |
 | Priority | 2 |
 | Duration | 7h |
 
