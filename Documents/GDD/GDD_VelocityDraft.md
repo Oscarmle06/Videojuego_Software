@@ -325,11 +325,17 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 | Class | Responsibility |
 |----------------|----------------|
-| **GameLoop** | Core execution cycle via `requestAnimationFrame()`. Manages update/render pipeline. All components initialized here. |
-| **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes `isPressed(key)`. |
-| **Camera** | Player's POV. Stores `posX`, `posY`, `dirX`, `dirY`, `planeX`, `planeY`, `posZ`. Follows PlayerKart. |
-| **Track** | Procedurally generated circuit. Handles waypoint generation, Catmull-Rom spline, edge normals, grid rasterization, spawn position, and checkpoint generation. |
-| **Kart** | Base entity for all vehicles. Shared state: position, direction vector, speed, topSpeed, acceleration, grip, health. |
+| **Camera** | Maintains the camera's position and orientation in the world. Provides the third-person perspective used by the raycasting renderer.|
+| **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes active key states each frame.|
+| **Race** | Coordinates a complete race session. Generates the track, initializes karts, runs the game state machine, and updates/renderers every frame.|
+| **PlayerKart** | Base class for all karts. Handles movement, physics, collisions, checkpoint progression, lap counting, health, and active effects.|
+| **Personality** | Base AI behavior class. Defines driving parameters such as lookahead distance (detection) and braking thresholds. Calculates steering and acceleration using spline waypoints.|
+| **CardSystem** | Manages the player's passive cards and applies permanent stat upgrades to the kart.|
+| **ActiveCards** | Manages the player's active card inventory, activation logic, and card effects|
+| **CPUCardSystem** | Autonomous version of ActiveCards used by CPU karts. Determines when to activate cards based on race conditions.|
+| **StatusEffect** | Abstract base class for all temporary effects applied to karts. |
+| **Track** | Procedurally generates race circuits, including waypoints, Catmull-Rom splines, checkpoints, trees, and the finish line. |
+| **FloorCaster** | Performs 2.5D raycasting and renders the floor and track on the main canvas.|
 
 
 ---
@@ -338,7 +344,6 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 | Class | Description |
 |-------|-------------|
-| **FloorCaster** | Receives Camera + Track each frame. Mode 7-style floor projection per scanline, samples Track grid for asphalt/grass color. Writes to Canvas pixel buffer. |
 | **SpriteRenderer** | Receives Camera + list of Kart/Projectile objects. Computes screen position and scale per sprite (billboard). Painter's Algorithm sort. |
 | **Minimap** | Renders top-down overview on secondary canvas. Draws track edges, kart positions as colored dots. |
 | **HUDRenderer** | Reads PlayerKart + CardSystem state. Renders health bar, lap, race position, active offensive slots on main canvas. |
