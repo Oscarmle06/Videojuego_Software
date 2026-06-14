@@ -325,17 +325,18 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 | Class | Responsibility |
 |----------------|----------------|
-| **Camera** | Maintains the camera's position and orientation in the world. Provides the third-person perspective used by the raycasting renderer.|
-| **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes active key states each frame.|
-| **Race** | Coordinates a complete race session. Generates the track, initializes karts, runs the game state machine, and updates/renderers every frame.|
-| **PlayerKart** | Base class for all karts. Handles movement, physics, collisions, checkpoint progression, lap counting, health, and active effects.|
-| **Personality** | Base AI behavior class. Defines driving parameters such as lookahead distance (detection) and braking thresholds. Calculates steering and acceleration using spline waypoints.|
-| **CardSystem** | Manages the player's passive cards and applies permanent stat upgrades to the kart.|
-| **ActiveCards** | Manages the player's active card inventory, activation logic, and card effects|
-| **CPUCardSystem** | Autonomous version of ActiveCards used by CPU karts. Determines when to activate cards based on race conditions.|
+| **Camera** | Maintains the camera's position and orientation in the world. Provides the third-person perspective used by the raycasting renderer. |
+| **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes active key states each frame. | 
+| **Race** | Coordinates a complete race session. Generates the track, initializes karts, runs the game state machine, and updates/renderers every frame. |
+| **PlayerKart** | Base class for all karts. Handles movement, physics, collisions, checkpoint progression, lap counting, health, and active effects. |
+| **Personality** | Base AI behavior class. Defines driving parameters such as lookahead distance (detection) and braking thresholds. Calculates steering and acceleration using spline waypoints. |
+| **CardSystem** | Manages the player's passive cards and applies permanent stat upgrades to the kart. |
+| **ActiveCards** | Manages the player's active card inventory, activation logic, and card effects. |
+| **CPUCardSystem** | Autonomous version of ActiveCards used by CPU karts. Determines when to activate cards based on race conditions. |
 | **StatusEffect** | Abstract base class for all temporary effects applied to karts. |
 | **Track** | Procedurally generates race circuits, including waypoints, Catmull-Rom splines, checkpoints, trees, and the finish line. |
-| **FloorCaster** | Performs 2.5D raycasting and renders the floor and track on the main canvas.|
+| **FloorCaster** | Performs 2.5D raycasting and renders the floor and track on the main canvas. |
+| **HUD** | Not in use, was replazed by render in the direct loop of race. |
 
 
 ---
@@ -344,17 +345,24 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 | Class | Description |
 |-------|-------------|
-| **SpriteRenderer** | Receives Camera + list of Kart/Projectile objects. Computes screen position and scale per sprite (billboard). Painter's Algorithm sort. |
-| **Minimap** | Renders top-down overview on secondary canvas. Draws track edges, kart positions as colored dots. |
-| **HUDRenderer** | Reads PlayerKart + CardSystem state. Renders health bar, lap, race position, active offensive slots on main canvas. |
-| **PlayerKart** | Extends Kart. Reads Input each frame for acceleration/braking/steering. Terrain modifiers applied from Track grid. Stats modified by CardSystem passives. |
-| **CPUKart** | Extends Kart. Controlled by AIController (no Input). Follows spline waypoints. Behavior type assigned at race start. |
-| **AIController** | Manages all CPUKart instances. Computes steering/acceleration per behavior type each frame. Uses spline for pathfinding, PlayerKart position for offensive decisions. |
-| **CardSystem** | Manages deck across races. Stores card pool, active passives applied to PlayerKart, 4-slot offensive inventory. Presents 4 random cards between races. |
-| **RaceManager** | Tracks lap counts, race positions, finish conditions. Determines podium result. Triggers CardSystem post-race. Manages roguelike run-end conditions (outside top 3 or HP = 0). |
-| **CardSelectionScreen** | Rendered between races. Displays 3 available cards, handles selection input, returns control to GameLoop. |
-| **PauseMenuScreen** | Hadles the modification of settings. |
-| **TireShredder / EMP / GrapplerHook / SonicWave** | Implement specific offensive behaviors per card. |
+| **CPUKart** | Extends PlayerKart. AI-controlled kart that uses a Personality instance instead of player input and has its own autonomous CPUCardSystem. |
+| **FastPersonality** | Extends Personality. Prioritizes maximum speed with long lookahead (30) threshhold and minimal braking. |
+| **AggressivePersonality** | Extends Personality. Focuses on blocking, ramming opponents, and using braking as an offensive tactic. Neutral lookahead threshhold. |
+| **StrategicPersonality** | Extends Personality. Follows the racing line and blocks in certain instances according to the player's position. Neutral lookahead threshhold.|
+| **ProvocativePersonality** | Extends Personality. Long lookahead threshhold. Combines high-speed driving with active blocking behavior from upfront. |
+| **EvasivePersonality** | Extends Personality. Prioritizes obstacle avoidance and smooth driving with minimal braking. Currently unused in race progression.|
+| **SpeedDebuff** | Extends StatusEffect. Reduces the kart's maximum speed for a limited duration. |
+| **SpeedDrain** | Extends StatusEffect. Drains the kart's current speed over time (frames). |
+| **SpeedBoost** | Extends StatusEffect. Increases the kart's current speed up to 130% of its maximum speed. |
+| **Knockback** | Extends StatusEffect. Applies an impulse force and optional damage to a kart. |
+| **CardDisable** | Extends StatusEffect. Prevents a kart from using active cards for a limited duration. |
+| **InstantHeal** | Extends StatusEffect. Restores a portion of the kart's maximum health instantly. |
+| **Shield** | Extends StatusEffect. Temporary shield that absorbs a single damage or knockback event. |
+| **SpriteRenderer** | Renders karts, trees, and effects as perspective-scaled sprites sorted by depth. |
+| **SkyRenderer** | Draws the sky background with parallax scrolling based on camera rotation. |
+| **CardHUD** | Extends HUD. Draws the player's active cards and passive upgrades on the HUD. Not in use. |
+| **CardSelectScreen** | Between-race screen that presents four random cards and processes player selection. |
+| **VFX** | Manages and renders visual effects such as shockwaves, shields, and grappling hook cables. |
 
 ---
 
