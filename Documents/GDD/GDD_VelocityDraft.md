@@ -167,6 +167,10 @@ A single persistent health bar replaces the traditional lives system. Damage is 
 #### Race Classification
 Finish in the **top 3** to advance. Finishing 4th or lower ends the run immediately, regardless of HP remaining, and forces the player to re-run the race.
 
+#### Randomized Track Generation
+Each race uses a proicedurally generated rack created at the start of the race. Tacks are generated from randomized waypoints that are converted into smooth racing using spline interpolation. The generation system guarantees that every tack forms a closed circuit.
+Because tracks are generated differently each run, players cannot memorize layouts and must adapt their driving strategy and card usage.
+
 #### Card System
 At run start, the full card pool is available. After each race, 4 random cards are drawn and the player picks 1. Every race the rivals recieve a random card.
 Card categories:
@@ -207,65 +211,109 @@ The repair cards form the normal deck with the offensive.
 
 ### **Themes**
 
-The visual theme is retro arcade racing: vivid green grass, blue sky, palm trees and classic track-side elements. Each race uses a different time-of-day background (skybox) with its own atmosphere:
+The visual theme is retro arcade racing: vivid green grass, blue sky, trees and classic track-side elements. Each race uses a different time-of-day background (sky panorama) with its own atmosphere:
 
 | Time | Atmosphere | Sky |
 |----------|-------------------------------|-------------------------|
-| Sunrise | Quiet, soft, fresh start | Orange/golden horizon |
-| Midday | Bright, warm, non-threatening | Blue sky with clouds |
-| Sunset | Warm, reflective, melancholic | Orange/purple gradient |
+|1.Sunrise| Quiet, soft, fresh start | Orange/golden horizon |
+| 2.Midday| Bright, warm, non-threatening | Blue sky with clouds, slight orange gradient|
+| 3.Sunset| Warm, reflective, melancholic | Orange/dark blue gradient |
+1.
+![Alt text](assets/imgs_used/sunrise.png)
+2.
+![Alt text](assets/imgs_used/sunnyday.png)
+3.
+![Alt text](assets/imgs_used/sunset.png)
 
-![Alt text](/assets/imgs/sunnyday.png)
-![Alt text](/assets/imgs/sunrise.png)
-![Alt text](/assets/imgs/sunset.png)
 
-Weather overlays (Clear, Rain, Wind) apply on top of the time-of-day backgrounds starting from Level 4.
-
-Track complexity increases with each level: more waypoints (turns), additional laps, and tighter layouts. Lap count maxes out at Level 5.
+Track complexity increases with each level: more waypoints (turns), additional laps, and tighter layouts.
 
 ---
 
 ### **Game Flow**
 
-1. **Title Screen** → Story Cutscene (reserve driver backstory, team quit, fight for championship alone)
-2. **Level Selection** → Only Level 1 available initially
+**Title Screen** → Story Cutscene (driver backstory, team quit, fight for championship alone)
 
-**Level 1 — Time Trial (tutorial)**
-- Solo run, no CPUs, beat a forgiving target time
+**Race Introduction screen** → Specific screen for pactice race that shows basic instructions.
+
+**Practice race**
+- 1 CPU
 - Teaches: acceleration, braking, turning
 - Unlocks the full card pool on completion
 
-**Card Selection** → First exposure; game explains card types, HP mechanic, offensive cards
+**Results screen**
+-Variation for winning or losing
+
+**Card Selection** → First exposure; shows 4 randomized cards for the player to choose from.
+
+**Race Introduction screen** → Only includes the title of the level
 
 **Level 2 — First Real Race**
-- 3 CPUs, neutral/sunny/midday conditions
+-Initial number of laps
+- 4 CPUs, sunrise/midday/sunset conditions
+- CPUs receive hidden upgrades (offensive, passive, or repair)
 - Must finish top 3 to continue
-- Permadeath active from here on (run restarts as "another season", some upgrades retained)
+- Permadeath active from here on (run restarts as "another season") if 0 health reached
+- Re-run triggered if not three first places reached (retains passive/car upgrades)
+
+**Results screen**
 
 **Card Selection**
 
-**Level 3** — Similar to L2, CPUs receive hidden upgrades (offensive, passive, or repair)
+**Race Introduction screen** 
+
+**Level 3** 
+— Similar to L2
+-number of laps increases
+
+**Results screen**
 
 **Card Selection**
 
-**Level 4** — Afternoon, rainy weather introduced
-- Teaches weather impact on handling
-- Introduces weather randomization for all future races (sunny / rainy / windy)
+**Race Introduction screen** 
+
+**Level 4** 
+— Similar to L3, same number of laps as L3
+- parameters for CPUs are modified/upgraded
+
+**Results screen**
 
 **Card Selection**
 
-**Level 5** — 4 CPUs, weather randomized
-- New rival introduced: former teammate on a well-funded team (story beat)
+**Race Introduction screen** 
+
+**Level 5** 
+— 4 CPUs
+— Similar to L3, same number of laps as L3
+-parameters for CPUs are modified/upgraded
+
+**Results screen**
 
 **Card Selection**
 
-**Level 6** — Similar to L5, pre-championship race
+**Race Introduction screen** 
+
+**Level 6** 
+— 4 CPUs
+— Similar to L3, same number of laps as L3
+-parameters for CPUs are modified/upgraded
+-pre-championship race
+
+**Results screen**
 
 **Card Selection**
+
+**Race Introduction screen** → Specific variation for championship race
 
 **Level 7 — Championship Race**
+— Similar to L3, same number of laps as L3
 - All mechanics active, highest CPU difficulty
-- Winning triggers the victory cutscene and credits
+  
+**Results screen**
+  -In case of winning specific variation for championship
+  
+**Credit screen**
+-Includes the name of the team members
 
 ---
 
@@ -277,12 +325,19 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 | Class | Responsibility |
 |----------------|----------------|
-| **GameLoop** | Core execution cycle via `requestAnimationFrame()`. Manages update/render pipeline. All components initialized here. |
-| **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes `isPressed(key)`. |
-| **Camera** | Player's POV. Stores `posX`, `posY`, `dirX`, `dirY`, `planeX`, `planeY`, `posZ`. Follows PlayerKart. |
-| **Track** | Procedurally generated circuit. Handles waypoint generation, Catmull-Rom spline, edge normals, grid rasterization, spawn position, and checkpoint generation. |
-| **Kart** | Base entity for all vehicles. Shared state: position, direction vector, speed, topSpeed, acceleration, grip, health. |
-| **Projectile** | Base entity for offensive items. Shared state: position, direction, speed, damage, duration, owner reference. |
+| **Camera** | Maintains the camera's position and orientation in the world. Provides the third-person perspective used by the raycasting renderer. |
+| **Input** | Keyboard state manager. Listens to `keydown`/`keyup` events, exposes active key states each frame. | 
+| **Race** | Coordinates a complete race session. Generates the track, initializes karts, runs the game state machine, and updates/renderers every frame. |
+| **PlayerKart** | Base class for all karts. Handles movement, physics, collisions, checkpoint progression, lap counting, health, and active effects. |
+| **Personality** | Base AI behavior class. Defines driving parameters such as lookahead distance (detection) and braking thresholds. Calculates steering and acceleration using spline waypoints. |
+| **CardSystem** | Manages the player's passive cards and applies permanent stat upgrades to the kart. |
+| **ActiveCards** | Manages the player's active card inventory, activation logic, and card effects. |
+| **CPUCardSystem** | Autonomous version of ActiveCards used by CPU karts. Determines when to activate cards based on race conditions. |
+| **StatusEffect** | Abstract base class for all temporary effects applied to karts. |
+| **Track** | Procedurally generates race circuits, including waypoints, Catmull-Rom splines, checkpoints, trees, and the finish line. |
+| **FloorCaster** | Performs 2.5D raycasting and renders the floor and track on the main canvas. |
+| **HUD** | Not in use, was replazed by render in the direct loop of race. |
+
 
 ---
 
@@ -290,19 +345,24 @@ Track complexity increases with each level: more waypoints (turns), additional l
 
 | Class | Description |
 |-------|-------------|
-| **FloorCaster** | Receives Camera + Track each frame. Mode 7-style floor projection per scanline, samples Track grid for asphalt/grass color. Writes to Canvas pixel buffer. |
-| **SpriteRenderer** | Receives Camera + list of Kart/Projectile objects. Computes screen position and scale per sprite (billboard). Painter's Algorithm sort. |
-| **Minimap** | Renders top-down overview on secondary canvas. Draws track edges, kart positions as colored dots, camera direction indicator. |
-| **HUDRenderer** | Reads PlayerKart + CardSystem state. Renders health bar, lap, race position, active offensive slots on main canvas. |
-| **PlayerKart** | Extends Kart. Reads Input each frame for acceleration/braking/steering. Terrain modifiers applied from Track grid. Stats modified by CardSystem passives. |
-| **CPUKart** | Extends Kart. Controlled by AIController (no Input). Follows spline waypoints. Behavior type assigned at race start. |
-| **AIController** | Manages all CPUKart instances. Computes steering/acceleration per behavior type each frame. Uses spline for pathfinding, PlayerKart position for offensive decisions. |
-| **CardSystem** | Manages deck across races. Stores card pool, active passives applied to PlayerKart, 3-slot offensive inventory. Presents 3 random cards between races. |
-| **RaceManager** | Tracks lap counts, race positions, finish conditions. Determines podium result. Triggers CardSystem post-race. Manages roguelike run-end conditions (outside top 3 or HP = 0). |
-| **CardSelectionScreen** | Rendered between races. Displays 3 available cards, handles selection input, returns control to GameLoop. |
-| **MainMenu** | Entry point. Handles deck building at run start (up to 12 cards) before first race. |
-| **GameOverScreen** | Displayed on run end. Shows highest level reached, cards collected during run. |
-| **TireShredder / EMP / GrapplerHook / SonicWave** | Extend Projectile. Implement specific offensive behaviors per card. |
+| **CPUKart** | Extends PlayerKart. AI-controlled kart that uses a Personality instance instead of player input and has its own autonomous CPUCardSystem. |
+| **FastPersonality** | Extends Personality. Prioritizes maximum speed with long lookahead (30) threshhold and minimal braking. |
+| **AggressivePersonality** | Extends Personality. Focuses on blocking, ramming opponents, and using braking as an offensive tactic. Neutral lookahead threshhold. |
+| **StrategicPersonality** | Extends Personality. Follows the racing line and blocks in certain instances according to the player's position. Neutral lookahead threshhold.|
+| **ProvocativePersonality** | Extends Personality. Long lookahead threshhold. Combines high-speed driving with active blocking behavior from upfront. |
+| **EvasivePersonality** | Extends Personality. Prioritizes obstacle avoidance and smooth driving with minimal braking. Currently unused in race progression.|
+| **SpeedDebuff** | Extends StatusEffect. Reduces the kart's maximum speed for a limited duration. |
+| **SpeedDrain** | Extends StatusEffect. Drains the kart's current speed over time (frames). |
+| **SpeedBoost** | Extends StatusEffect. Increases the kart's current speed up to 130% of its maximum speed. |
+| **Knockback** | Extends StatusEffect. Applies an impulse force and optional damage to a kart. |
+| **CardDisable** | Extends StatusEffect. Prevents a kart from using active cards for a limited duration. |
+| **InstantHeal** | Extends StatusEffect. Restores a portion of the kart's maximum health instantly. |
+| **Shield** | Extends StatusEffect. Temporary shield that absorbs a single damage or knockback event. |
+| **SpriteRenderer** | Renders karts, trees, and effects as perspective-scaled sprites sorted by depth. |
+| **SkyRenderer** | Draws the sky background with parallax scrolling based on camera rotation. |
+| **CardHUD** | Extends HUD. Draws the player's active cards and passive upgrades on the HUD. Not in use. |
+| **CardSelectScreen** | Between-race screen that presents four random cards and processes player selection. |
+| **VFX** | Manages and renders visual effects such as shockwaves, shields, and grappling hook cables. |
 
 ---
 
@@ -311,7 +371,7 @@ Track complexity increases with each level: more waypoints (turns), additional l
 #### 2.5D Visual Style
 The game uses a retro-inspired pseudo-3d visual style similar to classic arcade racing games. Tracks are rendered using perspective-based floor projection techniques to create the illusion of depth, while karts and projectiles are displayed as scaled sprites that grow or shrink depending on distance from the camera. 
 
-The uppse hald of the screen displays the sky and environmental backgrounds, which change according to the current level theme and in-game time of day.
+The upper half of the screen displays the sky backgrounds, which change according to the current level theme and in-game time of day.
 
 #### Track Generation
 Tracks are procedurally generated using curved waypoint paths to create smooth racing circuits. Each track includes:
@@ -321,7 +381,7 @@ Tracks are procedurally generated using curved waypoint paths to create smooth r
 4.Off-road terrain areas.
 If the player drives off to these areas it will lose all speed.
 
-Track complexity increases throughout the game by introducing tighter turns, additional laps and weather modifiers. 
+Track complexity increases throughout the game by introducing tighter turns, additional laps. 
 
 ---
 
@@ -343,7 +403,7 @@ Camera plane rotates identically to keep FOV consistent.
 #### Kart vs Track Collision
 
 - Off-grid boundary → velocity = 0, kart pushed back
-- Off-track (grass) → terrain penalties apply, offensive cards disabled
+- Off-track (grass) → terrain penalties apply
 
 #### Kart vs Kart Collision (Circle Collision)
 
@@ -355,14 +415,30 @@ On collision: both receive impulse away from each other. The Aggressive CPU uses
 |------|--------|
 | Racing Transmission | Improves vehicle acceleration. |
 | Heavy Chassis |Reduces collision damage and increases resistance to impacts |
-| Sport Tires | Improves grip and allows tighter turns at high speed. |
+| Sport Tires | Improves acceleration. |
 | Aerodynamic Spoiler | Increases maximum speed |
 
 ---
 
 ### **Database Structure**
 
-Purpose: player progression persistence, session analytics for difficulty tuning, card balance data (selection frequency → drop rate / power adjustments).
+Purpose: The database system will be focused on maintaining player progression persistence and the creation of statistics for the balancing of the game and player experience enhancement.
+For the players a leader board will be able. The places in this board will be determined based on the fastest time they obtain in a race.
+For the admins the statistics will be more "balancing the dynamics" focused. 
+These include:
+
+-Card impact
+Ilustartes the relation between activated and chosen cards with the podium rate.
+
+-Daily race quality
+Which ilustrates how many races took place in a day and how many players reached podium in such races.
+
+-Race level difficulty
+Which measures how many wins occur in a race and provides a comparison with how many players started those races.
+
+These statistics give admins an idea of how the player are executing their strategies (for example if cards really make a difference in the races and by consequence the players do activate them (card impact)). 
+
+The database stores most information of the game including the player's information (account), the cards information, the rivals information and the game's.
 
 ---
 
@@ -374,47 +450,68 @@ Purpose: player progression persistence, session analytics for difficulty tuning
 
 Pixel art, retro arcade racing aesthetic. Vivid but limited palette to avoid visual overload. All characters and enemies are outlined in black for contrast against the background.
 
-Sprite resolution: **64×64 pixels** per kart and card. Health bar visible at all times — flashes red when HP hits 0 before the cutscene triggers.
+Sprite resolution: **64×64 pixels** per kart and card. Health bar visible at all times during races — flashes red when HP hits 0 before the explosion effect triggers.
 
-**Color palettes (proposed):**
+**Color palettes :**
 
-| Option | Primary | Shadow | Highlight |
-|--------|---------|---------|-----------|
-| 1 (Red) | #E63946 | #E63946 | #E63946 |
-| 2 (Blue) | #2D9CDB | #1C2A44 | #56CCF2 |
-| 3 (Green) | #27AE60 | #145A32 | #6FCF97 |
-| 4 (Yellow) | #F2C94C | #B7950B | #FFF176 |
+The color for the CPU rivals is determined by their personality. Each has a distinct main color:
+1. The blue rival is the leader (fast) personality.
+2. The green is the agressive personality.
+3. The grey rival has the strategic personality. 
+4. The yellow rival is the provocative personality.
+They all have as accent colors white, and grey. With the grey rival having light purple details. And the yellow rival having orange shadows to add contrast.
 
-Player kart: vivid blue (Option 2). Each CPU has a distinct palette tied to their personality type.
+Player kart: The car uses red as it's main color with grey and white details.
 
 ### **Graphics Needed**
 
 **Karts (Player + 4 CPU variants)**
 
-For each kart: side profile (L), side profile (R), front view, back view, angled back-left, angled back-right, angled front-left, angled front-right *(used for drift/turn animation)*
+For each kart: back view with their respective palletes
 
-![alt text](/assets/imgs/kart.png)
-![alt text](/assets/imgs/colorpal.png)
+<img src="assets/imgs_used/redkart.png" alt="Alt text" width="200">
 
-**Cards (12 total)**
+CPU variants:
+
+<img src="assets/imgs_used/bluekart.png" alt="Alt text" width="200"><img src="assets/imgs_used/greenkart.png" alt="Alt text" width="200"><img src="assets/imgs_used/greykart.png" alt="Alt text" width="200"><img src="assets/imgs_used/yellowkart.png" alt="Alt text" width="200">
+
+(The low resolution is because of the sprites size)
+
+**Cards (10 total)**
 - Front face: unique illustration + category letter (P / O / R) + ability identifier
-- Back face: shared design for all cards (same deck implied)
+  
+Concept art:
 
-![alt text](/assets/imgs/cards.png)
+ ![Alt text](assets/imgs_used/cards.png)
+
+Implemented design:
+
+1.Passive cards (aerodynamic spoiler, heavy chasis, racing transmition, sport tires)
+
+<img src="assets/imgs_used/cards/aerodynamic_spoiler.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/heavychasis.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/racing-transmition.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/sporttires.png" alt="Alt text" width="200">
+
+2. Offensive cards (EMP, grapplerhook, sonicwave, tire shredder)
+   
+<img src="assets/imgs_used/cards/EMP.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/grapplerhook.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/sonicwave.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/tireshredder.png" alt="Alt text" width="200">
+
+3. Repair cards (repair bot, temporary armour)
+
+<img src="assets/imgs_used/cards/repairbot.png" alt="Alt text" width="200"><img src="assets/imgs_used/cards/temporaryArmour.png" alt="Alt text" width="200">
 
 **UI Elements**
 - Health bar
 - Race position indicator
-- Card HUD slots (3 offensive)
+- Card HUD slots (4 offensive)
 - Minimap overlay frame
 
 **Backgrounds / Skyboxes**
 - Sunrise, Midday, Sunset pixel art backgrounds
-- Rain streak overlay
-- Level Select top-down track map
+
 
 **Cutscene Art**
-- Intro (helmet on table)
+- Intro (helmet on table for background)
+- Race introduction nd variants
+- Credits and Title screens
 - Win / Permadeath variants
 
 ---
@@ -437,22 +534,24 @@ Sound effects should be punchy and arcade-style — enough to confirm actions wi
 | Explosion | [YouTube](https://www.youtube.com/watch?v=HTXiJpCDiH4) |
 | Car Crash | [YouTube](https://www.youtube.com/watch?v=uakY1LYZ3Vo) |
 | UI Selection | [YouTube](https://www.youtube.com/watch?v=d9sQvn0pYts) |
-| Rain | [YouTube](https://www.youtube.com/watch?v=C-hzP3mOBGY) |
-| Wind | [YouTube](https://www.youtube.com/watch?v=5jlUVr6gkos) |
 | Race Start | [YouTube](https://www.youtube.com/watch?v=KOoCEIwswYg) |
 
 ### **Music Needed**
 
 All tracks original, composed and recorded by the team.
+1. Gold Medal Run
+2. Midnight Pit Stop
+3. Race
+4. Velvet Tide.
 
 | Track | Context |
 |-------|---------|
-| Main Menu | Title screen |
-| Card Selection | Between-race card screen |
-| Storyline | Cutscenes |
+| Gold Medal Run| Result screen positive (Win) |
+| Midnight Pit Stop | Between-race card select screen |
+| One final turn | Result screen negative (loss) |
 | Race | During races |
-| Winning Race | Post-race win |
-| Ending Race | Credits / run end |
+| Velvet tide | Intro screens |
+| Velvet tide | Credits |
 
 Style: city pop / Japanese racing game aesthetic. Upbeat, melodic, loop-friendly.
 
@@ -462,32 +561,47 @@ Style: city pop / Japanese racing game aesthetic. Upbeat, melodic, loop-friendly
 
 ---
 
-### Sprint 1 — Documentation & Conceptualization ✅
-- Finalization of GDD
-- Initial UML / Entity-Relationship diagram sketch
-- Creation of user stories (game + database)
+### Sprint 1 — Project Plannung & Conceptualization & Foundations ✅
+- Finalization of Game Design Document GDD
+- Create initial UML / Entity-Relationship diagram 
+- Define user stories for both gameplay and database requirements
+- Creation and organize initial git repository issues
+- Develop intial visual asset prototypes and sprites
+- Implementation of player vehicle movement controls
 
-### Sprint 2 — Core Engine ✅
-- Base classes: `Kart`, `Track`, `Camera`
-- Input system (keyboard/mouse)
+### Sprint 2 — Core System Development ✅
+- Develop core classes: `Kart`, `Track`, `Camera`
+- Implement Input system (keyboard/mouse)
+- Design and Implement `CardSystem` (passive upgrades + active abilities)
+- Develop the racing gameplay screen and health system
+
+
+### Sprint 3 — Gameplay Systems & AI ✅
+- Design race tracks with progressive complexity (waypoints and lap structure)
+- Implement kart physics and collision detection
+- Develop HUD: health bar, race position, active card slots
+- Implement core screen navigation and game flow
+- Implement card effects over attributes
+- Develop AI behavior for all four CPU driver archetypes (`AIController`)
+- Finilized sprites assets
+
+### Sprint 4 — Content Development & Progression Systems ✅
 - MySQL database setup and table creation
+- Add dummy data to test the database
+- Design Statistics of gameplay
+- Finish game screen flow and navigation
+- Add visual feeback and gameplay effects
+- Implement level reset and restart mechanisms
+- Create additional visual assets
 
-### Sprint 3 — Roguelite System & AI ← *Current*
-- Implement `CardSystem` (passive upgrades + active abilities)
-- Implement kart physics and track/kart collision
-- Develop AI behavior for all 4 CPU types (`AIController`)
-
-### Sprint 4 — Level Design & Content
-- Race tracks with increasing complexity (more waypoints, laps)
-- Weather system integration (rain/wind modifiers)
-- HUD: health bar, race position, active card slots
-
-### Sprint 5 — Assets, Sounds & Web Integration
+### Sprint 5 — Assets, Sounds & Web Platform Development and Integration ✅
 - Music and SFX integration
 - Finalize all 2.5D sprites and environment backgrounds
 - HTML/JS/CSS web page development
+-  Connect the database with the web and gameplay.
+-  Fix bugs in the connection between the web, database and gameplay
 
-### Sprint 6 — Testing, Bug Fixing & Delivery
-- Intensive QA (errors, glitches, memory leaks, logic errors)
-- AI difficulty + card power balancing
-- Final documentation review and stable build delivery
+### Sprint 6 — Quality Assurance & Project Delivery  ✅
+- Perform Testing and final bux fixing
+- Conduct final documentation review
+- Organize and clean project repository for delivery
