@@ -439,3 +439,13 @@ User stories:
 | Attacks trigger visual effects when activated, targets display feedback when hit. |  |
 | Priority | 2 |
 | Duration | 2h |
+
+| User Story #44 — Database integration | |
+| :---- | :---- |
+| **As** | a developer |
+| **I want** | to externalize data into a database |
+| **So that** | I can manage information dynamically without hard-coding |
+| **Acceptance criteria** | |
+| 1. Database schema implemented for core entities. <br> 2. CRUD operations are fully functional. <br> 3. Hard-coded constants are replaced by database queries. | |
+| **Priority** | 1 |
+| **Duration** | 12h |
