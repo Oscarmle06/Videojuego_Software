@@ -140,17 +140,7 @@ User stories:
 | Priority | 2 |
 | Duration | 14h |
 
-| User Story \#14 — Progressive Map |  |
-| :---- | :---- |
-| As | a player |
-| I want | to see a selection map where levels unlock progressively |
-| So that | I can understand my progression through the championship. |
-| Acceptance criteria |  |
-| Levels unlock progressively Locked levels cannot be accessed Completed levels update visually |  |
-| Priority | 2 |
-| Duration | 15h |
-
-| User Story \#15 — Pause Menu |  |
+| User Story \#14 — Pause Menu |  |
 | :---- | :---- |
 | As | a player |
 | I want | to press “SPACE” during a race to adjust settings such as volume and brightness |
@@ -160,7 +150,7 @@ User stories:
 | Priority | 2 |
 | Duration | 7h |
 
-| User Story \#16 — Race HUD |  |
+| User Story \#15 — Race HUD |  |
 | :---- | :---- |
 | As | a player |
 | I want | to see my current position, lap number, and track map on the HUD, |
@@ -170,7 +160,7 @@ User stories:
 | Priority | 1 |
 | Duration | 9h |
 
-| User Story \#17 — Upgrade Statistics Screen |  |
+| User Story \#16 — Upgrade Statistics Screen |  |
 | :---- | :---- |
 | As | a player |
 | I want | to view a statistics screen showing the progress of my chassis, tires, and engine |
@@ -180,7 +170,7 @@ User stories:
 | Priority | 2 |
 | Duration | 10h |
 
-| User Story \#18 — User Authentication |  |
+| User Story \#17 — User Authentication |  |
 | :---- | :---- |
 | As | a user |
 | I want | to register and log in |
@@ -190,7 +180,7 @@ User stories:
 | Priority | 1 |
 | Duration | 20h |
 
-| User Story \#19 — Card Analytics |  |
+| User Story \#18 — Card Analytics |  |
 | :---- | :---- |
 | As | a developer |
 | I want | the system to track which cards are selected most often by players |
@@ -200,7 +190,7 @@ User stories:
 | Priority | 3 |
 | Duration | 10h |
 
-| User Story \#20 — Session Persistence |  |
+| User Story \#19 — Session Persistence |  |
 | :---- | :---- |
 | As | a player |
 | I want | my session to remain active using a token system |
@@ -210,7 +200,7 @@ User stories:
 | Priority | 2 |
 | Duration | 8h |
 
-| User Story \#21 — Statistics Synchronization |  |
+| User Story \#20 — Statistics Synchronization |  |
 | :---- | :---- |
 | As | a player |
 | I want | my statistics to synchronize automatically after finishing a match |
@@ -220,7 +210,7 @@ User stories:
 | Priority | 1 |
 | Duration | 12h |
 
-| User Story \#22 — Difficulty Analytics |  |
+| User Story \#21 — Difficulty Analytics |  |
 | :---- | :---- |
 | As | a developer |
 | I want | to know in which levels players die the most |
@@ -230,7 +220,7 @@ User stories:
 | Priority | 3 |
 | Duration | 8h |
 
-| User Story \#23 — Balance Dashboard |  |
+| User Story \#22 — Balance Dashboard |  |
 | :---- | :---- |
 | As | an administrator |
 | I want | to view a ranking of cards with the highest win rates  |
@@ -240,7 +230,7 @@ User stories:
 | Priority | 3 |
 | Duration | 10h |
 
-| User Story #24 — Vehicle Chassis Resistance |  |
+| User Story #23 — Vehicle Chassis Resistance |  |
 | :---- | :---- |
 | As |  |
 | I want | my vehicle health and durability (affected by chassis cards) to determine how much damage I absorb or withstand during a collision |
@@ -250,7 +240,7 @@ User stories:
 | Priority | 2 |
 | Duration | 14h |
 
-| User Story \#25 — Card Leveling |  |
+| User Story \#24 — Card Leveling |  |
 | :---- | :---- |
 | As | a player |
 | I want | duplicate cards to level up and improve their effectiveness percentages |
@@ -260,7 +250,7 @@ User stories:
 | Priority | 2 |
 | Duration | 9h |
 
-| User Story \#26 — Tutorial Race |  |
+| User Story \#25 — Tutorial Race |  |
 | :---- | :---- |
 | As | a new player |
 | I want | an introductory race that explains the core mechanics before starting my real run |
@@ -270,7 +260,7 @@ User stories:
 | Priority | 1 |
 | Duration | 12h |
 
-| User Story \#27 — Achievement System |  |
+| User Story \#26 — Achievement System |  |
 | :---- | :---- |
 | As | a developer |
 | I want | to implement an achievement system that grants a global user experience |
@@ -280,7 +270,7 @@ User stories:
 | Priority | 3 |
 | Duration | 14h |
 
-| User Story \#28 — Collision Knockback |  |
+| User Story \#27 — Collision Knockback |  |
 | :---- | :---- |
 | As | a player |
 | I want | collisions with other vehicles to push me away physically |
@@ -290,7 +280,7 @@ User stories:
 | Priority | 2 |
 | Duration | 10h |
 
-| User Story \#29 — Enemy Scaling System |  |
+| User Story \#28 — Enemy Scaling System |  |
 | :---- | :---- |
 | As | a developer |
 | I want | CPU attributes and health increase automatically after each completed level |
@@ -300,7 +290,7 @@ User stories:
 | Priority | 2 |
 | Duration | 12h |
 
-| User Story \#30 — Active Card Menu |  |
+| User Story \#29 — Active Card Menu |  |
 | :---- | :---- |
 | As | a player |
 | I want | to see which cards I currently have in the pause menu or garage |
@@ -310,7 +300,7 @@ User stories:
 | Priority | 2 |
 | Duration | 6h |
 
-| User Story \#31 — Elimination Statistics |  |
+| User Story \#30 — Elimination Statistics |  |
 | :---- | :---- |
 | As | a player |
 | I want | the system to track how many rivals I eliminate through damage |
@@ -320,17 +310,7 @@ User stories:
 | Priority | 2 |
 | Duration | 7h |
 
-| User Story \#32 — Completed Level Indicators |  |
-| :---- | :---- |
-| As | a player |
-| I want | completed levels to change color on the map selection screen |
-| So that | I have visual confirmation of my progress |
-| Acceptance criteria |  |
-| Completed levels change color Visual progress updates correctly on the map |  |
-| Priority | 2 |
-| Duration | 5h |
-
-| User Story \#33 — Victory Validation |  |
+| User Story \#31 — Victory Validation |  |
 | :---- | :---- |
 | As | a player |
 | I want | my victory to be validated if I cross the finish line in first place after completing all required laps |
@@ -340,7 +320,7 @@ User stories:
 | Priority | 1 |
 | Duration | 10h |
 
-| User Story \#34 — Lap Counter |  |
+| User Story \#32 — Lap Counter |  |
 | :---- | :---- |
 | As | a player |
 | I want | the game to register each time I cross the finish line |
@@ -350,7 +330,7 @@ User stories:
 | Priority | 1 |
 | Duration | 6h |
 
-| User Story \#35 — New Run Button |  |
+| User Story \#33 — New Run Button |  |
 | :---- | :---- |
 | As | a player |
 | I want | a button to start a new run after losing due to permadeath |
@@ -360,7 +340,7 @@ User stories:
 | Priority | 1  |
 | Duration | 4h |
 
-| User Story \#36 — Card Descriptions |  |
+| User Story \#34 — Card Descriptions |  |
 | :---- | :---- |
 | As | a player |
 | I want | every card in the selection screen to show an icon and a clear description of its effect |
@@ -370,7 +350,7 @@ User stories:
 | Priority | 2 |
 | Duration | 6h |
 
-| User Story \#37 — Card Selection Confirmation |  |
+| User Story \#35 — Card Selection Confirmation |  |
 | :---- | :---- |
 | As | a player |
 | I want | visual confirmation after clicking one of the three cards |
@@ -380,17 +360,7 @@ User stories:
 | Priority | 2 |
 | Duration | 5h |
 
-| User Story \#38 — Current Level Highlight |  |
-| :---- | :---- |
-| As | a player |
-| I want | the current level I am on to blink or be highlighted on the map |
-| So that | I can easily identify my current progression point |
-| Acceptance criteria |  |
-| Current level blinks or highlights on the map Indicator updates dynamically |  |
-| Priority | 2 |
-| Duration | 4h |
-
-| User Story \#39 — Secure Logout |  |
+| User Story \#36 — Secure Logout |  |
 | :---- | :---- |
 | As | a user |
 | I want | to securely log out of my account |
@@ -400,7 +370,7 @@ User stories:
 | Priority | 1 |
 | Duration | 5h |
 
-| User Story \#40 — Career Wins Profile |  |
+| User Story \#37 — Career Wins Profile |  |
 | :---- | :---- |
 | As | a player |
 | I want | to see the total number of races won across all runs in my profile |
@@ -410,7 +380,7 @@ User stories:
 | Priority | 2 |
 | Duration | 6h |
 
-| User Story \#41 — Server-side Validation |  |
+| User Story \#38 — Server-side Validation |  |
 | :---- | :---- |
 | As | an administrator  |
 | I want | the server to verify that the submitted statistics are valid |
@@ -420,7 +390,7 @@ User stories:
 | Priority | 1 |
 | Duration | 14h |
 
-| User Story \#42 — Developer Credits |  |
+| User Story \#39 — Developer Credits |  |
 | :---- | :---- |
 | As | a user |
 | I want | to see the names of the development team members in the menu |
@@ -430,7 +400,7 @@ User stories:
 | Priority | 3  |
 | Duration | 3h |
 
-| User Story \#43 — Connection Failure Warning |  |
+| User Story \#40 — Connection Failure Warning |  |
 | :---- | :---- |
 | As | a player |
 | I want | to receive a warning if my connection to the server fails |
@@ -440,7 +410,7 @@ User stories:
 | Priority | 2 |
 | Duration | 6h |
 
-| User Story \#44 — Game logo and visual identity |  |
+| User Story \#41 — Game logo and visual identity |  |
 | :---- | :---- |
 | As | a developer |
 | I want | the game to have a recognizable logo and visual identity |
@@ -450,7 +420,7 @@ User stories:
 | Priority | 3 |
 | Duration | 2h |
 
-| User Story \#45 — Distinct Vehicle visuals |  |
+| User Story \#42 — Distinct Vehicle visuals |  |
 | :---- | :---- |
 | As | a player |
 | I want | the player vehicle and revial vehicles to look visually distinct |
@@ -460,8 +430,7 @@ User stories:
 | Priority | 2 |
 | Duration | 2h |
 
-
-| User Story \#46 — Attack feedback  |  |
+| User Story \#43 — Attack feedback  |  |
 | :---- | :---- |
 | As | a player |
 | I want | visual and gameplay feedbackj during attacks |
