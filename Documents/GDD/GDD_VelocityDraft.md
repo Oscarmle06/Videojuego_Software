@@ -167,6 +167,10 @@ A single persistent health bar replaces the traditional lives system. Damage is 
 #### Race Classification
 Finish in the **top 3** to advance. Finishing 4th or lower ends the run immediately, regardless of HP remaining, and forces the player to re-run the race.
 
+#### Randomized Track Generation
+Each race uses a proicedurally generated rack created at the start of the race. Tacks are generated from randomized waypoints that are converted into smooth racing using spline interpolation. The generation system guarantees that every tack forms a closed circuit.
+Because tracks are generated differently each run, players cannot memorize layouts and must adapt their driving strategy and card usage.
+
 #### Card System
 At run start, the full card pool is available. After each race, 4 random cards are drawn and the player picks 1. Every race the rivals recieve a random card.
 Card categories:
