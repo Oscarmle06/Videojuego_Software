@@ -78,7 +78,7 @@ npm install
 
 ## 5. Start the project
 
-`npm run dev` launches **both** the backend API (Express on port 3000) and the game dev server (Vite on port 5173) in a single terminal using `concurrently`.
+`npm run dev` launches **both** the backend API (Express on port 3000) and the Vite dev server (web dashboard + game, port 5173) in a single terminal using `concurrently`.
 
 ```bash
 npm run dev
@@ -95,7 +95,7 @@ npm run dev:frontend   # Vite dev server → http://localhost:5173
 
 ## 6. Open the web dashboard
 
-Open `Web/frontend/index.html` in your browser, or navigate to **http://localhost:5173** which redirects there automatically.
+Navigate to **http://localhost:5173** — it redirects automatically to the login page. The game runs embedded inside the dashboard at `http://localhost:5173/Web/frontend/game.html`.
 
 > The backend must be running before opening the dashboard — it handles login, card balance, and race result persistence.
 
